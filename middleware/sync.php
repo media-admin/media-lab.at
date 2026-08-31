@@ -5,6 +5,12 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use SupplierSync\Services\ApiClient;
 use SupplierSync\Services\FeedGenerator;
+use Dotenv\Dotenv;
+
+// .env laden (API-Keys etc.) — muss vor dem Require von config/suppliers.php passieren,
+// da dort $_ENV[...] ausgelesen wird.
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->safeLoad(); // safeLoad statt load: bricht nicht ab, falls .env mal fehlt
 
 // Lock verhindert überlappende Läufe (wichtig für den ML-SKU-Counter, siehe Notion-Doku)
 $lockFile = __DIR__ . '/sync.lock';
