@@ -78,14 +78,14 @@ yarn.lock
 #   reproduzierbar zu pinnen
 
 # Build-Output (wird generiert, nicht versionieren)
-/cms/wp-content/themes/custom-theme/assets/dist/
+/cms/wp-content/themes/media-lab-theme/assets/dist/
 *.map
 
 # Vite-Hot-Reload-Marker (wird nur während `npm run dev` erzeugt) - vorher
 # Teil derselben korrupten, zusammengeklebten Zeile wie /cms/wp-content/
 # languages/ oben und dadurch nie wirksam ignoriert.
 # Bitte prüfen/entfernen, falls dieser Pfad bei euch nicht (mehr) zutrifft.
-/cms/wp-content/themes/custom-theme/assets/hot
+/cms/wp-content/themes/media-lab-theme/assets/hot
 
 # ============================================
 # BACKUP & TEMP FILES (aus Entwicklungsiterationen)
@@ -109,7 +109,7 @@ yarn.lock
 *.swo
 
 # JS Backup Files
-/cms/wp-content/themes/custom-theme/assets/src/js/main.js.backup-error-tracking
+/cms/wp-content/themes/media-lab-theme/assets/src/js/main.js.backup-error-tracking
 
 # ============================================
 # UMGEBUNGSVARIABLEN (NIEMALS committen!)
