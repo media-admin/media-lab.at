@@ -11,6 +11,11 @@ function ml_env(string $key, string $default = ''): string {
     return ($value === false || $value === null || $value === '') ? $default : $value;
 }
 
+// Makito nutzt keinen API-Key/Header, sondern einen kundenspezifischen
+// URL-Parameter ("pszinternal"). Trotzdem über .env verwaltet, da es sich
+// faktisch um ein Zugangs-Credential handelt (nicht committen).
+$makitoToken = ml_env('MAKITO_CUSTOMER_TOKEN');
+
 return [
     'cotton-classics' => [
         'name'             => 'Cotton Classics',
@@ -36,9 +41,14 @@ return [
         'name'             => 'Makito',
         'adapter'          => 'MakitoAdapter',
         'supplier_code'    => 'TKM',
-        'api_url'          => '', // TODO: XML-Feeds, kein REST-Endpoint
-        'api_key'          => ml_env('MAKITO_API_KEY'),
-        'enabled'          => false,
+        'api_url'          => $makitoToken
+            ? "http://print.makito.es:8080/user/xml/ItemDataFile.php?pszinternal={$makitoToken}"
+            : '',
+        'stock_api_url'    => $makitoToken
+            ? "http://print.makito.es:8080/user/xml/allstockfile.php?pszinternal={$makitoToken}"
+            : '',
+        'api_key'          => '', // nicht genutzt, Makito authentifiziert über URL-Token
+        'enabled'          => true,
         'category_mapping' => [],
     ],
 ];
