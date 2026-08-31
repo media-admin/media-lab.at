@@ -21,9 +21,11 @@ return [
         'name'             => 'Cotton Classics',
         'adapter'          => 'CottonClassicsAdapter',
         'supplier_code'    => 'LCC',
-        'api_url'          => '', // TODO: Datei-basiert (CSV/XLSX), kein API-Endpoint
-        'api_key'          => ml_env('COTTON_CLASSICS_API_KEY'),
-        'enabled'          => false, // Preise teils per Mail — Sonderfall im Adapter behandeln
+        // Datei-basiert, kein API-Endpoint — jährlicher Stammdaten-Export,
+        // muss manuell hier abgelegt werden (siehe docs/Mapping-Dokument).
+        'file_path'        => __DIR__ . '/../import-files/cotton-classics/latest.xlsx',
+        'api_key'          => '',
+        'enabled'          => true,
         'category_mapping' => [],
     ],
     'midocean' => [

@@ -3,7 +3,8 @@
         "guzzlehttp/guzzle": "^7.8",
         "monolog/monolog": "^3.5",
         "league/csv": "^9.11",
-        "vlucas/phpdotenv": "^5.7"
+        "vlucas/phpdotenv": "^5.7",
+        "openspout/openspout": "^5.3"
     },
     "autoload": {
         "psr-4": {

@@ -31,6 +31,10 @@ class ComposerStaticInit43e6b2eb8e3d9b7ad2089a0220c65921
             'Psr\\Http\\Client\\' => 16,
             'PhpOption\\' => 10,
         ),
+        'O' =>
+        array (
+            'OpenSpout\\' => 10,
+        ),
         'M' =>
         array (
             'Monolog\\' => 8,
@@ -85,6 +89,10 @@ class ComposerStaticInit43e6b2eb8e3d9b7ad2089a0220c65921
         'PhpOption\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
+        ),
+        'OpenSpout\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/openspout/openspout/src',
         ),
         'Monolog\\' =>
         array (
