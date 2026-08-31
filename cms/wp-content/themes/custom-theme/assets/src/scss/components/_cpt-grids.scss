@@ -1,0 +1,162 @@
+@use '../abstracts' as *;
+
+// =============================================================================
+// CPT Grids – Projects & Services
+// Version: 1.2.0 – Fluid Responsive System
+//
+// WICHTIG: Dieses File lädt in style.scss NACH _services.scss (Zeile 53 vs 41).
+// Alle hier definierten Properties überschreiben _services.scss.
+// Daher: grid-template-columns, gap und margin müssen hier konsistent gesetzt sein.
+//
+// Änderungen:
+//   - gap: $spacing-6 → var(--space-xl)
+//   - margin: $spacing-8 → var(--space-2xl)
+//   - padding: $spacing-6 → var(--space-xl)
+//   - font-size → var(--text-*)
+//   - grid-template-columns: 1fr als Base explizit gesetzt
+// =============================================================================
+
+// =============================================================================
+// PROJECTS GRID
+// =============================================================================
+
+.projects-grid {
+  display:               grid;
+  gap:                   var(--space-xl);
+  margin:                var(--space-2xl) 0;
+  // Base: 1 Spalte auf Mobile (ohne data-columns Attribut)
+  grid-template-columns: 1fr;
+
+  &[data-columns="2"] {
+    grid-template-columns: 1fr;
+    @include respond-to('md') { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  &[data-columns="3"] {
+    grid-template-columns: 1fr;
+    @include respond-to('sm') { grid-template-columns: repeat(2, 1fr); }
+    @include respond-to('lg') { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  &[data-columns="4"] {
+    grid-template-columns: 1fr;
+    @include respond-to('sm') { grid-template-columns: repeat(2, 1fr); }
+    @include respond-to('lg') { grid-template-columns: repeat(4, 1fr); }
+  }
+}
+
+// project-card lebt jetzt ausschließlich in components/_projects-grid.scss
+// (war hier dupliziert mit abweichenden Werten, vereinheitlicht 2026-08-14 -
+// inkl. aktiviertem Overlay/Link-Hover-Pattern). _projects-grid.scss wird in
+// style.scss NACH dieser Datei geladen.
+
+// =============================================================================
+// SERVICES GRID
+// =============================================================================
+
+.services-grid {
+  display:               grid !important;
+  gap:                   var(--space-xl) !important;
+  margin:                var(--space-2xl) 0 !important;
+  width:                 100% !important;
+  // Base Mobile: 1 Spalte – !important nötig wegen WP Inline-Style Override
+  grid-template-columns: 1fr !important;
+
+  &[data-columns="1"] { grid-template-columns: 1fr !important; }
+
+  &[data-columns="2"] {
+    grid-template-columns: 1fr !important;
+    @include respond-to('md') { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+
+  &[data-columns="3"] {
+    grid-template-columns: 1fr !important;
+    @include respond-to('md') { grid-template-columns: repeat(2, 1fr) !important; }
+    @include respond-to('lg') { grid-template-columns: repeat(3, 1fr) !important; }
+  }
+
+  &[data-columns="4"] {
+    grid-template-columns: 1fr !important;
+    @include respond-to('sm') { grid-template-columns: repeat(2, 1fr) !important; }
+    @include respond-to('lg') { grid-template-columns: repeat(4, 1fr) !important; }
+  }
+}
+
+// ── Service Card ──────────────────────────────────────────────────────────────
+
+.service-card {
+  background:     var(--color-card-bg);
+  border-radius:  $radius-lg;
+  padding:        var(--space-xl);
+  box-shadow:     $shadow-md;
+  transition:     $transition-base;
+  text-align:     center;
+  display:        flex;
+  flex-direction: column;
+
+  &:hover {
+    transform:  translateY(-8px);
+    box-shadow: $shadow-xl;
+  }
+
+  &__icon {
+    width:           80px;
+    height:          80px;
+    margin:          0 auto var(--space-md);
+    background:      rgba($color-primary, 0.1);
+    border-radius:   $radius-full;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+
+    .dashicons {
+      font-size: 40px;
+      width:     40px;
+      height:    40px;
+      color:     $color-primary;
+    }
+  }
+
+  &__title {
+    margin:      0 0 $spacing-2;
+    font-size:   var(--text-xl);
+    font-weight: 700;
+    color:       var(--color-text);
+  }
+
+  &__price {
+    font-size:     var(--text-xl);
+    font-weight:   700;
+    color:         $color-primary;
+    margin-bottom: var(--space-sm);
+  }
+
+  &__excerpt {
+    color:         var(--color-text-secondary);
+    line-height:   1.6;
+    margin-bottom: var(--space-md);
+  }
+
+  &__features {
+    list-style:    none;
+    padding:       0;
+    margin:        0 0 var(--space-lg);
+
+    li {
+      padding:       $spacing-2 0;
+      border-bottom: 1px solid var(--color-border);
+      color:         var(--color-text-secondary);
+
+      &:last-child { border-bottom: none; }
+
+      &::before {
+        content:     "✓";
+        color:       $color-success;
+        font-weight: bold;
+        margin-right: $spacing-2;
+      }
+    }
+  }
+
+  &__cta { margin-top: auto; }
+}

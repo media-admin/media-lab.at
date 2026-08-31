@@ -1,0 +1,167 @@
+@use '../abstracts' as *;
+
+// =============================================================================
+// Projects Grid & Card
+// Vereinheitlicht 2026-08-14: .project-card war zuvor dupliziert in
+// _cpt-grids.scss UND hier, mit abweichenden Werten (CSS hat beide Dateien
+// property-für-property gemischt, je nach Ladereihenfolge in style.scss).
+// _cpt-grids.scss enthält .project-card jetzt nicht mehr - diese Datei ist
+// die einzige Quelle. Overlay/Link-Pattern (Hover-Button auf dem Bild) ist
+// jetzt fester Teil des Designs, nicht mehr totes CSS - siehe zugehöriges
+// Markup-Update in shortcodes.php / load-more.js / ajax-filters.js.
+// =============================================================================
+
+.projects-grid {
+  display:               grid;
+  gap:                   var(--space-lg);
+  margin:                var(--space-2xl) 0;
+  width:                 100%;
+  grid-template-columns: 1fr;
+
+  &[data-columns="1"] { grid-template-columns: 1fr; }
+
+  &[data-columns="2"] {
+    @include respond-to('md') { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  &[data-columns="3"] {
+    @include respond-to('md') { grid-template-columns: repeat(2, 1fr); }
+    @include respond-to('lg') { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  &[data-columns="4"] {
+    @include respond-to('sm') { grid-template-columns: repeat(2, 1fr); }
+    @include respond-to('lg') { grid-template-columns: repeat(4, 1fr); }
+  }
+}
+
+.project-card {
+  background:     var(--color-card-bg);
+  border-radius:  $radius-lg;
+  overflow:       hidden;
+  box-shadow:     $shadow-md;
+  transition:     $transition-base;
+
+  &:hover {
+    transform:  translateY(-8px);
+    box-shadow: $shadow-xl;
+
+    .project-card__image img { transform: scale(1.05); }
+    .project-card__overlay   { opacity: 1; }
+  }
+
+  &__image {
+    position:   relative;
+    padding-bottom: 66.67%; // 3:2
+    overflow:   hidden;
+    background: $color-gray-100;
+
+    img {
+      position:   absolute;
+      top: 0; left: 0;
+      width:      100%;
+      height:     100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  &__overlay {
+    position:        absolute;
+    inset:           0;
+    background:      rgba($color-primary, 0.9);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    opacity:         0;
+    transition:      opacity 0.3s ease;
+  }
+
+  &__link {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             $spacing-2;
+    padding:         $spacing-3 $spacing-4;
+    background:      $color-white;
+    color:           $color-primary;
+    border-radius:   $radius-md;
+    font-weight:     $font-weight-semibold;
+    text-decoration: none;
+    transition:      transform 0.2s ease;
+
+    &:hover { transform: scale(1.05); }
+
+    .dashicons { font-size: 18px; width: 18px; height: 18px; }
+  }
+
+  &__content {
+    padding: var(--space-lg);
+  }
+
+  &__categories {
+    display:       flex;
+    flex-wrap:     wrap;
+    gap:           $spacing-2;
+    margin-bottom: var(--space-sm);
+  }
+
+  &__category {
+    padding:        $spacing-1 $spacing-2;
+    background:     rgba($color-primary, 0.1);
+    color:          $color-primary;
+    font-size:      var(--text-xs);
+    font-weight:    $font-weight-semibold;
+    border-radius:  $radius-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__title {
+    margin:      0 0 $spacing-2;
+    font-size:   var(--text-xl);
+    font-weight: 700;
+
+    a {
+      color:           var(--color-text);
+      text-decoration: none;
+      transition:      color 0.2s ease;
+      &:hover { color: $color-primary; }
+    }
+  }
+
+  // Client · Datum – Separator kommt AUSSCHLIESSLICH von hier (::after),
+  // NICHT zusätzlich manuell im PHP einfügen (sonst doppelter Mittelpunkt).
+  &__meta {
+    display:       flex;
+    align-items:   center;
+    font-size:     var(--text-sm);
+    color:         var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+
+    span:not(:last-child)::after {
+      content: '·';
+      margin:  0 0.5rem;
+    }
+  }
+
+  &__excerpt {
+    color:         var(--color-text-muted);
+    line-height:   1.6;
+    margin-bottom: var(--space-sm);
+  }
+
+  &__url {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             $spacing-1;
+    color:           $color-primary;
+    text-decoration: none;
+    font-weight:     $font-weight-semibold;
+    font-size:       var(--text-sm);
+    transition:      color 0.2s ease;
+
+    &:hover { color: $color-primary-dark; }
+
+    .dashicons { font-size: 16px; width: 16px; height: 16px; }
+  }
+}

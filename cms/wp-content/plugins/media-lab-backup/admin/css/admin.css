@@ -1,0 +1,731 @@
+/* ═══════════════════════════════════════════════════════════
+   Media Lab Backup — Admin Styles
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+    --mlb-primary:     #2271b1;
+    --mlb-primary-h:   #135e96;
+    --mlb-success:     #00a32a;
+    --mlb-error:       #d63638;
+    --mlb-warning:     #dba617;
+    --mlb-info:        #72aee6;
+    --mlb-border:      #c3c4c7;
+    --mlb-bg:          #f6f7f7;
+    --mlb-card-bg:     #fff;
+    --mlb-radius:      6px;
+    --mlb-shadow:      0 1px 3px rgba(0,0,0,.08);
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+
+.mlb-wrap {
+    max-width: 960px;
+}
+
+.mlb-wrap h1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.mlb-wrap h1 .dashicons {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.mlb-tabs {
+    margin-bottom: 0 !important;
+}
+
+.mlb-tab-content {
+    background: transparent;
+    padding: 24px 0 0;
+}
+
+/* ── Status-Bar ─────────────────────────────────────────────── */
+
+.mlb-status-bar {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    background: var(--mlb-card-bg);
+    border: 1px solid var(--mlb-border);
+    border-radius: var(--mlb-radius);
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--mlb-shadow);
+}
+
+.mlb-status-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mlb-status-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #646970;
+}
+
+.mlb-status-item strong {
+    font-size: 14px;
+}
+
+.mlb-ok    { color: var(--mlb-success); }
+.mlb-error { color: var(--mlb-error); }
+
+/* ── Cards ───────────────────────────────────────────────────── */
+
+.mlb-card {
+    background: var(--mlb-card-bg);
+    border: 1px solid var(--mlb-border);
+    border-radius: var(--mlb-radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--mlb-shadow);
+}
+
+.mlb-card-title {
+    margin: 0 0 18px !important;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--mlb-border);
+    font-size: 15px !important;
+}
+
+/* ── Grid ────────────────────────────────────────────────────── */
+
+.mlb-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+}
+
+.mlb-span-2 {
+    grid-column: 1 / -1;
+}
+
+/* ── Form Fields ─────────────────────────────────────────────── */
+
+.mlb-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mlb-field label {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.mlb-field input[type="text"],
+.mlb-field input[type="email"],
+.mlb-field input[type="password"],
+.mlb-field input[type="number"],
+.mlb-field input[type="time"],
+.mlb-field select,
+.mlb-field textarea {
+    border-radius: 4px;
+    border: 1px solid var(--mlb-border);
+    padding: 6px 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    transition: border-color .15s;
+}
+
+.mlb-field input:focus,
+.mlb-field select:focus,
+.mlb-field textarea:focus {
+    border-color: var(--mlb-primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34,113,177,.2);
+}
+
+.mlb-field textarea {
+    font-family: monospace;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.mlb-field .description {
+    margin: 0;
+    font-size: 12px;
+    color: #646970;
+}
+
+/* ── Backup Scope Toggle Cards ───────────────────────────────── */
+
+.mlb-scope-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mlb-toggle-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 2px solid var(--mlb-border);
+    border-radius: var(--mlb-radius);
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    user-select: none;
+}
+
+.mlb-toggle-card:hover {
+    border-color: var(--mlb-primary);
+    background: #f0f6fc;
+}
+
+.mlb-toggle-card.active {
+    border-color: var(--mlb-primary);
+    background: #f0f6fc;
+}
+
+.mlb-toggle-card input[type="checkbox"] {
+    margin: 0;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.mlb-toggle-icon {
+    font-size: 24px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.mlb-toggle-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mlb-toggle-card strong {
+    font-size: 14px;
+}
+
+.mlb-toggle-card span {
+    font-size: 12px;
+    color: #646970;
+}
+
+.mlb-toggle-card em {
+    font-size: 12px;
+    color: var(--mlb-primary);
+    font-style: normal;
+}
+
+/* ── Backup Type Selector (Run page) ─────────────────────────── */
+
+.mlb-backup-type-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.mlb-type-option {
+    cursor: pointer;
+}
+
+.mlb-type-option input[type="radio"] {
+    display: none;
+}
+
+.mlb-type-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 2px solid var(--mlb-border);
+    border-radius: var(--mlb-radius);
+    transition: border-color .15s, background .15s;
+}
+
+.mlb-type-card:hover,
+.mlb-type-card.active {
+    border-color: var(--mlb-primary);
+    background: #f0f6fc;
+}
+
+.mlb-type-card strong {
+    font-size: 13px;
+}
+
+.mlb-type-card span {
+    font-size: 12px;
+    color: #646970;
+}
+
+/* ── Run Actions ─────────────────────────────────────────────── */
+
+.mlb-run-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* ── Log Output ──────────────────────────────────────────────── */
+
+.mlb-log-output {
+    background: #1d2327;
+    color: #a8c7fa;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 16px;
+    border-radius: 4px;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.mlb-log-line {
+    padding: 1px 0;
+}
+
+#mlb-log-card.mlb-log-success { border-color: var(--mlb-success); }
+#mlb-log-card.mlb-log-error   { border-color: var(--mlb-error); }
+
+/* ── Status ─────────────────────────────────────────────────── */
+
+.mlb-inline-status {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.mlb-status-ok    { color: var(--mlb-success); }
+.mlb-status-error { color: var(--mlb-error); }
+.mlb-status-info  { color: var(--mlb-primary); }
+
+/* ── Badges ─────────────────────────────────────────────────── */
+
+.mlb-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.mlb-badge-success { background: #edfaef; color: var(--mlb-success); }
+.mlb-badge-error   { background: #fce8e8; color: var(--mlb-error); }
+.mlb-badge-running { background: #fef8ee; color: var(--mlb-warning); }
+
+/* ── Logs Table ─────────────────────────────────────────────── */
+
+.mlb-logs-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.mlb-logs-table th,
+.mlb-logs-table td {
+    vertical-align: middle;
+    padding: 10px 12px !important;
+}
+
+.mlb-logs-table tr.mlb-status-error td {
+    background: #fff8f8 !important;
+}
+
+.mlb-filename {
+    font-size: 11px;
+    color: #646970;
+    word-break: break-all;
+}
+
+.mlb-error-msg {
+    cursor: help;
+    color: var(--mlb-error);
+    font-size: 12px;
+}
+
+.mlb-empty {
+    color: #646970;
+    font-style: italic;
+    padding: 8px 0;
+}
+
+/* ── Submit Row ──────────────────────────────────────────────── */
+
+.mlb-submit-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+/* ── Notice ──────────────────────────────────────────────────── */
+
+.mlb-notice {
+    margin: 0 0 20px !important;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+
+@media (max-width: 780px) {
+    .mlb-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .mlb-span-2 {
+        grid-column: 1;
+    }
+
+    .mlb-status-bar {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* ── Auth Tabs ───────────────────────────────────────────────── */
+
+.mlb-auth-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--mlb-border);
+    padding-top: 16px;
+}
+
+.mlb-auth-section h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.mlb-auth-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.mlb-auth-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 2px solid var(--mlb-border);
+    border-radius: var(--mlb-radius);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: border-color .15s, background .15s;
+}
+
+.mlb-auth-tab:has(input:checked) {
+    border-color: var(--mlb-primary);
+    background: #f0f6fc;
+}
+
+.mlb-auth-tab input[type="radio"] {
+    display: none;
+}
+
+.mlb-auth-panel {
+    display: none;
+}
+
+.mlb-auth-panel.active {
+    display: block;
+}
+
+.mlb-key-info {
+    margin-top: 12px !important;
+}
+
+.mlb-connection-test-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--mlb-border);
+}
+
+/* ── Excludes Tree Picker ────────────────────────────────────── */
+
+.mlb-excludes-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--mlb-border);
+    border-radius: var(--mlb-radius);
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.mlb-tree-panel {
+    border-right: 1px solid var(--mlb-border);
+    background: var(--mlb-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.mlb-tree-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #fff;
+    border-bottom: 1px solid var(--mlb-border);
+    font-size: 12px;
+}
+
+.mlb-tree-toolbar strong {
+    font-size: 12px;
+    font-family: monospace;
+    color: #1d2327;
+}
+
+.mlb-tree-toolbar-actions {
+    display: flex;
+    gap: 4px;
+}
+
+#mlb-tree-container {
+    padding: 8px;
+    overflow-y: auto;
+    max-height: 320px;
+    flex: 1;
+}
+
+.mlb-tree-hint,
+.mlb-tree-error {
+    color: #646970;
+    font-style: italic;
+    font-size: 12px;
+    padding: 8px 4px;
+    margin: 0;
+}
+
+.mlb-tree-error { color: var(--mlb-error); }
+
+/* ── Tree Nodes ──────────────────────────────────────────────── */
+
+.mlb-tree,
+.mlb-tree ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mlb-tree-children {
+    padding-left: 20px;
+}
+
+.mlb-tree-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 1px 0;
+    position: relative;
+}
+
+.mlb-tree-item > .mlb-tree-children {
+    width: 100%;
+    flex-basis: 100%;
+}
+
+.mlb-tree-toggle {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+    color: #646970;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    transition: background .1s, color .1s;
+}
+
+.mlb-tree-toggle:hover:not(:disabled) {
+    background: #e0e0e0;
+    color: #1d2327;
+}
+
+.mlb-tree-toggle:disabled {
+    cursor: default;
+    color: transparent;
+}
+
+.mlb-tree-item input[type="checkbox"] {
+    flex-shrink: 0;
+    margin: 0 4px 0 0;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.mlb-tree-item label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: normal;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background .1s;
+    flex: 1;
+    min-width: 0;
+}
+
+.mlb-tree-item label:hover {
+    background: #e8f0f8;
+}
+
+.mlb-tree-item:has(> input:checked) > label {
+    color: var(--mlb-primary);
+    font-weight: 600;
+    text-decoration: line-through;
+    opacity: .7;
+}
+
+.mlb-tree-icon {
+    font-size: 13px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.mlb-tree-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Textarea Panel ──────────────────────────────────────────── */
+
+.mlb-excludes-textarea-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    background: #fff;
+    gap: 6px;
+}
+
+.mlb-textarea-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.mlb-exclude-count {
+    background: var(--mlb-primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+}
+
+.mlb-excludes-textarea-panel textarea {
+    flex: 1;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    resize: vertical;
+    border: 1px solid var(--mlb-border);
+    border-radius: 4px;
+    padding: 8px;
+    min-height: 180px;
+}
+
+.mlb-excludes-textarea-panel .description {
+    margin: 0;
+    font-size: 11px;
+    color: #646970;
+}
+
+@media (max-width: 780px) {
+    .mlb-excludes-wrap {
+        grid-template-columns: 1fr;
+    }
+    .mlb-tree-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--mlb-border);
+    }
+}
+
+/* ── Cancel Button & Cancelled Badge ────────────────────────── */
+
+.mlb-cancel-btn {
+    border-color: var(--mlb-error) !important;
+    color: var(--mlb-error) !important;
+}
+
+.mlb-cancel-btn:hover {
+    background: #fce8e8 !important;
+}
+
+.mlb-badge-cancelled {
+    background: #f5f0ff;
+    color: #6d3fc8;
+}
+
+/* ── File Method Selector ────────────────────────────────────── */
+
+.mlb-method-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.mlb-method-option {
+    cursor: pointer;
+}
+
+.mlb-method-option input[type="radio"] {
+    display: none;
+}
+
+.mlb-method-card {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 16px;
+    border: 2px solid var(--mlb-border);
+    border-radius: var(--mlb-radius);
+    transition: border-color .15s, background .15s;
+}
+
+.mlb-method-option:has(input:checked) .mlb-method-card {
+    border-color: var(--mlb-primary);
+    background: #f0f6fc;
+}
+
+.mlb-method-card strong { font-size: 13px; }
+.mlb-method-card span   { font-size: 12px; color: #646970; }
+
+/* ── Logs Header ─────────────────────────────────────────────── */
+
+.mlb-logs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--mlb-border);
+}

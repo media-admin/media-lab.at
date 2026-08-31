@@ -1,0 +1,32 @@
+# BEGIN Security Headers (F-07)
+<IfModule mod_headers.c>
+    # Clickjacking verhindern
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # MIME-Sniffing verhindern
+    Header always set X-Content-Type-Options "nosniff"
+
+    # XSS-Filter (ältere Browser)
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Referrer-Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions-Policy (Kamera, Mikrofon, Geolocation deaktivieren)
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
+    # HSTS – nur aktivieren wenn HTTPS durchgehend genutzt wird
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+# END Security Headers
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress

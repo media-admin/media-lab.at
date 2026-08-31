@@ -1,0 +1,19 @@
+{
+    "name": "media-lab/media-lab-backup",
+    "description": "WordPress Backup Plugin für Hetzner Storage Box via SFTP",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=8.0",
+        "phpseclib/phpseclib": "~3.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "MediaLab\\Backup\\": "src/"
+        }
+    }
+}

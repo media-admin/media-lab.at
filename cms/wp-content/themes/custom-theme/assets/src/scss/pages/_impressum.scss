@@ -1,0 +1,14 @@
+// ── Impressum: Tabellen-Titelspalte ──────────────────────────────────────────
+.impressum-page .wp-block-table {
+    table {
+        table-layout: auto !important;
+    }
+
+    td:first-child {
+        background-color: rgba(25, 118, 176, 0.75);
+        color: #fff;
+        font-weight: 600;
+        white-space: nowrap;
+        padding-right: var(--space-sm);
+    }
+}

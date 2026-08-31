@@ -1,0 +1,128 @@
+/**
+ * Table of Contents – Visuelles Styling
+ *
+ * Setzt auf dem strukturellen Plugin-CSS auf (assets/css/table-of-contents.css).
+ * Alle Designentscheidungen hier – Farben, Typografie, Abstände, Border –
+ * greifen direkt auf die Theme-Tokens zu.
+ *
+ * Einbindung in style.scss:
+ *   @use 'components/table-of-contents';
+ */
+
+@use '../abstracts' as *;
+
+// ── Wrapper ──────────────────────────────────────────────────────
+
+.toc {
+    border: 1px solid $color-border;
+    border-radius: $radius-base;
+    padding: $spacing-3 $spacing-3;
+    font-size: var(--text-sm);
+    line-height: $line-height-base;
+}
+
+.toc--inline {
+    margin-block: $spacing-4;
+}
+
+// ── Header (Titel + Toggle) ──────────────────────────────────────
+
+.toc__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-1;
+    margin-bottom: $spacing-2;
+}
+
+.toc__title {
+    font-weight: $font-weight-semibold;
+    font-size: var(--text-base);
+    color: $color-text;
+}
+
+.toc__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: $spacing-1 * 0.5;
+    cursor: pointer;
+    color: $color-text-muted;
+    transition: $transition-fast;
+    flex-shrink: 0;
+
+    &:hover {
+        color: $color-primary;
+    }
+
+    svg {
+        width: 16px;
+        height: 16px;
+        display: block;
+    }
+}
+
+// ── Listen ───────────────────────────────────────────────────────
+
+.toc__list {
+    gap: $spacing-1 * 0.5;
+}
+
+.toc__sublist {
+    gap: $spacing-1 * 0.25;
+    margin-block-start: $spacing-1 * 0.25;
+    padding-inline-start: $spacing-2;
+}
+
+// ── Links ────────────────────────────────────────────────────────
+
+.toc__link {
+    display: block;
+    color: $color-text-muted;
+    text-decoration: none;
+    padding: $spacing-1 * 0.25 $spacing-1 * 0.5;
+    border-radius: $radius-sm;
+    border-left: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+        color: $color-primary;
+        text-decoration: none;
+    }
+}
+
+// Aktiver Eintrag (gesetzt per Scrollspy-JS)
+.toc__item.is-active > .toc__link {
+    color: $color-primary;
+    border-left-color: $color-primary;
+    background-color: rgba($color-primary, 0.06);
+    font-weight: $font-weight-medium;
+}
+
+// H4 dezenter als H3
+.toc__item--h4 > .toc__link {
+    font-size: var(--text-xs);
+    opacity: 0.8;
+}
+
+// ── Sticky: Scrollbar-Farbe ──────────────────────────────────────
+
+.toc--sticky {
+    scrollbar-color: $color-border transparent;
+
+    &::-webkit-scrollbar-thumb {
+        background-color: $color-border;
+        border-radius: $radius-full;
+    }
+}
+
+// ── Integration in Content-Bereiche ─────────────────────────────
+// Wenn der Block in einem Article / Entry-Bereich sitzt
+
+.entry-content .toc--inline,
+.post-content  .toc--inline,
+.page-content  .toc--inline {
+    margin-block: $spacing-4;
+}
