@@ -1,0 +1,12 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.8",
+        "monolog/monolog": "^3.5",
+        "league/csv": "^9.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "SupplierSync\\": "src/"
+        }
+    }
+}

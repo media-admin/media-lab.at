@@ -1,0 +1,4 @@
+feeds/*.csv
+feeds/*.xml
+logs/*.log
+sync.lock
