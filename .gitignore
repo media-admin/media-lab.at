@@ -194,3 +194,9 @@ cms/wp-content/mlbkp-temp/
 cms/wp-content/themes/*.zip
 cms/wp-content/mlbkp-temp/
 cms/wp-content/themes/*.zip
+
+# supplier-sync (MidOcean/Makito/Cotton Classics Middleware)
+cms/wp-content/supplier-sync/vendor/
+cms/wp-content/supplier-sync/feeds/
+cms/wp-content/supplier-sync/logs/
+cms/wp-content/supplier-sync/config/suppliers.php
