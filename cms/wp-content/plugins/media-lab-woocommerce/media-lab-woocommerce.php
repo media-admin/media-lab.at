@@ -50,6 +50,7 @@ add_action( 'plugins_loaded', function () {
     require_once MEDIA_LAB_WC_PATH . 'inc/catalog-mode.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-configurator.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/configurator/filter-sync.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-configurator-field-importer.php'; // NEU
 
     // ── Wunschliste (nutzt die Inquiry-Engine, siehe oben) ────────────────────
     require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-storage.php';

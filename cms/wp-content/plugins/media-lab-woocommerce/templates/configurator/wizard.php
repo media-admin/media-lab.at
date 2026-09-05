@@ -70,6 +70,7 @@ if (!empty($remaining_tabs)) {
      ]); ?>)'
      x-init="init()">
     
+     <?php if (!empty($steps)) : ?>
     <!-- Progress Bar -->
     <div class="configurator-progress">
         <div class="configurator-progress__bar">
@@ -80,6 +81,7 @@ if (!empty($remaining_tabs)) {
             Schritt <span x-text="currentStep"></span> von <span x-text="totalSteps + 1"></span>
         </div>
     </div>
+    <?php endif; ?>
     
     <!-- Steps Container -->
     <div class="configurator-steps">
@@ -271,7 +273,7 @@ if (!empty($remaining_tabs)) {
     
     <!-- Tier Pricing Table -->
     <?php if ($show_tier_table && !empty($tiers)) : ?>
-    <div class="configurator-tier-table" x-show="currentStep === quantityStep">
+    <div class="configurator-tier-table" x-show="steps.length === 0 || currentStep === quantityStep">
         <h4>Staffelpreise</h4>
         <table>
             <thead>
