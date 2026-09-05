@@ -33,6 +33,8 @@ class ProductVariant {
             'variant_id'           => $this->variantId,
             'variant_key'          => $this->buildVariantKey(),
             'attributes'           => json_encode($this->attributes),
+            'pa_color'             => $this->attributes['pa_color'] ?? '',
+            'pa_size'              => $this->attributes['pa_size'] ?? '',
             'stock'                => $this->stock,
             'first_arrival_date'   => $this->firstArrivalDate,
             'first_arrival_qty'    => $this->firstArrivalQty,

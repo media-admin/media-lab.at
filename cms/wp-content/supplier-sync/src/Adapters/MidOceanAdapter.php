@@ -210,6 +210,25 @@ class MidOceanAdapter extends AbstractAdapter {
             $product->variants[] = $this->transformVariant($rawVariant);
         }
 
+        // Parent-Produkt braucht ein eigenes Vorschaubild (WooCommerce zeigt
+        // im Shop-Grid und als Standardbild auf der Produktseite immer das
+        // Parent-Bild, nicht automatisch das der ersten Variante). Wir nehmen
+        // das Hauptbild der ersten verfügbaren Variante als repräsentatives
+        // Parent-Bild - üblicher Ansatz bei Farbvarianten-Produkten.
+        if (!empty($product->variants)) {
+            $firstVariantWithImage = null;
+            foreach ($product->variants as $variant) {
+                if ($variant->imageMain !== '') {
+                    $firstVariantWithImage = $variant;
+                    break;
+                }
+            }
+            if ($firstVariantWithImage !== null) {
+                $product->imageMain = $firstVariantWithImage->imageMain;
+                $product->imageGallery = $firstVariantWithImage->imageGallery;
+            }
+        }
+
         // Falls das Produkt gar keine Varianten hat (Randfall), Bild vom
         // Parent übernehmen, falls vorhanden.
         if (empty($product->variants) && !empty($raw['digital_assets'])) {

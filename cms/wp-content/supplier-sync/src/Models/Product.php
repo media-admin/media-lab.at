@@ -44,6 +44,8 @@ class Product {
             'categories'            => implode('|', $this->categories),
             'lead_time_text'        => $this->leadTimeText,
             'has_variants'          => $this->isVariable() ? '1' : '0',
+            'image_main'            => $this->imageMain,
+            'image_gallery'         => implode('|', $this->imageGallery),
         ];
     }
 }

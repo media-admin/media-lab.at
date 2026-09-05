@@ -44,6 +44,54 @@ class MediaLab_ML_SKU_Generator {
 		// 'save_post' mit sehr hoher Priorität (999) garantiert, dass unsere
 		// Zuweisung tatsächlich als Letztes läuft und nicht überschrieben wird.
 		add_action('save_post', [$this, 'safety_net_after_woocommerce_save'], 999, 3);
+
+		// SWEEP (BUG FIX, verifiziert 03.09.2026): WP All Import legt neue
+		// Varianten offenbar zweistufig an - der Post wird zuerst mit
+		// post_type='product' erstellt, und ERST DANACH (vermutlich per
+		// direktem $wpdb-Zugriff, ohne erneuten save_post-Hook) final auf
+		// 'product_variation' umgestellt. Feuert 'pmxi_saved_post' während
+		// dieses Zwischenzustands, klassifiziert unser Code die Variante
+		// fälschlich als 'product' und überspringt die SKU-Zuweisung dauerhaft
+		// - kein weiterer Hook feuert danach mehr. Betrifft nicht-deterministisch
+		// einen Teil der Varianten pro Importlauf (Timing-Rennen).
+		// Lösung: Einmaliger Sweep nach Abschluss des GESAMTEN Imports, der
+		// alle Varianten mit noch nicht-finaler SKU nachträglich korrigiert.
+		add_action('pmxi_import_complete', [$this, 'sweep_fix_stale_variation_skus'], 10, 1);
+	}
+
+	/**
+	 * Läuft einmal, wenn ein kompletter WP-All-Import-Lauf fertig ist.
+	 * Findet alle product_variation-Posts, deren SKU noch nicht im
+	 * ML-Format vorliegt (Symptom der oben beschriebenen Race Condition),
+	 * und korrigiert sie nachträglich über den bewährten Zuweisungspfad.
+	 */
+	public function sweep_fix_stale_variation_skus($import_id) {
+		global $wpdb;
+
+		$staleVariationIds = $wpdb->get_col($wpdb->prepare(
+			"SELECT p.ID
+			 FROM {$wpdb->posts} p
+			 INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = '_sku'
+			 WHERE p.post_type = 'product_variation'
+			 AND p.post_status = 'publish'
+			 AND (pm.meta_value = '' OR pm.meta_value NOT LIKE %s)",
+			self::SKU_PREFIX . '-%'
+		));
+
+		if (empty($staleVariationIds)) {
+			error_log("[ML SKU SWEEP] Import {$import_id} abgeschlossen - keine veralteten Varianten-SKUs gefunden.");
+			return;
+		}
+
+		error_log("[ML SKU SWEEP] Import {$import_id} abgeschlossen - " . count($staleVariationIds) . " Varianten mit veralteter SKU gefunden, korrigiere...");
+
+		$fixed = 0;
+		foreach ($staleVariationIds as $variation_id) {
+			$this->process_variation_via_import((int) $variation_id);
+			$fixed++;
+		}
+
+		error_log("[ML SKU SWEEP] Sweep fertig - {$fixed} Varianten verarbeitet.");
 	}
 
 	/**
@@ -150,21 +198,34 @@ class MediaLab_ML_SKU_Generator {
 	}
 
 	private function process_variation_via_import($variation_id) {
+		error_log("[ML SKU DEBUG] process_variation_via_import() gestartet für Variation {$variation_id}");
+
 		$variation = wc_get_product($variation_id);
-		if (!$variation || !$variation->is_type('variation')) return;
+		if (!$variation || !$variation->is_type('variation')) {
+			error_log("[ML SKU DEBUG] Post {$variation_id} ist keine gültige Variation - Abbruch");
+			return;
+		}
 
 		$parent_id = $variation->get_parent_id();
+		error_log("[ML SKU DEBUG] parent_id für Variation {$variation_id} = {$parent_id}");
 		if (!$parent_id) return;
 
 		$supplierCode = get_post_meta($parent_id, '_ml_supplier_code', true);
-		if (!$supplierCode) return; // parent not processed yet, will be picked up when parent runs
+		error_log("[ML SKU DEBUG] _ml_supplier_code des Parents {$parent_id} = '{$supplierCode}'");
+		if (!$supplierCode) {
+			error_log("[ML SKU DEBUG] Parent {$parent_id} hat keinen supplierCode - Abbruch (Parent noch nicht verarbeitet?)");
+			return;
+		}
 
 		$token = $this->token_for_supplier($supplierCode);
 		if (!$token) return;
 
 		$parentNumber = $this->ensure_parent_number($parent_id, $token);
+		error_log("[ML SKU DEBUG] parentNumber = {$parentNumber}, rufe assign_variation_sku auf");
 
 		$this->assign_variation_sku($variation_id, $parent_id, $token, $parentNumber);
+
+		error_log("[ML SKU DEBUG] process_variation_via_import() fertig für Variation {$variation_id}, aktuelle SKU: " . $variation->get_sku());
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -193,7 +254,14 @@ class MediaLab_ML_SKU_Generator {
 		$variation = wc_get_product($variation_id);
 		if (!$variation) return;
 
-		if ($variation->get_sku()) return; // already assigned, don't touch
+		$currentSku = $variation->get_sku();
+		// Gleiche Logik wie beim Parent: überschreiben, außer die SKU hat
+		// schon unser ML-Format. Nötig, weil WP All Import beim Varianten-
+		// Import eine temporäre SKU (supplier_variant_sku) setzt, die wir
+		// noch durch die finale ML-SKU ersetzen müssen.
+		if ($currentSku && str_starts_with($currentSku, self::SKU_PREFIX . '-')) {
+			return; // schon final zugewiesen, nichts zu tun
+		}
 
 		$variantKey = $this->build_variant_key($variation);
 		update_post_meta($variation_id, '_ml_variant_key', $variantKey);

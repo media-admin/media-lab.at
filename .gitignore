@@ -200,3 +200,4 @@ cms/wp-content/supplier-sync/vendor/
 cms/wp-content/supplier-sync/feeds/
 cms/wp-content/supplier-sync/logs/
 cms/wp-content/supplier-sync/config/suppliers.php
+cms/wp-content/supplier-sync/.env

@@ -18,13 +18,13 @@ class FeedGenerator {
         $parentCsv->insertOne([
             'import_uid', 'supplier_code', 'supplier_sku',
             'product_title', 'product_description', 'categories',
-            'lead_time_text', 'has_variants'
+            'lead_time_text', 'has_variants', 'image_main', 'image_gallery'
         ]);
 
         $variantCsv = Writer::createFromPath($variantFilepath, 'w+');
         $variantCsv->insertOne([
             'parent_import_uid', 'supplier_variant_sku', 'variant_id',
-            'variant_key', 'attributes', 'stock',
+            'variant_key', 'attributes', 'pa_color', 'pa_size', 'stock',
             'first_arrival_date', 'first_arrival_qty', 'price',
             'image_main', 'image_gallery'
         ]);
