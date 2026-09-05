@@ -35,6 +35,14 @@ class Product {
      */
     public array $priceTiers = [];
 
+    /**
+     * Konfigurator-Typ (ACF-Feld "config_type"), abgeleitet aus der
+     * Lieferanten-Kategorie (siehe MakitoAdapter::determineConfigType()).
+     * Default 'giveaway', da das der Fallback für alle nicht explizit
+     * gemappten Kategorien ist (siehe Kategorie-Zuordnungstabelle).
+     */
+    public string $configType = 'giveaway';
+
     // Bilder (Parent-Level gibt es bei MidOcean nicht - Bilder sind pro Variante!)
     public string $imageMain = '';
     public array $imageGallery = [];
@@ -60,6 +68,7 @@ class Product {
             'image_main'            => $this->imageMain,
             'image_gallery'         => implode('|', $this->imageGallery),
             'price_tiers'           => !empty($this->priceTiers) ? json_encode($this->priceTiers) : '',
+            'config_type'           => $this->configType,
         ];
     }
 }

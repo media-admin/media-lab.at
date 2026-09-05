@@ -87,6 +87,30 @@ class MakitoAdapter extends AbstractAdapter {
         return $products;
     }
 
+        private const CATEGORY_TO_CONFIG_TYPE = [
+        'Bekleidung'            => 'textile',
+        'Textilien'             => 'textile',
+        'T-Shirts & Polos'      => 'textile',
+        'Kopfbedeckungen'       => 'textile',
+        'Papier- und Druckerzeugnisse' => 'print',
+        'Notizbücher & Blöcke'  => 'print',
+        // Alles andere fällt auf 'giveaway' zurück - deckt Landwirtschaft,
+        // Werkzeug/KFZ, Büro, Schreibwaren, Getränke/Bar, Tassen/Krüge/
+        // Thermoskannen, Take Away, Kinder, Geschenke, Technologie,
+        // Taschen/Reisegepäck, Regenschirme, Schlüsselanhänger ab.
+        // 'Sport und Freizeit' und 'Veranstaltungen und Party' bewusst
+        // NICHT gelistet - nicht eindeutig, siehe Mapping-Doc.
+    ];
+
+    private function determineConfigType(array $categories): string {
+        foreach ($categories as $category) {
+            if (isset(self::CATEGORY_TO_CONFIG_TYPE[$category])) {
+                return self::CATEGORY_TO_CONFIG_TYPE[$category];
+            }
+        }
+        return 'giveaway';
+    }
+
     protected function transformToProduct(array $rawData) {
         /** @var \SimpleXMLElement $masterNode */
         $masterNode = $rawData['_xml'];
@@ -115,13 +139,16 @@ class MakitoAdapter extends AbstractAdapter {
         $product->productDescription = $this->sanitizeDescription((string) $masterNode->extendedinfo);
 
         if (isset($masterNode->categories)) {
+            $rawCategories = [];
             for ($i = 1; $i <= 5; $i++) {
                 $catField = "category_name_{$i}";
                 $val = trim((string) $masterNode->categories->{$catField});
                 if ($val !== '') {
+                    $rawCategories[] = $val;
                     $product->categories[] = $this->mapCategory($val);
                 }
             }
+            $product->configType = $this->determineConfigType($rawCategories);
         }
 
         $productImageMain = trim((string) $masterNode->imagemain);
