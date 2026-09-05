@@ -1,10 +1,28 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
+use Dotenv\Dotenv;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use SupplierSync\Services\ApiClient;
 use SupplierSync\Services\FeedGenerator;
+
+// .env laden (nötig für Lieferanten-Zugangsdaten wie MAKITO_CUSTOMER_TOKEN)
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+if (!function_exists('ml_env')) {
+    /**
+     * Liest eine Umgebungsvariable robust aus - $_ENV bleibt auf manchen
+     * PHP-CLI-Setups leer (variables_order ohne "E" in php.ini), auch wenn
+     * phpdotenv sie korrekt per putenv() gesetzt hat. getenv() funktioniert
+     * davon unabhängig zuverlässig.
+     */
+    function ml_env(string $key, $default = null) {
+        $value = $_ENV[$key] ?? getenv($key);
+        return $value !== false && $value !== null && $value !== '' ? $value : $default;
+    }
+}
 
 // Logging
 $logger = new Logger('supplier-sync');

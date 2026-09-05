@@ -33,6 +33,9 @@ class ProductVariant {
             'variant_id'           => $this->variantId,
             'variant_key'          => $this->buildVariantKey(),
             'attributes'           => json_encode($this->attributes),
+            // Flache Spalten zusätzlich zum JSON, da WP All Import Platzhalter
+            // nicht aus JSON extrahieren kann - direkt als eigene CSV-Spalte
+            // nutzbar im "Merkmale"-Tab der Variationen-Konfiguration.
             'pa_color'             => $this->attributes['pa_color'] ?? '',
             'pa_size'              => $this->attributes['pa_size'] ?? '',
             'stock'                => $this->stock,

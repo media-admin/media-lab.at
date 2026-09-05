@@ -31,13 +31,6 @@ class MidOceanAdapter extends AbstractAdapter {
     private array $stockBySku = [];
     private array $priceBySku = [];
 
-    /** @var \Psr\Log\LoggerInterface|null Optional - wird über sync.php injiziert */
-    private ?\Psr\Log\LoggerInterface $logger = null;
-
-    public function setLogger(\Psr\Log\LoggerInterface $logger): void {
-        $this->logger = $logger;
-    }
-
     public function fetchProducts(): array {
         $baseUrl = ($this->config['use_test_environment'] ?? false)
             ? self::BASE_URL_TEST
