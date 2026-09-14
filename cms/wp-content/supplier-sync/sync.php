@@ -35,7 +35,12 @@ $suppliers = require __DIR__ . '/config/suppliers.php';
 $apiClient = new ApiClient($logger);
 $feedGenerator = new FeedGenerator();
 
+$onlySupplier = $argv[1] ?? null;
+
 foreach ($suppliers as $key => $config) {
+    if ($onlySupplier !== null && $key !== $onlySupplier) {
+        continue;
+    }
     if (!$config['enabled']) {
         continue;
     }

@@ -26,16 +26,14 @@ class ProductVariant {
         return implode('|', $parts);
     }
 
-    public function toArray(string $parentImportUid): array {
+    public function toArray(string $parentImportUid, bool $parentHasVariants): array {
         return [
             'parent_import_uid'    => $parentImportUid,
+            'parent_has_variants'  => $parentHasVariants ? '1' : '0',
             'supplier_variant_sku' => $this->supplierVariantSku,
             'variant_id'           => $this->variantId,
             'variant_key'          => $this->buildVariantKey(),
             'attributes'           => json_encode($this->attributes),
-            // Flache Spalten zusätzlich zum JSON, da WP All Import Platzhalter
-            // nicht aus JSON extrahieren kann - direkt als eigene CSV-Spalte
-            // nutzbar im "Merkmale"-Tab der Variationen-Konfiguration.
             'pa_color'             => $this->attributes['pa_color'] ?? '',
             'pa_size'              => $this->attributes['pa_size'] ?? '',
             'stock'                => $this->stock,

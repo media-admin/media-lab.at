@@ -56,19 +56,28 @@ class Product {
     }
 
     public function toArray(): array {
-        return [
-            'import_uid'            => $this->importUid,
-            'supplier_code'         => $this->supplierCode,
-            'supplier_sku'          => $this->supplierSku,
-            'product_title'         => $this->productTitle,
-            'product_description'   => $this->productDescription,
-            'categories'            => implode('|', $this->categories),
-            'lead_time_text'        => $this->leadTimeText,
-            'has_variants'          => $this->isVariable() ? '1' : '0',
-            'image_main'            => $this->imageMain,
-            'image_gallery'         => implode('|', $this->imageGallery),
-            'price_tiers'           => !empty($this->priceTiers) ? json_encode($this->priceTiers) : '',
-            'config_type'           => $this->configType,
-        ];
+    $singleVariantPrice = '';
+    $singleVariantStock = '';
+    if (!$this->isVariable() && !empty($this->variants)) {
+        $singleVariantPrice = $this->variants[0]->price;
+        $singleVariantStock = $this->variants[0]->stock;
+    }
+
+    return [
+        'import_uid'            => $this->importUid,
+        'supplier_code'         => $this->supplierCode,
+        'supplier_sku'          => $this->supplierSku,
+        'product_title'         => $this->productTitle,
+        'product_description'   => $this->productDescription,
+        'categories'            => implode('|', $this->categories),
+        'lead_time_text'        => $this->leadTimeText,
+        'has_variants'          => $this->isVariable() ? '1' : '0',
+        'image_main'            => $this->imageMain,
+        'image_gallery'         => implode('|', $this->imageGallery),
+        'price_tiers'           => !empty($this->priceTiers) ? json_encode($this->priceTiers) : '',
+        'config_type'           => $this->configType,
+        'single_variant_price'  => $singleVariantPrice,
+        'single_variant_stock'  => $singleVariantStock,
+    ];
     }
 }

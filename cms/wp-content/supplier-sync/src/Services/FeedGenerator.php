@@ -19,12 +19,12 @@ class FeedGenerator {
             'import_uid', 'supplier_code', 'supplier_sku',
             'product_title', 'product_description', 'categories',
             'lead_time_text', 'has_variants', 'image_main', 'image_gallery',
-            'price_tiers', 'config_type'   // <- 'config_type' ergänzt, gleiche Position wie in toArray()
+            'price_tiers', 'config_type', 'single_variant_price', 'single_variant_stock'
         ]);
 
         $variantCsv = Writer::createFromPath($variantFilepath, 'w+');
         $variantCsv->insertOne([
-            'parent_import_uid', 'supplier_variant_sku', 'variant_id',
+            'parent_import_uid', 'parent_has_variants', 'supplier_variant_sku', 'variant_id',
             'variant_key', 'attributes', 'pa_color', 'pa_size', 'stock',
             'first_arrival_date', 'first_arrival_qty', 'price',
             'image_main', 'image_gallery'
@@ -34,7 +34,7 @@ class FeedGenerator {
             $parentCsv->insertOne($product->toArray());
 
             foreach ($product->variants as $variant) {
-                $variantCsv->insertOne($variant->toArray($product->importUid));
+                $variantCsv->insertOne($variant->toArray($product->importUid, $product->isVariable()));
             }
         }
     }
