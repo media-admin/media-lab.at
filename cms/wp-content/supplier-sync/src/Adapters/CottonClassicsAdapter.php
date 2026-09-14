@@ -41,6 +41,14 @@ class CottonClassicsAdapter extends AbstractAdapter {
 
     private const SUPPLIER_CODE = 'LCC';
 
+    /**
+     * Cotton Classics nutzt diese Null-GUID als Platzhalter für "kein Bild
+     * zugewiesen" statt das Feld leer zu lassen (bestätigt per FTP-Check:
+     * die Datei existiert nirgends, 14.09.2026). Wird wie ein leerer Wert
+     * behandelt, sonst schlägt der Download bei jedem Lauf erneut fehl.
+     */
+    private const NULL_IMAGE_GUID = '00000000-0000-0000-0000-000000000000.jpg';
+
     /** Size-Werte, die keine echte Variantenausprägung sind. */
     private const NO_SIZE_VALUES = ['ONESIZE', ''];
 
@@ -179,6 +187,9 @@ class CottonClassicsAdapter extends AbstractAdapter {
         // eigenes Parent-Bild liefert).
         $imageBaseUrl = rtrim((string) ($this->config['image_base_url'] ?? ''), '/');
         $stylePicture = $style['picture'] ?? '';
+        if ($stylePicture === self::NULL_IMAGE_GUID) {
+            $stylePicture = '';
+        }
         if ($stylePicture !== '' && $imageBaseUrl !== '') {
             $product->imageMain = $imageBaseUrl . '/' . $stylePicture;
         } else {
@@ -200,6 +211,9 @@ class CottonClassicsAdapter extends AbstractAdapter {
         $size     = trim((string) ($cells[5] ?? ''));
         $vkEinzel = $cells[8] ?? null;
         $packshot = trim((string) ($cells[17] ?? ''));
+        if ($packshot === self::NULL_IMAGE_GUID) {
+            $packshot = '';
+        }
 
         $variant = new ProductVariant();
         $variant->supplierVariantSku = $sku;
