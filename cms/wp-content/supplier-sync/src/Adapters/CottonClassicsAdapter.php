@@ -163,6 +163,10 @@ class CottonClassicsAdapter extends AbstractAdapter {
 
         $product->productTitle       = $style['title'] ?? $styleCode;
         $product->productDescription = $style['description'] ?? '';
+        // Manufacturer(2) liegt pro SKU-Zeile vor, ist aber innerhalb eines
+        // Styles konsistent (alle Farb-/Größenvarianten eines Styles teilen
+        // sich denselben Hersteller) - wir nehmen die erste Zeile.
+        $product->brand              = trim((string) ($rows[0][2] ?? ''));
         $product->categories         = $style['categories'] ?? [];
 
         foreach ($rows as $cells) {

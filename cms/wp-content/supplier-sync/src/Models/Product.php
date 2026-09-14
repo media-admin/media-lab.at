@@ -14,6 +14,7 @@ class Product {
     // Produktdaten
     public string $productTitle;
     public string $productDescription;
+    public string $brand = '';
     public array $categories = [];
 
     // Lager / Verfügbarkeit (Option A aus Notion-Dok)
@@ -69,6 +70,7 @@ class Product {
         'supplier_sku'          => $this->supplierSku,
         'product_title'         => $this->productTitle,
         'product_description'   => $this->productDescription,
+        'brand'                 => $this->brand,
         'categories'            => implode('|', $this->categories),
         'lead_time_text'        => $this->leadTimeText,
         'has_variants'          => $this->isVariable() ? '1' : '0',

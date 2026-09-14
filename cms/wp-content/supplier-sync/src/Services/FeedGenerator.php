@@ -17,7 +17,7 @@ class FeedGenerator {
         $parentCsv = Writer::createFromPath($parentFilepath, 'w+');
         $parentCsv->insertOne([
             'import_uid', 'supplier_code', 'supplier_sku',
-            'product_title', 'product_description', 'categories',
+            'product_title', 'product_description', 'brand', 'categories',
             'lead_time_text', 'has_variants', 'image_main', 'image_gallery',
             'price_tiers', 'config_type', 'single_variant_price', 'single_variant_stock'
         ]);
