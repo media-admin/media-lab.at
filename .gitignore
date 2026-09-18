@@ -209,3 +209,4 @@ cms/wp-content/supplier-sync/imports/
 
 # Echte Lagerbestandsdaten, gehören nicht ins Repo
 /inventur-liste.csv
+/wp-content
