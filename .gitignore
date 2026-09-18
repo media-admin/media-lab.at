@@ -203,3 +203,9 @@ cms/wp-content/supplier-sync/config/suppliers.php
 cms/wp-content/supplier-sync/.env
 cms/wp-content/supplier-sync/imports/
 cms/wp-content/supplier-sync/imports/
+
+# WordPress-Sprachversion von readme.html (deutsch) - analog zu /cms/readme.html
+/cms/liesmich.html
+
+# Echte Lagerbestandsdaten, gehören nicht ins Repo
+/inventur-liste.csv
