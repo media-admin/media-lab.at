@@ -4,341 +4,413 @@
  * Description: Generates Media Lab SKUs (ML-CODE-NNNNNN(-VVV)) for WooCommerce products/variations.
  *              Fires after WP All Import finishes writing custom fields (pmxi_saved_post),
  *              with a manual-save fallback and an atomic counter to avoid race conditions.
- * Version: 0.2.0
+ * Version: 0.3.0
  */
 
 defined('ABSPATH') || exit;
 
 class MediaLab_ML_SKU_Generator {
 
-	const SKU_PREFIX = 'ML';
-	const PARENT_PAD = 6;
-	const VAR_PAD    = 3;
+        const SKU_PREFIX = 'ML';
+        const PARENT_PAD = 6;
+        const VAR_PAD    = 3;
 
-	// supplier_code => token used in SKU (fallback mapping only;
-	// the importer SHOULD already write the token directly into _ml_supplier_code)
-	private $supplierTokens = [
-		'cotton'   => 'LCC',
-		'midocean' => 'DIM',
-		'makito'   => 'TKM',
-	];
+        // supplier_code => token used in SKU (fallback mapping only;
+        // the importer SHOULD already write the token directly into _ml_supplier_code)
+        private $supplierTokens = [
+                'cotton'   => 'LCC',
+                'midocean' => 'DIM',
+                'makito'   => 'TKM',
+        ];
 
-	private $isReprocessing = false;
+        private $isReprocessing = false;
 
-	public function init() {
-		// PRIMARY: fires after WP All Import has written all custom fields
-		// (both for the imported product/parent AND for each imported variation)
-		add_action('pmxi_saved_post', [$this, 'handle_import_saved_post'], 10, 1);
+        public function init() {
+                // PRIMARY: fires after WP All Import has written all custom fields
+                // (both for the imported product/parent AND for each imported variation)
+                add_action('pmxi_saved_post', [$this, 'handle_import_saved_post'], 10, 1);
 
-		// FALLBACK: manual edits/creation in wp-admin (not via importer)
-		add_action('save_post_product', [$this, 'maybe_assign_skus_on_product_save'], 50, 3);
-		add_action('save_post_product_variation', [$this, 'maybe_assign_sku_on_variation_save'], 50, 3);
+                // FALLBACK: manual edits/creation in wp-admin (not via importer)
+                add_action('save_post_product', [$this, 'maybe_assign_skus_on_product_save'], 50, 3);
+                add_action('save_post_product_variation', [$this, 'maybe_assign_sku_on_variation_save'], 50, 3);
 
-		// SAFETY NET (BUG FIX, verifiziert 01.09.2026): WordPress feuert den
-		// SPEZIFISCHEN Hook 'save_post_product' VOR dem GENERISCHEN Hook
-		// 'save_post'. WooCommerce's eigene Metabox-Speicherroutine für
-		// Produktdaten hängt an 'save_post' (Priorität 1) und überschreibt
-		// unsere gerade gesetzte SKU im selben Request mit dem Wert aus dem
-		// Formularfeld (der alten SKU, die beim Laden der Bearbeitungsseite
-		// noch angezeigt wurde). Dieser zusätzliche Hook auf das generische
-		// 'save_post' mit sehr hoher Priorität (999) garantiert, dass unsere
-		// Zuweisung tatsächlich als Letztes läuft und nicht überschrieben wird.
-		add_action('save_post', [$this, 'safety_net_after_woocommerce_save'], 999, 3);
+                // SAFETY NET (BUG FIX, verifiziert 01.09.2026): WordPress feuert den
+                // SPEZIFISCHEN Hook 'save_post_product' VOR dem GENERISCHEN Hook
+                // 'save_post'. WooCommerce's eigene Metabox-Speicherroutine für
+                // Produktdaten hängt an 'save_post' (Priorität 1) und überschreibt
+                // unsere gerade gesetzte SKU im selben Request mit dem Wert aus dem
+                // Formularfeld (der alten SKU, die beim Laden der Bearbeitungsseite
+                // noch angezeigt wurde). Dieser zusätzliche Hook auf das generische
+                // 'save_post' mit sehr hoher Priorität (999) garantiert, dass unsere
+                // Zuweisung tatsächlich als Letztes läuft und nicht überschrieben wird.
+                add_action('save_post', [$this, 'safety_net_after_woocommerce_save'], 999, 3);
 
-		// SWEEP (BUG FIX, verifiziert 03.09.2026): WP All Import legt neue
-		// Varianten offenbar zweistufig an - der Post wird zuerst mit
-		// post_type='product' erstellt, und ERST DANACH (vermutlich per
-		// direktem $wpdb-Zugriff, ohne erneuten save_post-Hook) final auf
-		// 'product_variation' umgestellt. Feuert 'pmxi_saved_post' während
-		// dieses Zwischenzustands, klassifiziert unser Code die Variante
-		// fälschlich als 'product' und überspringt die SKU-Zuweisung dauerhaft
-		// - kein weiterer Hook feuert danach mehr. Betrifft nicht-deterministisch
-		// einen Teil der Varianten pro Importlauf (Timing-Rennen).
-		// Lösung: Einmaliger Sweep nach Abschluss des GESAMTEN Imports, der
-		// alle Varianten mit noch nicht-finaler SKU nachträglich korrigiert.
-		add_action('pmxi_import_complete', [$this, 'sweep_fix_stale_variation_skus'], 10, 1);
-	}
+                // SWEEP (BUG FIX, verifiziert 03.09.2026): WP All Import legt neue
+                // Varianten offenbar zweistufig an - der Post wird zuerst mit
+                // post_type='product' erstellt, und ERST DANACH (vermutlich per
+                // direktem $wpdb-Zugriff, ohne erneuten save_post-Hook) final auf
+                // 'product_variation' umgestellt. Feuert 'pmxi_saved_post' während
+                // dieses Zwischenzustands, klassifiziert unser Code die Variante
+                // fälschlich als 'product' und überspringt die SKU-Zuweisung dauerhaft
+                // - kein weiterer Hook feuert danach mehr. Betrifft nicht-deterministisch
+                // einen Teil der Varianten pro Importlauf (Timing-Rennen).
+                // Lösung: Einmaliger Sweep nach Abschluss des GESAMTEN Imports, der
+                // alle Varianten mit noch nicht-finaler SKU nachträglich korrigiert.
+                add_action('pmxi_import_complete', [$this, 'sweep_fix_stale_variation_skus'], 10, 1);
 
-	/**
-	 * Läuft einmal, wenn ein kompletter WP-All-Import-Lauf fertig ist.
-	 * Findet alle product_variation-Posts, deren SKU noch nicht im
-	 * ML-Format vorliegt (Symptom der oben beschriebenen Race Condition),
-	 * und korrigiert sie nachträglich über den bewährten Zuweisungspfad.
-	 */
-	public function sweep_fix_stale_variation_skus($import_id) {
-		global $wpdb;
+                // INTERNER LAGERSTAND (Inventur-Feature, 2026-09): eigenes, im
+                // WP-Admin editierbares Feld 'stock_inhouse' - unabhängig vom per
+                // Feed importierten Lieferantenbestand (_stock). Zwei Render-/Save-
+                // Stellen nötig, da Produktvarianten keine eigene Bearbeitungsseite
+                // haben (siehe Methoden weiter unten).
+                add_action('woocommerce_product_after_variable_attributes', [$this, 'render_stock_inhouse_variation_field'], 10, 3);
+                add_action('woocommerce_save_product_variation', [$this, 'save_stock_inhouse_variation_field'], 10, 2);
+                add_action('woocommerce_product_options_inventory_product_data', [$this, 'render_stock_inhouse_simple_field']);
+                add_action('woocommerce_process_product_meta', [$this, 'save_stock_inhouse_simple_field']);
+        }
 
-		$staleVariationIds = $wpdb->get_col($wpdb->prepare(
-			"SELECT p.ID
-			 FROM {$wpdb->posts} p
-			 INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = '_sku'
-			 WHERE p.post_type = 'product_variation'
-			 AND p.post_status = 'publish'
-			 AND (pm.meta_value = '' OR pm.meta_value NOT LIKE %s)",
-			self::SKU_PREFIX . '-%'
-		));
+        /* ------------------------------------------------------------------ *
+         *  Interner Lagerstand (stock_inhouse) - editierbar im WP-Admin
+         * ------------------------------------------------------------------ */
 
-		if (empty($staleVariationIds)) {
-			error_log("[ML SKU SWEEP] Import {$import_id} abgeschlossen - keine veralteten Varianten-SKUs gefunden.");
-			return;
-		}
+        /**
+         * Feld in der Varianten-Zeile (Tab "Variationen"), dort wo auch
+         * Preis/Lagerbestand des Lieferanten-Imports stehen.
+         */
+        public function render_stock_inhouse_variation_field($loop, $variation_data, $variation) {
+                $value = get_post_meta($variation->ID, 'stock_inhouse', true);
 
-		error_log("[ML SKU SWEEP] Import {$import_id} abgeschlossen - " . count($staleVariationIds) . " Varianten mit veralteter SKU gefunden, korrigiere...");
+                echo '<div class="form-row form-row-full">';
+                woocommerce_wp_text_input([
+                        'id'                => "stock_inhouse_{$loop}",
+                        'name'              => "stock_inhouse[{$loop}]",
+                        'value'             => $value,
+                        'label'             => __('Interner Lagerstand', 'media-lab-ml-sku'),
+                        'desc_tip'          => true,
+                        'description'       => __('Physisch vorhandener Bestand im eigenen Lager (Inventur) - unabhängig vom Lieferantenbestand.', 'media-lab-ml-sku'),
+                        'type'              => 'number',
+                        'custom_attributes' => ['step' => '1', 'min' => '0'],
+                ]);
+                echo '</div>';
+        }
 
-		$fixed = 0;
-		foreach ($staleVariationIds as $variation_id) {
-			$this->process_variation_via_import((int) $variation_id);
-			$fixed++;
-		}
+        public function save_stock_inhouse_variation_field($variation_id, $loop) {
+                if (!isset($_POST['stock_inhouse'][$loop])) return;
 
-		error_log("[ML SKU SWEEP] Sweep fertig - {$fixed} Varianten verarbeitet.");
-	}
+                $raw = wc_clean(wp_unslash($_POST['stock_inhouse'][$loop]));
+                update_post_meta($variation_id, 'stock_inhouse', $raw === '' ? '' : absint($raw));
+        }
 
-	/**
-	 * Läuft garantiert NACH WooCommerce's eigener Produktdaten-Speicherung
-	 * (siehe Erklärung bei add_action('save_post', ...) oben).
-	 * Recursion-Guard nötig, da $product->save() intern wp_update_post()
-	 * aufruft, was wiederum 'save_post' erneut auslösen würde.
-	 */
-	public function safety_net_after_woocommerce_save($post_id, $post, $update) {
-		if ($this->isReprocessing) return;
-		if (wp_is_post_revision($post_id)) return;
-		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+        /**
+         * Feld im "Lagerbestand"-Tab des Parent-Produkts - nur für einfache
+         * Produkte relevant, Varianten haben ihr eigenes Feld (siehe oben).
+         * Ohne diesen Guard würde bei variablen Produkten zusätzlich ein
+         * verwirrendes, ungenutztes Parent-Feld erscheinen.
+         */
+        public function render_stock_inhouse_simple_field() {
+                global $post;
 
-		$post_type = get_post_type($post_id);
-		if (!in_array($post_type, ['product', 'product_variation'], true)) return;
+                $product = wc_get_product($post->ID);
+                if ($product && $product->is_type('variable')) return;
 
-		$this->isReprocessing = true;
+                woocommerce_wp_text_input([
+                        'id'                => 'stock_inhouse',
+                        'value'             => get_post_meta($post->ID, 'stock_inhouse', true),
+                        'label'             => __('Interner Lagerstand', 'media-lab-ml-sku'),
+                        'desc_tip'          => true,
+                        'description'       => __('Physisch vorhandener Bestand im eigenen Lager (Inventur) - unabhängig vom Lieferantenbestand.', 'media-lab-ml-sku'),
+                        'type'              => 'number',
+                        'custom_attributes' => ['step' => '1', 'min' => '0'],
+                ]);
+        }
 
-		if ($post_type === 'product') {
-			$this->process_parent($post_id);
-		} else {
-			$this->process_variation_via_import($post_id);
-		}
+        public function save_stock_inhouse_simple_field($post_id) {
+                if (!isset($_POST['stock_inhouse']) || is_array($_POST['stock_inhouse'])) return;
 
-		$this->isReprocessing = false;
-	}
+                $raw = wc_clean(wp_unslash($_POST['stock_inhouse']));
+                update_post_meta($post_id, 'stock_inhouse', $raw === '' ? '' : absint($raw));
+        }
 
-	/* ------------------------------------------------------------------ *
-	 *  WP All Import hook
-	 * ------------------------------------------------------------------ */
+        /**
+         * Läuft einmal, wenn ein kompletter WP-All-Import-Lauf fertig ist.
+         * Findet alle product_variation-Posts, deren SKU noch nicht im
+         * ML-Format vorliegt (Symptom der oben beschriebenen Race Condition),
+         * und korrigiert sie nachträglich über den bewährten Zuweisungspfad.
+         */
+        public function sweep_fix_stale_variation_skus($import_id) {
+                global $wpdb;
 
-	/**
-	 * Fires once per imported post (product OR variation), after XML/CSV
-	 * fields and custom fields have been fully written by WP All Import.
-	 */
-	public function handle_import_saved_post($post_id) {
-		$post_type = get_post_type($post_id);
+                $staleVariationIds = $wpdb->get_col($wpdb->prepare(
+                        "SELECT p.ID
+                         FROM {$wpdb->posts} p
+                         INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = '_sku'
+                         WHERE p.post_type = 'product_variation'
+                         AND p.post_status = 'publish'
+                         AND (pm.meta_value = '' OR pm.meta_value NOT LIKE %s)",
+                        self::SKU_PREFIX . '-%'
+                ));
 
-		if ($post_type === 'product') {
-			$this->process_parent($post_id);
-		} elseif ($post_type === 'product_variation') {
-			$this->process_variation_via_import($post_id);
-		}
-	}
+                if (empty($staleVariationIds)) {
+                        error_log("[ML SKU SWEEP] Import {$import_id} abgeschlossen - keine veralteten Varianten-SKUs gefunden.");
+                        return;
+                }
 
-	private function process_parent($post_id) {
-		error_log("[ML SKU DEBUG] process_parent() gestartet für Post {$post_id}");
+                error_log("[ML SKU SWEEP] Import {$import_id} abgeschlossen - " . count($staleVariationIds) . " Varianten mit veralteter SKU gefunden, korrigiere...");
 
-		$product = wc_get_product($post_id);
-		if (!$product) {
-			error_log("[ML SKU DEBUG] wc_get_product() lieferte NICHTS für Post {$post_id} - Abbruch");
-			return;
-		}
+                $fixed = 0;
+                foreach ($staleVariationIds as $variation_id) {
+                        $this->process_variation_via_import((int) $variation_id);
+                        $fixed++;
+                }
 
-		$supplierCode = get_post_meta($post_id, '_ml_supplier_code', true);
-		$supplierSku  = get_post_meta($post_id, '_ml_supplier_sku', true);
+                error_log("[ML SKU SWEEP] Sweep fertig - {$fixed} Varianten verarbeitet.");
+        }
 
-		error_log("[ML SKU DEBUG] _ml_supplier_code = '{$supplierCode}', _ml_supplier_sku = '{$supplierSku}'");
+        /**
+         * Läuft garantiert NACH WooCommerce's eigener Produktdaten-Speicherung
+         * (siehe Erklärung bei add_action('save_post', ...) oben).
+         * Recursion-Guard nötig, da $product->save() intern wp_update_post()
+         * aufruft, was wiederum 'save_post' erneut auslösen würde.
+         */
+        public function safety_net_after_woocommerce_save($post_id, $post, $update) {
+                if ($this->isReprocessing) return;
+                if (wp_is_post_revision($post_id)) return;
+                if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
 
-		// Importer hasn't written supplier data (yet) -> nothing to do.
-		if (!$supplierCode || !$supplierSku) {
-			error_log("[ML SKU DEBUG] supplierCode oder supplierSku leer - Abbruch für Post {$post_id}");
-			return;
-		}
+                $post_type = get_post_type($post_id);
+                if (!in_array($post_type, ['product', 'product_variation'], true)) return;
 
-		$token = $this->token_for_supplier($supplierCode);
-		error_log("[ML SKU DEBUG] token_for_supplier('{$supplierCode}') = " . var_export($token, true));
+                $this->isReprocessing = true;
 
-		if (!$token) {
-			// Unknown supplier code — don't silently assign a broken SKU.
-			error_log("[ML SKU] Unknown supplier code '{$supplierCode}' on product {$post_id}");
-			return;
-		}
+                if ($post_type === 'product') {
+                        $this->process_parent($post_id);
+                } else {
+                        $this->process_variation_via_import($post_id);
+                }
 
-		$parentNumber = $this->ensure_parent_number($post_id, $token);
-		error_log("[ML SKU DEBUG] parentNumber = {$parentNumber}");
+                $this->isReprocessing = false;
+        }
 
-		// Assign SKU to parent if missing ODER falls die aktuelle SKU noch
-		// nicht unserem ML-Format entspricht (z.B. eine temporäre
-		// Import-SKU wie "DIM|AR1249", die WP All Import zur
-		// Varianten-Zuordnung braucht, aber final ersetzt werden soll).
-		$currentSku = $product->get_sku();
-		error_log("[ML SKU DEBUG] currentSku = '{$currentSku}'");
+        /* ------------------------------------------------------------------ *
+         *  WP All Import hook
+         * ------------------------------------------------------------------ */
 
-		if (!$currentSku || !str_starts_with($currentSku, self::SKU_PREFIX . '-')) {
-			$sku = $this->format_parent_sku($token, $parentNumber);
-			error_log("[ML SKU DEBUG] Setze neue SKU: '{$sku}'");
-			$product->set_sku($sku);
-			$saveResult = $product->save();
-			error_log("[ML SKU DEBUG] save() Ergebnis: " . var_export($saveResult, true));
-		} else {
-			error_log("[ML SKU DEBUG] currentSku beginnt schon mit ML- Prefix, keine Änderung");
-		}
+        /**
+         * Fires once per imported post (product OR variation), after XML/CSV
+         * fields and custom fields have been fully written by WP All Import.
+         */
+        public function handle_import_saved_post($post_id) {
+                $post_type = get_post_type($post_id);
 
-		// If it's a variable product, make sure any children already present
-		// (e.g. re-import updating an existing variable product) also get SKUs.
-		if ($product->is_type('variable')) {
-			foreach ($product->get_children() as $variation_id) {
-				$this->assign_variation_sku($variation_id, $post_id, $token, $parentNumber);
-			}
-		}
+                if ($post_type === 'product') {
+                        $this->process_parent($post_id);
+                } elseif ($post_type === 'product_variation') {
+                        $this->process_variation_via_import($post_id);
+                }
+        }
 
-		error_log("[ML SKU DEBUG] process_parent() fertig für Post {$post_id}");
-	}
+        private function process_parent($post_id) {
+                error_log("[ML SKU DEBUG] process_parent() gestartet für Post {$post_id}");
 
-	private function process_variation_via_import($variation_id) {
-		error_log("[ML SKU DEBUG] process_variation_via_import() gestartet für Variation {$variation_id}");
+                $product = wc_get_product($post_id);
+                if (!$product) {
+                        error_log("[ML SKU DEBUG] wc_get_product() lieferte NICHTS für Post {$post_id} - Abbruch");
+                        return;
+                }
 
-		$variation = wc_get_product($variation_id);
-		if (!$variation || !$variation->is_type('variation')) {
-			error_log("[ML SKU DEBUG] Post {$variation_id} ist keine gültige Variation - Abbruch");
-			return;
-		}
+                $supplierCode = get_post_meta($post_id, '_ml_supplier_code', true);
+                $supplierSku  = get_post_meta($post_id, '_ml_supplier_sku', true);
 
-		$parent_id = $variation->get_parent_id();
-		error_log("[ML SKU DEBUG] parent_id für Variation {$variation_id} = {$parent_id}");
-		if (!$parent_id) return;
+                error_log("[ML SKU DEBUG] _ml_supplier_code = '{$supplierCode}', _ml_supplier_sku = '{$supplierSku}'");
 
-		$supplierCode = get_post_meta($parent_id, '_ml_supplier_code', true);
-		error_log("[ML SKU DEBUG] _ml_supplier_code des Parents {$parent_id} = '{$supplierCode}'");
-		if (!$supplierCode) {
-			error_log("[ML SKU DEBUG] Parent {$parent_id} hat keinen supplierCode - Abbruch (Parent noch nicht verarbeitet?)");
-			return;
-		}
+                // Importer hasn't written supplier data (yet) -> nothing to do.
+                if (!$supplierCode || !$supplierSku) {
+                        error_log("[ML SKU DEBUG] supplierCode oder supplierSku leer - Abbruch für Post {$post_id}");
+                        return;
+                }
 
-		$token = $this->token_for_supplier($supplierCode);
-		if (!$token) return;
+                $token = $this->token_for_supplier($supplierCode);
+                error_log("[ML SKU DEBUG] token_for_supplier('{$supplierCode}') = " . var_export($token, true));
 
-		$parentNumber = $this->ensure_parent_number($parent_id, $token);
-		error_log("[ML SKU DEBUG] parentNumber = {$parentNumber}, rufe assign_variation_sku auf");
+                if (!$token) {
+                        // Unknown supplier code — don't silently assign a broken SKU.
+                        error_log("[ML SKU] Unknown supplier code '{$supplierCode}' on product {$post_id}");
+                        return;
+                }
 
-		$this->assign_variation_sku($variation_id, $parent_id, $token, $parentNumber);
+                $parentNumber = $this->ensure_parent_number($post_id, $token);
+                error_log("[ML SKU DEBUG] parentNumber = {$parentNumber}");
 
-		error_log("[ML SKU DEBUG] process_variation_via_import() fertig für Variation {$variation_id}, aktuelle SKU: " . $variation->get_sku());
-	}
+                // Assign SKU to parent if missing ODER falls die aktuelle SKU noch
+                // nicht unserem ML-Format entspricht (z.B. eine temporäre
+                // Import-SKU wie "DIM|AR1249", die WP All Import zur
+                // Varianten-Zuordnung braucht, aber final ersetzt werden soll).
+                $currentSku = $product->get_sku();
+                error_log("[ML SKU DEBUG] currentSku = '{$currentSku}'");
 
-	/* ------------------------------------------------------------------ *
-	 *  Manual save fallback (wp-admin, no importer involved)
-	 * ------------------------------------------------------------------ */
+                if (!$currentSku || !str_starts_with($currentSku, self::SKU_PREFIX . '-')) {
+                        $sku = $this->format_parent_sku($token, $parentNumber);
+                        error_log("[ML SKU DEBUG] Setze neue SKU: '{$sku}'");
+                        $product->set_sku($sku);
+                        $saveResult = $product->save();
+                        error_log("[ML SKU DEBUG] save() Ergebnis: " . var_export($saveResult, true));
+                } else {
+                        error_log("[ML SKU DEBUG] currentSku beginnt schon mit ML- Prefix, keine Änderung");
+                }
 
-	public function maybe_assign_skus_on_product_save($post_id, $post, $update) {
-		if (wp_is_post_revision($post_id)) return;
-		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+                // If it's a variable product, make sure any children already present
+                // (e.g. re-import updating an existing variable product) also get SKUs.
+                if ($product->is_type('variable')) {
+                        foreach ($product->get_children() as $variation_id) {
+                                $this->assign_variation_sku($variation_id, $post_id, $token, $parentNumber);
+                        }
+                }
 
-		$this->process_parent($post_id);
-	}
+                error_log("[ML SKU DEBUG] process_parent() fertig für Post {$post_id}");
+        }
 
-	public function maybe_assign_sku_on_variation_save($post_id, $post, $update) {
-		if (wp_is_post_revision($post_id)) return;
-		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+        private function process_variation_via_import($variation_id) {
+                error_log("[ML SKU DEBUG] process_variation_via_import() gestartet für Variation {$variation_id}");
 
-		$this->process_variation_via_import($post_id);
-	}
+                $variation = wc_get_product($variation_id);
+                if (!$variation || !$variation->is_type('variation')) {
+                        error_log("[ML SKU DEBUG] Post {$variation_id} ist keine gültige Variation - Abbruch");
+                        return;
+                }
 
-	/* ------------------------------------------------------------------ *
-	 *  SKU assignment helpers
-	 * ------------------------------------------------------------------ */
+                $parent_id = $variation->get_parent_id();
+                error_log("[ML SKU DEBUG] parent_id für Variation {$variation_id} = {$parent_id}");
+                if (!$parent_id) return;
 
-	private function assign_variation_sku($variation_id, $parent_id, $token, $parentNumber) {
-		$variation = wc_get_product($variation_id);
-		if (!$variation) return;
+                $supplierCode = get_post_meta($parent_id, '_ml_supplier_code', true);
+                error_log("[ML SKU DEBUG] _ml_supplier_code des Parents {$parent_id} = '{$supplierCode}'");
+                if (!$supplierCode) {
+                        error_log("[ML SKU DEBUG] Parent {$parent_id} hat keinen supplierCode - Abbruch (Parent noch nicht verarbeitet?)");
+                        return;
+                }
 
-		$currentSku = $variation->get_sku();
-		// Gleiche Logik wie beim Parent: überschreiben, außer die SKU hat
-		// schon unser ML-Format. Nötig, weil WP All Import beim Varianten-
-		// Import eine temporäre SKU (supplier_variant_sku) setzt, die wir
-		// noch durch die finale ML-SKU ersetzen müssen.
-		if ($currentSku && str_starts_with($currentSku, self::SKU_PREFIX . '-')) {
-			return; // schon final zugewiesen, nichts zu tun
-		}
+                $token = $this->token_for_supplier($supplierCode);
+                if (!$token) return;
 
-		$variantKey = $this->build_variant_key($variation);
-		update_post_meta($variation_id, '_ml_variant_key', $variantKey);
+                $parentNumber = $this->ensure_parent_number($parent_id, $token);
+                error_log("[ML SKU DEBUG] parentNumber = {$parentNumber}, rufe assign_variation_sku auf");
 
-		$varNumber = get_post_meta($variation_id, '_ml_variant_number', true);
-		if (!$varNumber) {
-			$varNumber = $this->atomic_increment("ml_var_counter_parent_{$parent_id}");
-			update_post_meta($variation_id, '_ml_variant_number', $varNumber);
-		}
+                $this->assign_variation_sku($variation_id, $parent_id, $token, $parentNumber);
 
-		$sku = $this->format_variant_sku($token, $parentNumber, $varNumber);
+                error_log("[ML SKU DEBUG] process_variation_via_import() fertig für Variation {$variation_id}, aktuelle SKU: " . $variation->get_sku());
+        }
 
-		$variation->set_sku($sku);
-		$variation->save();
-	}
+        /* ------------------------------------------------------------------ *
+         *  Manual save fallback (wp-admin, no importer involved)
+         * ------------------------------------------------------------------ */
 
-	private function ensure_parent_number($post_id, $token) {
-		$parentNumber = get_post_meta($post_id, '_ml_parent_number', true);
-		if (!$parentNumber) {
-			$parentNumber = $this->atomic_increment("ml_counter_{$token}");
-			update_post_meta($post_id, '_ml_parent_number', $parentNumber);
-		}
-		return (int) $parentNumber;
-	}
+        public function maybe_assign_skus_on_product_save($post_id, $post, $update) {
+                if (wp_is_post_revision($post_id)) return;
+                if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
 
-	private function build_variant_key($variation) {
-		$attrs = $variation->get_attributes(); // ['pa_color' => 'red', 'pa_size' => 'l', ...]
-		ksort($attrs);
+                $this->process_parent($post_id);
+        }
 
-		$parts = [];
-		foreach ($attrs as $k => $v) {
-			$parts[] = "{$k}={$v}";
-		}
-		return implode('|', $parts);
-	}
+        public function maybe_assign_sku_on_variation_save($post_id, $post, $update) {
+                if (wp_is_post_revision($post_id)) return;
+                if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
 
-	private function token_for_supplier($supplierCode) {
-		// supplierCode may already be the token (DIM/LCC/TKM) or a logical code (midocean, etc.)
-		if (in_array($supplierCode, ['DIM', 'LCC', 'TKM'], true)) return $supplierCode;
-		return $this->supplierTokens[$supplierCode] ?? null;
-	}
+                $this->process_variation_via_import($post_id);
+        }
 
-	private function format_parent_sku($token, $parentNumber) {
-		$num = str_pad((string) $parentNumber, self::PARENT_PAD, '0', STR_PAD_LEFT);
-		return self::SKU_PREFIX . '-' . $token . '-' . $num;
-	}
+        /* ------------------------------------------------------------------ *
+         *  SKU assignment helpers
+         * ------------------------------------------------------------------ */
 
-	private function format_variant_sku($token, $parentNumber, $varNumber) {
-		$pnum = str_pad((string) $parentNumber, self::PARENT_PAD, '0', STR_PAD_LEFT);
-		$vnum = str_pad((string) $varNumber, self::VAR_PAD, '0', STR_PAD_LEFT);
-		return self::SKU_PREFIX . '-' . $token . '-' . $pnum . '-' . $vnum;
-	}
+        private function assign_variation_sku($variation_id, $parent_id, $token, $parentNumber) {
+                $variation = wc_get_product($variation_id);
+                if (!$variation) return;
 
-	/**
-	 * Atomic counter increment using a single UPSERT statement,
-	 * safe against concurrent requests (unlike get_option/update_option).
-	 * Requires option_name to have a UNIQUE index — true for wp_options by default.
-	 */
-	private function atomic_increment($optionKey) {
-		global $wpdb;
+                $currentSku = $variation->get_sku();
+                // Gleiche Logik wie beim Parent: überschreiben, außer die SKU hat
+                // schon unser ML-Format. Nötig, weil WP All Import beim Varianten-
+                // Import eine temporäre SKU (supplier_variant_sku) setzt, die wir
+                // noch durch die finale ML-SKU ersetzen müssen.
+                if ($currentSku && str_starts_with($currentSku, self::SKU_PREFIX . '-')) {
+                        return; // schon final zugewiesen, nichts zu tun
+                }
 
-		$wpdb->query($wpdb->prepare(
-			"INSERT INTO {$wpdb->options} (option_name, option_value, autoload)
-			 VALUES (%s, '1', 'no')
-			 ON DUPLICATE KEY UPDATE option_value = option_value + 1",
-			$optionKey
-		));
+                $variantKey = $this->build_variant_key($variation);
+                update_post_meta($variation_id, '_ml_variant_key', $variantKey);
 
-		return (int) $wpdb->get_var($wpdb->prepare(
-			"SELECT option_value FROM {$wpdb->options} WHERE option_name = %s",
-			$optionKey
-		));
-	}
+                $varNumber = get_post_meta($variation_id, '_ml_variant_number', true);
+                if (!$varNumber) {
+                        $varNumber = $this->atomic_increment("ml_var_counter_parent_{$parent_id}");
+                        update_post_meta($variation_id, '_ml_variant_number', $varNumber);
+                }
+
+                $sku = $this->format_variant_sku($token, $parentNumber, $varNumber);
+
+                $variation->set_sku($sku);
+                $variation->save();
+        }
+
+        private function ensure_parent_number($post_id, $token) {
+                $parentNumber = get_post_meta($post_id, '_ml_parent_number', true);
+                if (!$parentNumber) {
+                        $parentNumber = $this->atomic_increment("ml_counter_{$token}");
+                        update_post_meta($post_id, '_ml_parent_number', $parentNumber);
+                }
+                return (int) $parentNumber;
+        }
+
+        private function build_variant_key($variation) {
+                $attrs = $variation->get_attributes(); // ['pa_color' => 'red', 'pa_size' => 'l', ...]
+                ksort($attrs);
+
+                $parts = [];
+                foreach ($attrs as $k => $v) {
+                        $parts[] = "{$k}={$v}";
+                }
+                return implode('|', $parts);
+        }
+
+        private function token_for_supplier($supplierCode) {
+                // supplierCode may already be the token (DIM/LCC/TKM) or a logical code (midocean, etc.)
+                if (in_array($supplierCode, ['DIM', 'LCC', 'TKM'], true)) return $supplierCode;
+                return $this->supplierTokens[$supplierCode] ?? null;
+        }
+
+        private function format_parent_sku($token, $parentNumber) {
+                $num = str_pad((string) $parentNumber, self::PARENT_PAD, '0', STR_PAD_LEFT);
+                return self::SKU_PREFIX . '-' . $token . '-' . $num;
+        }
+
+        private function format_variant_sku($token, $parentNumber, $varNumber) {
+                $pnum = str_pad((string) $parentNumber, self::PARENT_PAD, '0', STR_PAD_LEFT);
+                $vnum = str_pad((string) $varNumber, self::VAR_PAD, '0', STR_PAD_LEFT);
+                return self::SKU_PREFIX . '-' . $token . '-' . $pnum . '-' . $vnum;
+        }
+
+        /**
+         * Atomic counter increment using a single UPSERT statement,
+         * safe against concurrent requests (unlike get_option/update_option).
+         * Requires option_name to have a UNIQUE index — true for wp_options by default.
+         */
+        private function atomic_increment($optionKey) {
+                global $wpdb;
+
+                $wpdb->query($wpdb->prepare(
+                        "INSERT INTO {$wpdb->options} (option_name, option_value, autoload)
+                         VALUES (%s, '1', 'no')
+                         ON DUPLICATE KEY UPDATE option_value = option_value + 1",
+                        $optionKey
+                ));
+
+                return (int) $wpdb->get_var($wpdb->prepare(
+                        "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s",
+                        $optionKey
+                ));
+        }
 }
 
 add_action('plugins_loaded', function () {
-	if (!class_exists('WooCommerce')) return;
-	$gen = new MediaLab_ML_SKU_Generator();
-	$gen->init();
+        if (!class_exists('WooCommerce')) return;
+        $gen = new MediaLab_ML_SKU_Generator();
+        $gen->init();
 });
