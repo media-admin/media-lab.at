@@ -72,6 +72,38 @@ für ein Kundenprojekt verwenden.
 
 ---
 
+## Supplier Sync — Lieferanten-Import (media-lab.at-spezifisch)
+
+Anders als die übrigen Komponenten ist `cms/wp-content/supplier-sync/`
+**kein** wiederverwendbares Starter-Kit-Modul, sondern ein eigenständiges
+PHP-System nur für dieses eine Projekt (media-lab.at, WooCommerce Catalog
+Mode). Synchronisiert Produktdaten von drei Lieferanten (MidOcean, Makito,
+Cotton Classics) in WP-All-Import-CSV-Feeds.
+
+```
+supplier-sync/
+├── config/suppliers.php          # Pro Lieferant: Adapter-Klasse, Zugangsdaten, supplier_code
+├── src/
+│   ├── Adapters/                 # Ein Adapter pro Lieferant (API/XML/XLSX → Product-Modell)
+│   ├── Models/Product.php        # Gemeinsames Parent+Varianten-Modell
+│   └── Services/                 # ApiClient, FeedGenerator
+├── sync.php                      # php sync.php [<supplier_key>] — holt Rohdaten, schreibt CSV-Feeds
+├── lookup_skus.php                # php lookup_skus.php <supplier_key> — läuft NACH dem WP-All-Import-
+│                                  #   Parent-Import, reichert den Varianten-Feed um die tatsächlich
+│                                  #   vergebene ML-SKU an (Voraussetzung für den Varianten-Import)
+├── download_cotton_images.php     # Cotton Classics: spiegelt Bilder per FTP lokal (kein HTTP-Zugriff)
+└── feeds/                         # Generierte CSVs, Input für WP All Import
+```
+
+**Ablauf pro Lieferant:** `sync.php <supplier>` → WP-All-Import-Parent-Import
+→ `lookup_skus.php <supplier>` → WP-All-Import-Varianten-Import.
+
+Details, bekannte Bugs und Architektur-Entscheidungen: siehe
+`supplier-sync/CHANGELOG.md` sowie Notion „WooCommerce Import –
+Entscheidungen & Setup".
+
+---
+
 ## Footer-Menüs
 
 Das Theme registriert drei Menü-Locations (verifiziert gegen
