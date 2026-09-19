@@ -210,3 +210,9 @@ cms/wp-content/supplier-sync/imports/
 # Echte Lagerbestandsdaten, gehören nicht ins Repo
 /inventur-liste.csv
 /wp-content
+
+# Inventur: generierte Exporte und einmalige historische Rohdaten,
+# kein Quellcode - nur build_inventory_export.php wird versioniert.
+/cms/wp-content/supplier-sync/inventur/*.xlsx
+/cms/wp-content/supplier-sync/inventur/*.csv
+/cms/wp-content/supplier-sync/inventur/*.tsv
