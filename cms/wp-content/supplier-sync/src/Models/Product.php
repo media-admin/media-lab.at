@@ -58,9 +58,11 @@ class Product {
 
     public function toArray(): array {
     $singleVariantPrice = '';
+    $singleVariantCostPrice = '';
     $singleVariantStock = '';
     if (!$this->isVariable() && !empty($this->variants)) {
         $singleVariantPrice = $this->variants[0]->price;
+        $singleVariantCostPrice = $this->variants[0]->costPrice;
         $singleVariantStock = $this->variants[0]->stock;
     }
 
@@ -79,6 +81,7 @@ class Product {
         'price_tiers'           => !empty($this->priceTiers) ? json_encode($this->priceTiers) : '',
         'config_type'           => $this->configType,
         'single_variant_price'  => $singleVariantPrice,
+        'single_variant_cost_price' => $singleVariantCostPrice,
         'single_variant_stock'  => $singleVariantStock,
     ];
     }

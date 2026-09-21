@@ -67,6 +67,58 @@ class MediaLab_ML_SKU_Generator {
                 add_action('woocommerce_save_product_variation', [$this, 'save_stock_inhouse_variation_field'], 10, 2);
                 add_action('woocommerce_product_options_inventory_product_data', [$this, 'render_stock_inhouse_simple_field']);
                 add_action('woocommerce_process_product_meta', [$this, 'save_stock_inhouse_simple_field']);
+
+                // PREISKALKULATION (2026-09): Cotton-Classics-Preise aus dem Feed
+                // sind EINKAUFSPREISE (Cotton Classics' eigener Verkaufspreis AN
+                // Media Lab, Feldname "VKEinzel" aus DEREN Perspektive) - der
+                // tatsächliche Shop-Verkaufspreis wird erst hier über einen im
+                // WP-Admin editierbaren Faktor berechnet. Der Wert wird von
+                // supplier-sync (eigenständiges CLI-Skript, lädt kein WordPress)
+                // direkt per PDO aus wp_options gelesen, nicht über get_field().
+                add_action('acf/init', [$this, 'register_pricing_options_page']);
+        }
+
+        /* ------------------------------------------------------------------ *
+         *  Preiskalkulation: Aufschlagsfaktor Einkaufspreis -> Verkaufspreis
+         * ------------------------------------------------------------------ */
+
+        public function register_pricing_options_page() {
+                if (!function_exists('acf_add_options_page')) return;
+
+                acf_add_options_sub_page([
+                        'page_title'  => 'Preiskalkulation',
+                        'menu_title'  => 'Preiskalkulation',
+                        'parent_slug' => 'woocommerce',
+                        'capability'  => 'manage_woocommerce',
+                        'slug'        => 'ml-pricing-factors',
+                ]);
+
+                acf_add_local_field_group([
+                        'key'    => 'group_ml_pricing_factors',
+                        'title'  => 'Preiskalkulation',
+                        'fields' => [
+                                [
+                                        'key'           => 'field_ml_markup_factor_cotton_classics',
+                                        'label'         => 'Aufschlagsfaktor Cotton Classics',
+                                        'name'          => 'ml_markup_factor_cotton_classics',
+                                        'type'          => 'number',
+                                        'instructions'  => 'Verkaufspreis = Einkaufspreis (aus dem Cotton-Classics-Feed) x dieser Faktor. Beispiel: 1.8 = 80% Aufschlag. Wirkt erst ab dem naechsten Sync-Lauf (php sync.php cotton_classics), nicht rueckwirkend auf bereits importierte Preise.',
+                                        'required'      => 1,
+                                        'default_value' => 1,
+                                        'min'           => 0.01,
+                                        'step'          => 0.01,
+                                ],
+                        ],
+                        'location' => [
+                                [
+                                        [
+                                                'param'    => 'options_page',
+                                                'operator' => '==',
+                                                'value'    => 'ml-pricing-factors',
+                                        ],
+                                ],
+                        ],
+                ]);
         }
 
         /* ------------------------------------------------------------------ *

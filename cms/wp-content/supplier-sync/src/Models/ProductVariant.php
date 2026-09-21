@@ -13,6 +13,7 @@ class ProductVariant {
     public ?string $firstArrivalDate = null;
     public ?int $firstArrivalQty = null;
     public ?float $price = null;
+    public ?float $costPrice = null; // Einkaufspreis, falls vom Lieferanten getrennt geliefert (aktuell nur Cotton Classics)
     public string $imageMain = '';
     public array $imageGallery = [];
 
@@ -40,6 +41,7 @@ class ProductVariant {
             'first_arrival_date'   => $this->firstArrivalDate,
             'first_arrival_qty'    => $this->firstArrivalQty,
             'price'                => $this->price,
+            'cost_price'           => $this->costPrice,
             'image_main'           => $this->imageMain,
             'image_gallery'        => implode('|', $this->imageGallery),
         ];

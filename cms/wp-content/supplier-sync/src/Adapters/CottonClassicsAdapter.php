@@ -228,12 +228,23 @@ class CottonClassicsAdapter extends AbstractAdapter {
         }
         $variant->attributes = $attrs;
 
-        // Preis: nur Einzelpreis (VKEinzel), keine Mengenstaffel - Cotton
-        // Classics liefert Preise PRO VARIANTE (bestätigt per Stichprobe:
-        // >80 Styles mit abweichenden Preisen zwischen Farben/Größen
-        // desselben Styles), anders als bei Makito (Preis pro Parent).
+        // Preis: VKEinzel ist Cotton Classics' VERKAUFSpreis AN Media Lab -
+        // aus UNSERER Sicht also der EINKAUFSPREIS, nicht der Shop-Verkaufs-
+        // preis (bestaetigt 19.09.2026, siehe Notion "Technische Erkenntnisse").
+        // Der tatsaechliche Verkaufspreis wird ueber einen im WP-Admin
+        // editierbaren Aufschlagsfaktor berechnet (WooCommerce -> Preis-
+        // kalkulation, ml_markup_factor_cotton_classics, per DatabaseClient
+        // in sync.php geladen). Fallback 1.0 (= unveraendert), falls noch
+        // nicht konfiguriert.
+        //
+        // Nur Einzelpreis, keine Mengenstaffel - Cotton Classics liefert
+        // Preise PRO VARIANTE (bestätigt per Stichprobe: >80 Styles mit
+        // abweichenden Preisen zwischen Farben/Größen desselben Styles),
+        // anders als bei Makito (Preis pro Parent).
         if ($vkEinzel !== null && $vkEinzel !== '') {
-            $variant->price = (float) $vkEinzel;
+            $variant->costPrice = (float) $vkEinzel;
+            $markupFactor = (float) ($this->config['markup_factor'] ?? 1.0);
+            $variant->price = round($variant->costPrice * $markupFactor, 2);
         }
 
         $imageBaseUrl = rtrim((string) ($this->config['image_base_url'] ?? ''), '/');

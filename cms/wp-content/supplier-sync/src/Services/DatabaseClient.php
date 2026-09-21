@@ -83,4 +83,27 @@ class DatabaseClient {
 
         return $map;
     }
+
+    /**
+     * Liest einen einzelnen Wert aus wp_options - robust gegenueber ACFs
+     * "options_"-Praefix bei Optionsseiten (analog zu
+     * medialab_heartbeat_get_setting() in media-lab-agency-core, das
+     * dasselbe Muster ueber get_field() abbildet). Da dieses Skript kein
+     * WordPress laedt, muss der Fallback hier direkt per SQL erfolgen.
+     */
+    public function getOption(string $optionName): ?string {
+        $options = $this->table('options');
+        $sql = "SELECT option_value FROM {$options} WHERE option_name = :name LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute(['name' => $optionName]);
+        $value = $stmt->fetchColumn();
+        if ($value !== false && $value !== '') {
+            return $value;
+        }
+
+        $stmt->execute(['name' => 'options_' . $optionName]);
+        $value = $stmt->fetchColumn();
+        return ($value !== false && $value !== '') ? $value : null;
+    }
 }
