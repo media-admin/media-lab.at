@@ -52,6 +52,9 @@ class CottonClassicsAdapter extends AbstractAdapter {
     /** Size-Werte, die keine echte Variantenausprägung sind. */
     private const NO_SIZE_VALUES = ['ONESIZE', ''];
 
+    /** Status (SKU List, Spalte 16) -> ACF product_badge. ACTUAL = kein Badge. */
+    private const STATUS_TO_BADGE = ['NEW' => 'new', 'SELLOUT' => 'restposten'];
+
     /** @return Product[] */
     public function fetchProducts(): array {
         $filePath = $this->config['file_path'] ?? '';
@@ -180,6 +183,7 @@ class CottonClassicsAdapter extends AbstractAdapter {
         foreach ($rows as $cells) {
             $product->variants[] = $this->transformVariant($cells);
         }
+        $product->badge = $this->determineBadge($rows);
 
         // Parent-Bild: bevorzugt das Style-Level "Picture", sonst Fallback
         // auf das Bild der ersten Variante mit gesetztem imageMain (analog
@@ -202,6 +206,16 @@ class CottonClassicsAdapter extends AbstractAdapter {
         }
 
         return $product;
+    }
+
+    /** Badge nur, wenn ALLE Varianten des Styles denselben Status haben. */
+    private function determineBadge(array $rows): string {
+        $badges = [];
+        foreach ($rows as $cells) {
+            $status = strtoupper(trim((string) ($cells[16] ?? '')));
+            $badges[self::STATUS_TO_BADGE[$status] ?? ''] = true;
+        }
+        return count($badges) === 1 ? (string) array_key_first($badges) : '';
     }
 
     private function transformVariant(array $cells): ProductVariant {

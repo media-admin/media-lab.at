@@ -38,16 +38,20 @@ $feedGenerator = new FeedGenerator();
 
 $onlySupplier = $argv[1] ?? null;
 
-// Preiskalkulation Cotton Classics: VKEinzel aus dem Feed ist der Einkaufs-
-// preis (siehe CottonClassicsAdapter), der Aufschlagsfaktor wird im WP-Admin
-// gepflegt (WooCommerce -> Preiskalkulation) und hier direkt per PDO aus
-// wp_options gelesen, da dieses Skript kein WordPress laedt. Nur laden, wenn
-// Cotton Classics in diesem Lauf ueberhaupt verarbeitet wird.
-$willProcessCottonClassics = isset($suppliers['cotton_classics'])
-    && ($onlySupplier === null || $onlySupplier === 'cotton_classics')
-    && $suppliers['cotton_classics']['enabled'];
+// Preiskalkulation: Feed-Preise von Cotton Classics und MidOcean sind Einkaufs-
+// preise. Der Aufschlagsfaktor je Lieferant wird im WP-Admin gepflegt
+// (WooCommerce -> Preiskalkulation, Option ml_markup_factor_<supplier_key>) und
+// hier direkt per PDO aus wp_options gelesen, da dieses Skript kein WordPress
+// laedt. Fallback 1.0, falls nichts (oder ein ungueltiger Wert) gesetzt ist.
+$suppliersWithMarkup = ['cotton_classics', 'midocean'];
+$markupKeysToLoad = array_filter(
+    $suppliersWithMarkup,
+    fn($k) => isset($suppliers[$k])
+        && !empty($suppliers[$k]['enabled'])
+        && ($onlySupplier === null || $onlySupplier === $k)
+);
 
-if ($willProcessCottonClassics) {
+if (!empty($markupKeysToLoad)) {
     try {
         $db = new DatabaseClient(
             ml_env('DB_HOST', '127.0.0.1'),
@@ -57,12 +61,21 @@ if ($willProcessCottonClassics) {
             ml_env('DB_PASS'),
             ml_env('DB_TABLE_PREFIX', 'wp_')
         );
-        $factorRaw = $db->getOption('ml_markup_factor_cotton_classics');
-        $suppliers['cotton_classics']['markup_factor'] = $factorRaw !== null ? (float) $factorRaw : 1.0;
-        $logger->info("Cotton-Classics-Aufschlagsfaktor geladen: {$suppliers['cotton_classics']['markup_factor']}");
+        foreach ($markupKeysToLoad as $k) {
+            $factorRaw = $db->getOption('ml_markup_factor_' . $k);
+            $factor = $factorRaw !== null ? (float) $factorRaw : 1.0;
+            if ($factor <= 0) {
+                $logger->warning("Aufschlagsfaktor {$k} ungueltig ({$factorRaw}), verwende 1.0");
+                $factor = 1.0;
+            }
+            $suppliers[$k]['markup_factor'] = $factor;
+            $logger->info("Aufschlagsfaktor {$k} geladen: {$factor}");
+        }
     } catch (\Throwable $e) {
-        $logger->warning("Konnte Aufschlagsfaktor nicht laden, verwende Fallback 1.0: " . $e->getMessage());
-        $suppliers['cotton_classics']['markup_factor'] = 1.0;
+        $logger->warning("Konnte Aufschlagsfaktoren nicht laden, verwende 1.0: " . $e->getMessage());
+        foreach ($markupKeysToLoad as $k) {
+            $suppliers[$k]['markup_factor'] = 1.0;
+        }
     }
 }
 

@@ -19,7 +19,7 @@ class FeedGenerator {
             'import_uid', 'supplier_code', 'supplier_sku',
             'product_title', 'product_description', 'brand', 'categories',
             'lead_time_text', 'has_variants', 'image_main', 'image_gallery',
-            'price_tiers', 'config_type', 'single_variant_price', 'single_variant_cost_price', 'single_variant_stock'
+            'price_tiers', 'config_type', 'single_variant_price', 'single_variant_cost_price', 'single_variant_stock', 'product_badge'
         ]);
 
         $variantCsv = Writer::createFromPath($variantFilepath, 'w+');

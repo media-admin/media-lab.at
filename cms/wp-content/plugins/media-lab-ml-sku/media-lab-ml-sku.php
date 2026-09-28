@@ -119,6 +119,20 @@ class MediaLab_ML_SKU_Generator {
                                 ],
                         ],
                 ]);
+
+                // MidOcean: Feed-Preise sind Einkaufspreise (bestaetigt 28.09.2026)
+                acf_add_local_field([
+                        'key'           => 'field_ml_markup_factor_midocean',
+                        'label'         => 'Aufschlagsfaktor MidOcean',
+                        'name'          => 'ml_markup_factor_midocean',
+                        'type'          => 'number',
+                        'instructions'  => 'Verkaufspreis = Einkaufspreis (aus dem MidOcean-Feed) x dieser Faktor. Wirkt erst ab dem naechsten Sync-Lauf (php sync.php midocean).',
+                        'required'      => 1,
+                        'default_value' => 1,
+                        'min'           => 0.01,
+                        'step'          => 0.01,
+                        'parent'        => 'group_ml_pricing_factors',
+                ]);
         }
 
         /* ------------------------------------------------------------------ *

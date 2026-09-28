@@ -49,9 +49,17 @@ class MidOceanAdapter extends AbstractAdapter {
         // BESTÄTIGT (echter API-Call, 31.08.2026): Antwort ist ein direktes
         // JSON-Array von Produkt-Objekten, kein Wrapper-Key.
         $products = [];
+        $skipped = [];
         foreach ($rawProducts as $rawProduct) {
+            // Kataloge, Musterpakete u. ae. (product_class "Catalogues") sind keine Shop-Produkte
+            if (strcasecmp(trim((string) ($rawProduct['product_class'] ?? '')), 'Catalogues') === 0) {
+                $skipped[] = (string) ($rawProduct['master_code'] ?? '?');
+                continue;
+            }
             $products[] = $this->transformToProduct($rawProduct);
         }
+        $this->logger?->info('MidOcean: ' . count($skipped) . ' Produkte der Klasse Catalogues uebersprungen: ' . implode(',', array_slice($skipped, 0, 60)));
+        $this->logger?->info('MidOcean Badges: ' . json_encode($this->badgeStats, JSON_UNESCAPED_UNICODE));
 
         return $products;
     }
@@ -174,6 +182,10 @@ class MidOceanAdapter extends AbstractAdapter {
         $product->importUid    = self::SUPPLIER_CODE . '|' . $product->supplierSku;
 
         $product->productTitle = trim((string) ($raw['product_name'] ?? ''));
+        if ($product->productTitle === '') {
+            // Einzelne Produkte (z.B. MO1202) haben keinen product_name: Kurzbeschreibung als Ersatz
+            $product->productTitle = trim((string) ($raw['short_description'] ?? ''));
+        }
 
         $product->productDescription = $this->sanitizeDescription(
             (string) ($raw['long_description'] ?? $raw['short_description'] ?? '')
@@ -202,6 +214,7 @@ class MidOceanAdapter extends AbstractAdapter {
         foreach ($rawVariants as $rawVariant) {
             $product->variants[] = $this->transformVariant($rawVariant);
         }
+        $product->badge = $this->determineBadge($rawVariants);
 
         // Parent-Produkt braucht ein eigenes Vorschaubild (WooCommerce zeigt
         // im Shop-Grid und als Standardbild auf der Produktseite immer das
@@ -231,6 +244,38 @@ class MidOceanAdapter extends AbstractAdapter {
         return $product;
     }
 
+    /** Anzahl Produkte je Badge-Ergebnis, wird nach dem Lauf ins Log geschrieben. */
+    private array $badgeStats = ['new' => 0, 'restposten' => 0, 'gemischt' => 0, 'kein Status' => 0];
+
+    /**
+     * Badge (ACF product_badge) aus dem Produktlebenszyklus der Varianten:
+     * plc_status 11 = NEW -> "new", 20 = OUTLET -> "restposten".
+     * Nur wenn ALLE Varianten denselben Status haben, sonst kein Badge.
+     */
+    private function determineBadge(array $rawVariants): string {
+        if (empty($rawVariants)) return '';
+        $badges = [];
+        foreach ($rawVariants as $v) {
+            $code = trim((string) ($v['plc_status'] ?? ''));
+            $desc = strtoupper(trim((string) ($v['plc_status_description'] ?? '')));
+            if ($code === '11' || $desc === 'NEW') {
+                $b = 'new';
+            } elseif ($code === '20' || $desc === 'OUTLET') {
+                $b = 'restposten';
+            } else {
+                $b = '';
+            }
+            $badges[$b] = true;
+        }
+        if (count($badges) !== 1) {
+            $this->badgeStats['gemischt']++;
+            return '';
+        }
+        $badge = (string) array_key_first($badges);
+        $this->badgeStats[$badge !== '' ? $badge : 'kein Status']++;
+        return $badge;
+    }
+
     private function transformVariant(array $raw): ProductVariant {
         $variant = new ProductVariant();
 
@@ -257,8 +302,13 @@ class MidOceanAdapter extends AbstractAdapter {
             $variant->firstArrivalQty = $stockInfo['first_arrival_qty'];
         }
 
+        // Feed-Preis = Einkaufspreis (bestaetigt 28.09.2026). Verkaufspreis =
+        // Einkaufspreis x Aufschlagsfaktor (WP-Admin: WooCommerce -> Preis-
+        // kalkulation, in sync.php geladen; Fallback 1.0).
         if (isset($this->priceBySku[$sku])) {
-            $variant->price = $this->priceBySku[$sku];
+            $variant->costPrice = $this->priceBySku[$sku];
+            $markupFactor = (float) ($this->config['markup_factor'] ?? 1.0);
+            $variant->price = round($variant->costPrice * $markupFactor, 2);
         }
 
         if (!empty($raw['digital_assets'])) {

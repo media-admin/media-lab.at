@@ -168,7 +168,8 @@
                 "new": "Neu",
                 "bestseller": "Bestseller",
                 "limited": "Limitiert",
-                "eco": "Umweltfreundlich"
+                "eco": "Umweltfreundlich",
+                "restposten": "Restposten"
             },
             "allow_null": 1,
             "multiple": 0,
@@ -200,5 +201,5 @@
     "description": "",
     "show_in_rest": false,
     "display_title": "",
-    "modified": 1771236278
+    "modified": 1790590756
 }
