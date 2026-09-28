@@ -290,8 +290,12 @@ class MidOceanAdapter extends AbstractAdapter {
         // einem echten Textil-Produkt-Response verifiziert. SKU-Suffixe wie
         // "-L", "-XXL" (siehe Pricelist-Sample) bestätigen aber, dass Größen
         // existieren - Fallback auf "size_description" bis final geprüft.
-        if (isset($raw['size_description'])) {
-            $variant->attributes['pa_size'] = strtolower(trim((string) $raw['size_description']));
+        $sizeRaw = '';
+        foreach (['size_textile', 'size_description', 'size'] as $sizeKey) {
+            if (isset($raw[$sizeKey]) && trim((string) $raw[$sizeKey]) !== '') { $sizeRaw = (string) $raw[$sizeKey]; break; }
+        }
+        if ($sizeRaw !== '') {
+            $variant->attributes['pa_size'] = strtolower(trim($sizeRaw));
         }
 
         // Stock- und Preisdaten aus den vorab geladenen Maps zuordnen
