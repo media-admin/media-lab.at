@@ -715,3 +715,46 @@ add_action( 'woocommerce_single_product_summary', function() {
         esc_html( $badge['label'] )
     );
 }, 4 );
+
+/* ============================================================
+ * Projektspezifische Erweiterungen fuer das zentral verwaltete
+ * Starter-Kit-Plugin media-lab-woocommerce (ab 01.10.2026)
+ *
+ * Bewusst HIER statt dort gepflegt: media-lab-woocommerce wird zentral
+ * im Starter-Kit-Repo verwaltet und auf alle Projekte ausgerollt -
+ * projektspezifische Logik (stock_inhouse, product_badge) gehoert ins
+ * Projekt-Plugin, nicht in die geteilte Codebasis.
+ * ============================================================ */
+
+add_filter( 'media_lab_ajax_search_result', function( $result, $post_id, $post_type ) {
+    if ( $post_type !== 'product' || ! function_exists( 'wc_get_product' ) ) {
+        return $result;
+    }
+
+    $product = wc_get_product( $post_id );
+    if ( ! $product ) {
+        return $result;
+    }
+
+    $availability = ml_get_grid_availability( $product );
+    $result['availability_badge'] = ( $availability && $availability['status'] === 'in_house' )
+        ? $availability['label']
+        : null;
+
+    $product_badge = ml_get_product_badge( $post_id );
+    $result['product_badge_label'] = $product_badge['label'] ?? null;
+    $result['product_badge_class'] = $product_badge['class'] ?? null;
+
+    return $result;
+}, 20, 3 );
+
+add_action( 'woocommerce_single_product_summary', function() {
+    if ( ! function_exists( 'get_field' ) || get_field( 'wc_catalog_mode_hide_buttons', 'option' ) !== true ) {
+        return;
+    }
+    global $product;
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+    echo wc_get_stock_html( $product );
+}, 30 );
