@@ -321,11 +321,20 @@ class MakitoAdapter extends AbstractAdapter {
         $priceInfo = $priceByMaster[$product->supplierSku];
         $price1 = $priceInfo['price1'];
 
+        // Feed-Preis (price1) = Einkaufspreis (bestaetigt 29.09.2026, Proforma-
+        // Rechnung Makito). Verkaufspreis = Einkaufspreis x Aufschlagsfaktor
+        // (WP-Admin: WooCommerce -> Preiskalkulation, in sync.php geladen;
+        // Fallback 1.0). Die Mengenstaffel bleibt unveraendert prozentual
+        // (siehe unten) und ist damit vom Faktor unabhaengig korrekt.
+        $markupFactor = (float) ($this->config['markup_factor'] ?? 1.0);
+        $sellPrice1 = round($price1 * $markupFactor, 2);
+
         // Einzelpreis: price1 (Basis-Staffel, kleinste Menge) für alle
         // Varianten dieses Masters - Makito differenziert Preise nicht
         // nach Farbe/Größe.
         foreach ($product->variants as $variant) {
-            $variant->price = $price1;
+            $variant->costPrice = $price1;
+            $variant->price = $sellPrice1;
         }
 
         // Mengenstaffel als Rabatt-Prozentsatz relativ zu price1 umrechnen -

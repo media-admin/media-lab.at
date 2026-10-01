@@ -43,7 +43,7 @@ $onlySupplier = $argv[1] ?? null;
 // (WooCommerce -> Preiskalkulation, Option ml_markup_factor_<supplier_key>) und
 // hier direkt per PDO aus wp_options gelesen, da dieses Skript kein WordPress
 // laedt. Fallback 1.0, falls nichts (oder ein ungueltiger Wert) gesetzt ist.
-$suppliersWithMarkup = ['cotton_classics', 'midocean'];
+$suppliersWithMarkup = ['cotton_classics', 'midocean', 'makito'];
 $markupKeysToLoad = array_filter(
     $suppliersWithMarkup,
     fn($k) => isset($suppliers[$k])
