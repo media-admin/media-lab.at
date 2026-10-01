@@ -225,6 +225,23 @@
     ins { text-decoration: none; color: $color-error; }
   }
 
+  // Verfügbarkeits-Badge (media-lab-ml-sku: ml_get_grid_availability()) -
+  // nur "Kurzfristig lieferbar", analog Shop-Grid (.ml-availability-badge
+  // in _woocommerce.scss). Eigene Zeile unter Titel/Excerpt, nicht im
+  // &__meta-Flex, da Preis dort bereits rechtsbündig sitzt.
+  &__availability {
+    display:        inline-block;
+    margin-top:      0.25rem;
+    padding:         2px 0.5rem;
+    background:      $color-info;
+    color:           $color-white;
+    font-size:       var(--text-xs);
+    font-weight:     $font-weight-bold;
+    border-radius:   $radius-sm;
+    text-transform:  uppercase;
+    letter-spacing:  0.05em;
+  }
+
   &__no-results,
   &__error {
     position:      absolute;

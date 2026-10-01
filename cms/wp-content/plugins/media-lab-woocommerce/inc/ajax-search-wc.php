@@ -35,5 +35,16 @@ add_filter('media_lab_ajax_search_result', function($result, $post_id, $post_typ
     $result['in_stock']      = $product->is_in_stock();
     $result['is_on_sale']    = $product->is_on_sale();
 
+    // Kurzfristig-lieferbar-Badge (media-lab-ml-sku) - dieselbe Logik wie
+    // Einzelproduktseite/Shop-Grid, hier nur das "Kurzfristig lieferbar"-
+    // Badge, nicht der generische "Lieferbar"-Text (siehe SCSS-Kommentar
+    // zu .ml-availability--supplier: bewusst dezent/ausgeblendet dort).
+    if ( function_exists( 'ml_get_grid_availability' ) ) {
+        $availability = ml_get_grid_availability( $product );
+        $result['availability_badge'] = ( $availability && $availability['status'] === 'in_house' )
+            ? $availability['label']
+            : null;
+    }
+
     return $result;
 }, 10, 3);

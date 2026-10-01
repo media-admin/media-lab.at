@@ -133,6 +133,20 @@ class MediaLab_ML_SKU_Generator {
                         'step'          => 0.01,
                         'parent'        => 'group_ml_pricing_factors',
                 ]);
+
+                // Makito: Feed-Preise sind Einkaufspreise (bestaetigt 29.09.2026)
+                acf_add_local_field([
+                        'key'           => 'field_ml_markup_factor_makito',
+                        'label'         => 'Aufschlagsfaktor Makito',
+                        'name'          => 'ml_markup_factor_makito',
+                        'type'          => 'number',
+                        'instructions'  => 'Verkaufspreis = Einkaufspreis (aus dem Makito-Feed) x dieser Faktor. Wirkt erst ab dem naechsten Sync-Lauf (php sync.php makito).',
+                        'required'      => 1,
+                        'default_value' => 1,
+                        'min'           => 0.01,
+                        'step'          => 0.01,
+                        'parent'        => 'group_ml_pricing_factors',
+                ]);
         }
 
         /* ------------------------------------------------------------------ *
@@ -480,3 +494,147 @@ add_action('plugins_loaded', function () {
         $gen = new MediaLab_ML_SKU_Generator();
         $gen->init();
 });
+
+/* ============================================================
+ * Frontend-Verfügbarkeitslogik (ab 30.09.2026)
+ *
+ * Dreistufig:
+ *   1. stock_inhouse > 0            -> "Kurzfristig lieferbar" (eigener Lagerbestand)
+ *   2. sonst Lieferantenbestand > 0 -> "Lieferbar" (+ Datum aus
+ *                                      _ml_lead_time_text, falls vorhanden -
+ *                                      aktuell nur bei Makito teilweise befüllt)
+ *   3. sonst                        -> WooCommerce-Standardverhalten unverändert
+ *                                      ("Nicht vorrätig" o.ä.)
+ * ============================================================ */
+
+/**
+ * @param WC_Product|WC_Product_Variation $product
+ * @return array{status:string,label:string,badge_class:string}|null
+ *         null = Fall 3, WooCommerce-Standard beibehalten
+ */
+function ml_get_product_availability( $product ): ?array {
+    if ( ! $product instanceof WC_Product ) {
+        return null;
+    }
+
+    $product_id = $product->get_id();
+
+    $stock_inhouse = (int) get_post_meta( $product_id, 'stock_inhouse', true );
+    if ( $stock_inhouse > 0 ) {
+        return [
+            'status'      => 'in_house',
+            'label'       => __( 'Kurzfristig lieferbar', 'media-lab-ml-sku' ),
+            'badge_class' => 'ml-availability--in-house',
+        ];
+    }
+
+    if ( $product->is_in_stock() ) {
+        $label = __( 'Lieferbar', 'media-lab-ml-sku' );
+
+        $lead_time_raw = get_post_meta( $product_id, '_ml_lead_time_text', true );
+        if ( $lead_time_raw ) {
+            // Format TT-MM-JJJJ (Makito). Bei unbekanntem Format wird das
+            // Datum stillschweigend ignoriert, Label bleibt "Lieferbar".
+            $date = DateTime::createFromFormat( 'd-m-Y', trim( (string) $lead_time_raw ) );
+            if ( $date instanceof DateTime ) {
+                $label = sprintf(
+                    /* translators: %s: Datum im Format TT.MM. */
+                    __( 'Lieferbar ab %s', 'media-lab-ml-sku' ),
+                    $date->format( 'd.m.' )
+                );
+            }
+        }
+
+        return [
+            'status'      => 'supplier',
+            'label'       => $label,
+            'badge_class' => 'ml-availability--supplier',
+        ];
+    }
+
+    return null;
+}
+
+/**
+ * Einzelproduktseite: überschreibt WooCommerce's Standard-Lagerstatustext
+ * ("Vorrätig" / "X auf Lager"). Feuert sowohl für einfache Produkte als
+ * auch für jede Variante einzeln (beim Variantenwechsel via AJAX,
+ * WC_AJAX::get_variation()) - Varianten-Ebene ist damit automatisch
+ * mit abgedeckt, ohne zusätzlichen Hook.
+ */
+add_filter( 'woocommerce_get_availability', function( $availability, $product ) {
+    $override = ml_get_product_availability( $product );
+    if ( $override === null ) {
+        return $availability;
+    }
+
+    $availability['availability'] = $override['label'];
+    $availability['class']        = $override['badge_class'];
+
+    return $availability;
+}, 10, 2 );
+
+/**
+ * Wie ml_get_product_availability(), aber für variable Parent-Produkte:
+ * prüft stock_inhouse über ALLE Varianten (nicht nur den Parent selbst,
+ * der ja gar keinen eigenen stock_inhouse-Wert trägt). Wird nur im
+ * Shop-Grid gebraucht, wo WooCommerce mit der Parent-ID arbeitet, nicht
+ * auf der Einzelproduktseite (dort übernimmt der jeweils aktive
+ * Varianten-Kontext das automatisch, siehe woocommerce_get_availability).
+ */
+function ml_get_grid_availability( WC_Product $product ): ?array {
+    if ( $product->is_type( 'variable' ) ) {
+        global $wpdb;
+        $has_stock_variation = $wpdb->get_var( $wpdb->prepare(
+            "SELECT p.ID FROM {$wpdb->posts} p
+             JOIN {$wpdb->postmeta} m ON m.post_id = p.ID
+             WHERE p.post_parent = %d AND p.post_type = 'product_variation'
+             AND m.meta_key = 'stock_inhouse' AND CAST(m.meta_value AS UNSIGNED) > 0
+             LIMIT 1",
+            $product->get_id()
+        ) );
+
+        if ( $has_stock_variation ) {
+            return [
+                'status'      => 'in_house',
+                'label'       => __( 'Kurzfristig lieferbar', 'media-lab-ml-sku' ),
+                'badge_class' => 'ml-availability--in-house',
+            ];
+        }
+
+        if ( $product->is_in_stock() ) {
+            return [
+                'status'      => 'supplier',
+                'label'       => __( 'Lieferbar', 'media-lab-ml-sku' ),
+                'badge_class' => 'ml-availability--supplier',
+            ];
+        }
+
+        return null;
+    }
+
+    return ml_get_product_availability( $product );
+}
+
+/**
+ * Shop-Grid: WooCommerce zeigt dort standardmäßig KEINEN Lagerstatus-Text
+ * (anders als auf der Einzelproduktseite) - wird hier komplett neu
+ * ausgegeben, direkt über dem Produkttitel.
+ */
+add_action( 'woocommerce_before_shop_loop_item_title', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+
+    $availability = ml_get_grid_availability( $product );
+    if ( $availability === null ) {
+        return;
+    }
+
+    printf(
+        '<span class="ml-availability-badge %s">%s</span>',
+        esc_attr( $availability['badge_class'] ),
+        esc_html( $availability['label'] )
+    );
+}, 9 ); // Priorität 9: vor dem Standard-Sale-Badge (Prio 10), damit beide nebeneinander Platz finden

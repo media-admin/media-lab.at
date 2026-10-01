@@ -139,6 +139,13 @@ class MediaLab_WC_Catalog_Mode {
         if ($hide_buttons === true) {
             remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10);
             remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30);
+            // wc_get_stock_html() sass bisher NUR im entfernten Add-to-Cart-
+            // Template (single-product/add-to-cart/simple.php) - mit dem
+            // kompletten Entfernen des Buttons fiel der Lagerstatus-Text
+            // (inkl. unseres woocommerce_get_availability-Filters aus
+            // media-lab-ml-sku.php) versehentlich mit weg. Hier separat neu
+            // ausgeben, an derselben Prioritaet, an der vorher der Button sass.
+            add_action('woocommerce_single_product_summary', array($this, 'display_stock_status'), 30);
         }
         
         add_action('woocommerce_after_shop_loop_item_title', array($this, 'display_catalog_message'), 10);
@@ -150,6 +157,14 @@ class MediaLab_WC_Catalog_Mode {
         }
     }
     
+    public function display_stock_status() {
+        global $product;
+        if (!$product instanceof WC_Product) {
+            return;
+        }
+        echo wc_get_stock_html($product);
+    }
+
     public function display_catalog_message() {
         $message = get_field('wc_catalog_mode_message', 'option');
         if ($message) {

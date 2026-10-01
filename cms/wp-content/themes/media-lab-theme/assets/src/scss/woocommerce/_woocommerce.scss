@@ -119,6 +119,35 @@
         letter-spacing: 0.5px !important;
     }
 
+    // Verfügbarkeits-Badge (media-lab-ml-sku: ml_get_grid_availability()).
+    // Unter dem .onsale-Badge positioniert (top + spacing-3 + ~28px Zeilenhöhe
+    // des Sale-Badges), damit beide gleichzeitig sichtbar bleiben, falls ein
+    // reduziertes Produkt zusätzlich kurzfristig lieferbar ist.
+    .ml-availability-badge {
+        position:       absolute !important;
+        top:            calc(#{$spacing-3} + 28px) !important;
+        left:           $spacing-3 !important;
+        z-index:        2 !important;
+        font-size:      var(--text-xs) !important;
+        font-weight:    $font-weight-bold !important;
+        padding:        4px $spacing-2 !important;
+        border-radius:  $radius-sm !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+
+        &.ml-availability--in-house {
+            background: $color-info !important;
+            color:      $color-white !important;
+        }
+
+        &.ml-availability--supplier {
+            // Bewusst dezenter als die beiden anderen Badges: reiner
+            // Lieferanten-Normalfall, kein hervorhebenswerter Sonderstatus -
+            // wird daher nicht als eigenes Ribbon geführt.
+            display: none;
+        }
+    }
+
     .woocommerce-loop-product__link {
         display:  block !important;
         overflow: hidden !important;
