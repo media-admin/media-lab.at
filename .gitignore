@@ -58,6 +58,12 @@
 !/cms/wp-content/plugins/index.php
 !/cms/wp-content/plugins/media-lab-*/
 
+# Ausnahme von der Ausnahme: media-lab-agency-core und media-lab-woocommerce
+# werden in einem eigenen, separaten Repo verwaltet und hier bewusst NICHT
+# mitversioniert (01.10.2026).
+/cms/wp-content/plugins/media-lab-agency-core/
+/cms/wp-content/plugins/media-lab-woocommerce/
+
 # ============================================
 # THEMES – Standard WP Themes
 # ============================================
