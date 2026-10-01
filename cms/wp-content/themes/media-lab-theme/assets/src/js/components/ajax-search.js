@@ -183,6 +183,7 @@ function displayResults(results, container) {
                     ${result.excerpt ? `<div class="ajax-search__excerpt">${result.excerpt}</div>` : ''}
                     ${result.price ? `<div class="ajax-search__price">${result.price}</div>` : ''}
                     ${result.availability_badge ? `<span class="ajax-search__availability">${result.availability_badge}</span>` : ''}
+                    ${result.product_badge_label ? `<span class="ajax-search__product-badge ${result.product_badge_class || ''}">${result.product_badge_label}</span>` : ''}
                 </div>
             </a>
         `;

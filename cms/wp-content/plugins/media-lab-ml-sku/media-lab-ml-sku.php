@@ -638,3 +638,80 @@ add_action( 'woocommerce_before_shop_loop_item_title', function() {
         esc_html( $availability['label'] )
     );
 }, 9 ); // Priorität 9: vor dem Standard-Sale-Badge (Prio 10), damit beide nebeneinander Platz finden
+
+/* ============================================================
+ * Frontend-Anzeige des Lieferanten-Status-Badges (ab 01.10.2026)
+ *
+ * product_badge (ACF, group_product_additional) lebt nur auf
+ * Parent-Ebene. Unabhaengig von der Verfuegbarkeits-Logik oben -
+ * ein Produkt kann beides, eins von beiden oder keins haben.
+ * ============================================================ */
+
+function ml_get_product_badge( int $product_id ): ?array {
+    $value = get_field( 'product_badge', $product_id );
+    if ( empty( $value ) ) {
+        return null;
+    }
+
+    $labels = [
+        'new'        => __( 'Neu', 'media-lab-ml-sku' ),
+        'restposten' => __( 'Restposten', 'media-lab-ml-sku' ),
+        'bestseller' => __( 'Bestseller', 'media-lab-ml-sku' ),
+        'limited'    => __( 'Limitiert', 'media-lab-ml-sku' ),
+        'eco'        => __( 'Umweltfreundlich', 'media-lab-ml-sku' ),
+    ];
+
+    if ( ! isset( $labels[ $value ] ) ) {
+        return null;
+    }
+
+    return [
+        'value' => $value,
+        'label' => $labels[ $value ],
+        'class' => 'ml-product-badge--' . $value,
+    ];
+}
+
+/**
+ * Shop-Grid. $product->get_id() reicht ohne Sonderbehandlung - anders
+ * als stock_inhouse lebt product_badge direkt am Parent.
+ */
+add_action( 'woocommerce_before_shop_loop_item_title', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+
+    $badge = ml_get_product_badge( $product->get_id() );
+    if ( $badge === null ) {
+        return;
+    }
+
+    printf(
+        '<span class="ml-product-badge %s">%s</span>',
+        esc_attr( $badge['class'] ),
+        esc_html( $badge['label'] )
+    );
+}, 9 );
+
+/**
+ * Einzelproduktseite, vor dem Titel (WooCommerce-Standard fuer den
+ * Titel selbst ist Prioritaet 5).
+ */
+add_action( 'woocommerce_single_product_summary', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+
+    $badge = ml_get_product_badge( $product->get_id() );
+    if ( $badge === null ) {
+        return;
+    }
+
+    printf(
+        '<span class="ml-product-badge ml-product-badge--inline %s">%s</span>',
+        esc_attr( $badge['class'] ),
+        esc_html( $badge['label'] )
+    );
+}, 4 );
