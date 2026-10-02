@@ -57,6 +57,7 @@ class MediaLab_ML_SKU_Generator {
                 // Lösung: Einmaliger Sweep nach Abschluss des GESAMTEN Imports, der
                 // alle Varianten mit noch nicht-finaler SKU nachträglich korrigiert.
                 add_action('pmxi_import_complete', [$this, 'sweep_fix_stale_variation_skus'], 10, 1);
+                add_action('pmxi_import_complete', [$this, 'sweep_draft_products_without_image'], 10, 1);
 
                 // INTERNER LAGERSTAND (Inventur-Feature, 2026-09): eigenes, im
                 // WP-Admin editierbares Feld 'stock_inhouse' - unabhängig vom per
@@ -244,6 +245,47 @@ class MediaLab_ML_SKU_Generator {
                 }
 
                 error_log("[ML SKU SWEEP] Sweep fertig - {$fixed} Varianten verarbeitet.");
+        }
+
+        /**
+         * Setzt veroeffentlichte Produkte automatisch auf Entwurf, wenn kein
+         * gueltiges Titelbild vorhanden ist (z.B. fehlgeschlagener Bild-
+         * Download, siehe Cotton Classics: 9 GUIDs, die auf dem FTP nicht
+         * existieren). Nur Lieferanten-Sync-Produkte (_ml_supplier_code
+         * gesetzt) - manuell angelegte Admin-Produkte bleiben unberuehrt.
+         * Re-Publish erfolgt ausschliesslich manuell, kein automatisches
+         * Zurueck-Veroeffentlichen (01.10.2026).
+         */
+        public function sweep_draft_products_without_image($import_id) {
+                global $wpdb;
+
+                $productIds = $wpdb->get_col(
+                        "SELECT p.ID
+                         FROM {$wpdb->posts} p
+                         INNER JOIN {$wpdb->postmeta} sc ON sc.post_id = p.ID AND sc.meta_key = '_ml_supplier_code'
+                         LEFT JOIN {$wpdb->postmeta} t ON t.post_id = p.ID AND t.meta_key = '_thumbnail_id'
+                         WHERE p.post_type = 'product'
+                         AND p.post_status = 'publish'
+                         AND (t.meta_value IS NULL OR t.meta_value = '')"
+                );
+
+                if (empty($productIds)) {
+                        error_log("[ML IMAGE SWEEP] Import {$import_id} abgeschlossen - keine Produkte ohne Bild gefunden.");
+                        return;
+                }
+
+                error_log("[ML IMAGE SWEEP] Import {$import_id} abgeschlossen - " . count($productIds) . " veroeffentlichte Produkte ohne Bild gefunden, setze auf Entwurf...");
+
+                $drafted = 0;
+                foreach ($productIds as $product_id) {
+                        wp_update_post([
+                                'ID'          => (int) $product_id,
+                                'post_status' => 'draft',
+                        ]);
+                        $drafted++;
+                }
+
+                error_log("[ML IMAGE SWEEP] Sweep fertig - {$drafted} Produkte auf Entwurf gesetzt.");
         }
 
         /**
@@ -758,3 +800,93 @@ add_action( 'woocommerce_single_product_summary', function() {
     }
     echo wc_get_stock_html( $product );
 }, 30 );
+
+/* ============================================================
+ * Mengenstaffel-Anzeige für Cotton Classics (ab 02.10.2026)
+ *
+ * tier_pricing (ACF, Konfigurator-Feldgruppe) ist zwar an die
+ * is_configurable-Bedingung gebunden - aber nur in der ADMIN-UI
+ * (conditional_logic), nicht programmatisch. get_field()/update_field()
+ * funktionieren unabhaengig davon, siehe class-price-calculator.php::
+ * get_all_tiers() (liest einfach get_field('tier_pricing', ...) ohne
+ * weitere Pruefung). Wir nutzen hier bewusst NICHT dieses Feld (lebt auf
+ * Parent-Ebene, Cotton Classics hat aber Preise PRO VARIANTE - 29% der
+ * Styles haben abweichende Preise zwischen Farben/Groessen, siehe
+ * Notion), sondern bauen eine eigene, Varianten-genaue Anzeige:
+ *
+ * - woocommerce_available_variation haengt price_tiers (aus dem Custom
+ *   Field _ml_price_tiers_raw, importiert von WP All Import Import 13)
+ *   in das ohnehin pro Variante an den Browser ausgelieferte JSON-Paket.
+ * - Kein neuer AJAX-Call noetig: found_variation (von WooCommerce's
+ *   eigenem Variantenformular gefeuert) liest direkt aus diesem bereits
+ *   geladenen Paket, exakt wie der Preis selbst beim Variantenwechsel.
+ * - Simple Produkte (272 Cotton-Classics-Artikel ohne Varianten) haben
+ *   keine Variantenauswahl - dort direkt aus dem Parent-Feld.
+ */
+
+add_filter( 'woocommerce_available_variation', function( $data, $product, $variation ) {
+    $raw = get_post_meta( $variation->get_id(), '_ml_price_tiers_raw', true );
+    if ( $raw ) {
+        $decoded = json_decode( $raw, true );
+        $data['ml_price_tiers'] = is_array( $decoded ) ? $decoded : null;
+    }
+    return $data;
+}, 10, 3 );
+
+/**
+ * Liefert die Mengenstaffel für ein Simple-Produkt (kein Varianten-
+ * Kontext, daher kein Variantenwechsel-Event moeglich) oder null, wenn
+ * keine Daten vorliegen.
+ */
+function ml_get_simple_product_price_tiers( int $product_id ): ?array {
+    $raw = get_post_meta( $product_id, '_ml_price_tiers_raw', true );
+    if ( ! $raw ) {
+        return null;
+    }
+    $decoded = json_decode( $raw, true );
+    return is_array( $decoded ) ? $decoded : null;
+}
+
+/**
+ * Container fuer die Mengenstaffel-Tabelle auf der Einzelproduktseite.
+ * Prioritaet 15: nach dem Preis (10), vor der Kurzbeschreibung (20).
+ * Simple Produkte: Tabelle sofort serverseitig gerendert.
+ * Variable Produkte: leerer Platzhalter, JS befuellt bei found_variation
+ * (siehe woocommerce_available_variation-Filter oben, liefert die Daten
+ * bereits im initialen Varianten-JSON mit, kein AJAX-Nachladen noetig).
+ */
+add_action( 'woocommerce_single_product_summary', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+
+    if ( $product->is_type( 'simple' ) ) {
+        $tiers = ml_get_simple_product_price_tiers( $product->get_id() );
+        if ( ! $tiers ) {
+            return;
+        }
+        echo '<div class="ml-price-tiers">';
+        echo '<h3 class="ml-price-tiers__title">' . esc_html__( 'Mengenrabatt', 'media-lab-ml-sku' ) . '</h3>';
+        echo '<table class="ml-price-tiers__table"><tbody>';
+        $basePrice = (float) $product->get_price();
+        foreach ( $tiers as $tier ) {
+            $tierPrice = round( $basePrice * ( 1 - ( $tier['discount_percent'] ?? 0 ) / 100 ), 2 );
+            printf(
+                '<tr><td>%s %d</td><td>%s</td></tr>',
+                esc_html__( 'ab', 'media-lab-ml-sku' ),
+                (int) $tier['min_quantity'],
+                wc_price( $tierPrice )
+            );
+        }
+        echo '</tbody></table></div>';
+        return;
+    }
+
+    if ( $product->is_type( 'variable' ) ) {
+        echo '<div class="ml-price-tiers ml-price-tiers--variable" style="display:none;">';
+        echo '<h3 class="ml-price-tiers__title">' . esc_html__( 'Mengenrabatt', 'media-lab-ml-sku' ) . '</h3>';
+        echo '<table class="ml-price-tiers__table"><tbody></tbody></table>';
+        echo '</div>';
+    }
+}, 15 );

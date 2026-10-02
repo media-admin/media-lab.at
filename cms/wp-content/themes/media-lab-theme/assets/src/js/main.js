@@ -151,6 +151,12 @@ const initApp = async () => {
     await import('./components/load-more');
   }
 
+  // Mengenstaffel (Cotton Classics): Container aus PHP → .ml-price-tiers--variable
+  if (has('.ml-price-tiers--variable')) {
+    const { default: PriceTiers } = await import('./components/price-tiers');
+    safeInit('PriceTiers', () => new PriceTiers());
+  }
+
   // AJAX Filters: Klasse aus PHP → .ajax-filters
   if (has('.ajax-filters')) {
     const { default: AjaxFilters } = await import('./components/ajax-filters');

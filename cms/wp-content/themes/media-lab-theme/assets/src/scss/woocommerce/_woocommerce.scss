@@ -297,6 +297,34 @@
         &.ml-product-badge--eco        { background: $color-gray-400; }
     }
 
+    .ml-price-tiers {
+        margin: $spacing-4 0;
+
+        &__title {
+            font-size: var(--text-base);
+            font-weight: $font-weight-semibold;
+            margin-bottom: $spacing-2;
+            color: var(--color-text);
+        }
+
+        &__table {
+            width: 100%;
+            max-width: 320px;
+            border-collapse: collapse;
+            font-size: var(--text-sm);
+
+            td {
+                padding: $spacing-2 $spacing-3;
+                border-bottom: 1px solid var(--color-border);
+
+                &:first-child { color: var(--color-text-muted); }
+                &:last-child  { text-align: right; font-weight: $font-weight-semibold; }
+            }
+
+            tr:last-child td { border-bottom: none; }
+        }
+    }
+
     .product_title {
         font-size:   clamp(1.5rem, 3vw, 2rem);
         font-weight: $font-weight-bold;
