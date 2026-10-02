@@ -27,7 +27,7 @@ class FeedGenerator {
             'parent_import_uid', 'parent_has_variants', 'supplier_variant_sku', 'variant_id',
             'variant_key', 'attributes', 'pa_color', 'pa_size', 'stock',
             'first_arrival_date', 'first_arrival_qty', 'price', 'cost_price',
-            'image_main', 'image_gallery'
+            'price_tiers', 'image_main', 'image_gallery'
         ]);
 
         foreach ($products as $product) {

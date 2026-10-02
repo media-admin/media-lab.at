@@ -224,6 +224,10 @@ class CottonClassicsAdapter extends AbstractAdapter {
         $colour   = trim((string) ($cells[4] ?? ''));
         $size     = trim((string) ($cells[5] ?? ''));
         $vkEinzel = $cells[8] ?? null;
+        $vk10     = $cells[9] ?? null;
+        $vk100    = $cells[10] ?? null;
+        $vk500    = $cells[11] ?? null;
+        $vk1000   = $cells[12] ?? null;
         $packshot = trim((string) ($cells[17] ?? ''));
         if ($packshot === self::NULL_IMAGE_GUID) {
             $packshot = '';
@@ -251,14 +255,24 @@ class CottonClassicsAdapter extends AbstractAdapter {
         // in sync.php geladen). Fallback 1.0 (= unveraendert), falls noch
         // nicht konfiguriert.
         //
-        // Nur Einzelpreis, keine Mengenstaffel - Cotton Classics liefert
-        // Preise PRO VARIANTE (bestätigt per Stichprobe: >80 Styles mit
-        // abweichenden Preisen zwischen Farben/Größen desselben Styles),
-        // anders als bei Makito (Preis pro Parent).
+        // Preise PRO VARIANTE (anders als Makito: Preis pro Parent).
+        // Mengenstaffel (VK10/VK100/VK500/VK1000) als Rabatt-Prozent relativ
+        // zu VKEinzel, analog MakitoAdapter, ab 01.10.2026.
         if ($vkEinzel !== null && $vkEinzel !== '') {
             $variant->costPrice = (float) $vkEinzel;
             $markupFactor = (float) ($this->config['markup_factor'] ?? 1.0);
             $variant->price = round($variant->costPrice * $markupFactor, 2);
+
+            $vkEinzelFloat = (float) $vkEinzel;
+            $tiers = [['min_quantity' => 1, 'discount_percent' => 0.0]];
+            foreach (['10' => $vk10, '100' => $vk100, '500' => $vk500, '1000' => $vk1000] as $minQty => $tierPrice) {
+                if ($tierPrice === null || $tierPrice === '' || $vkEinzelFloat <= 0) {
+                    continue;
+                }
+                $discountPercent = round((1 - ((float) $tierPrice / $vkEinzelFloat)) * 100, 2);
+                $tiers[] = ['min_quantity' => (int) $minQty, 'discount_percent' => $discountPercent];
+            }
+            $variant->priceTiers = $tiers;
         }
 
         $imageBaseUrl = rtrim((string) ($this->config['image_base_url'] ?? ''), '/');
@@ -266,8 +280,7 @@ class CottonClassicsAdapter extends AbstractAdapter {
             $variant->imageMain = $imageBaseUrl . '/' . $packshot;
         }
 
-        // Kein Stock-Feed, keine Preise (folgt als nächster Schritt) -
-        // stock/price bleiben auf ihren Defaults (0 bzw. null).
+        // Kein Stock-Feed - stock bleibt auf seinem Default (0).
 
         return $variant;
     }

@@ -14,6 +14,7 @@ class ProductVariant {
     public ?int $firstArrivalQty = null;
     public ?float $price = null;
     public ?float $costPrice = null; // Einkaufspreis, falls vom Lieferanten getrennt geliefert (aktuell nur Cotton Classics)
+    public array $priceTiers = []; // Mengenstaffel, analog Product->priceTiers (aktuell nur Cotton Classics)
     public string $imageMain = '';
     public array $imageGallery = [];
 
@@ -42,6 +43,7 @@ class ProductVariant {
             'first_arrival_qty'    => $this->firstArrivalQty,
             'price'                => $this->price,
             'cost_price'           => $this->costPrice,
+            'price_tiers'          => !empty($this->priceTiers) ? json_encode($this->priceTiers) : '',
             'image_main'           => $this->imageMain,
             'image_gallery'        => implode('|', $this->imageGallery),
         ];
