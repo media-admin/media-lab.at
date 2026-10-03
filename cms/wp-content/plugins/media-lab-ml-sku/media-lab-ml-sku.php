@@ -889,4 +889,98 @@ add_action( 'woocommerce_single_product_summary', function() {
         echo '<table class="ml-price-tiers__table"><tbody></tbody></table>';
         echo '</div>';
     }
-}, 15 );
+}, 33 ); // nach Beschreibung (32), 03.10.2026, vorher 15
+
+// ── Einzelprodukt: Reihenfolge im Summary-Bereich (03.10.2026) ───────────────
+// Produkt-Meta (Artikelnummer, Kategorie, Marke) ganz oben, vor Badge (Prio 4) und
+// Titel (Prio 5). WooCommerce-Standard war Prio 40.
+add_action( 'init', function() {
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
+    add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 1 );
+}, 20 );
+
+// Bewertungen: Der Tab erscheint nur bei offenen Kommentaren. Importierte Produkte
+// kommen mit comment_status=closed an. Fuer Produkte immer offen, ohne DB-Eingriff
+// (ueberlebt Re-Imports). Globaler Schalter bleibt WooCommerce -> Einstellungen.
+add_filter( 'comments_open', function( $open, $post_id ) {
+    return get_post_type( $post_id ) === 'product' ? true : $open;
+}, 10, 2 );
+
+// Beschreibung im Summary (Prio 6): direkt unter dem Titel (Prio 5), vor dem Meta (7). Konfigurierbare Produkte (Konfigurator-Wizard) bleiben
+// unveraendert, dort baut media-lab-woocommerce eigene Tabs.
+add_action( 'woocommerce_single_product_summary', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) { return; }
+    if ( function_exists( 'get_field' ) && get_field( 'is_configurable', $product->get_id() ) ) { return; }
+    $desc = $product->get_description();
+    if ( $desc === '' ) { return; }
+    echo '<div class="ml-product-description">' . wp_kses_post( wpautop( wptexturize( do_shortcode( $desc ) ) ) ) . '</div>';
+}, 6 );
+
+// Tab "Beschreibung" entfernen (steht jetzt im Summary), gleiche Ausnahme wie oben.
+add_filter( 'woocommerce_product_tabs', function( $tabs ) {
+    $id = get_the_ID();
+    if ( $id && function_exists( 'get_field' ) && get_field( 'is_configurable', $id ) ) { return $tabs; }
+    unset( $tabs['description'] );
+    return $tabs;
+}, 98 );
+
+// Wunschlisten-Button auf der Einzelproduktseite als Text-Button (03.10.2026).
+// Den automatischen Icon-Button des Plugins abschalten und an derselben Stelle
+// (Prio 31, nach dem Lagerstatus) mit Stil 'text' selbst ausgeben. Die Produktkarten
+// (Loop) behalten das Herz-Icon, sie laufen ueber einen eigenen Hook.
+add_filter( 'mlw_wishlist_auto_single_button', '__return_false' );
+add_action( 'woocommerce_single_product_summary', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) { return; }
+    if ( ! class_exists( 'MediaLab_Wishlist_Frontend' ) ) { return; }
+    $btn = MediaLab_Wishlist_Frontend::render_button_html( $product->get_id(), true, 'text' );
+    if ( $btn === '' ) { return; } // konfigurierbare Produkte: eigener Wizard-Button
+    // Mengenfeld fuer die Anfrage; wishlist.js liest es beim Hinzufuegen (ohne Feld: Menge 1).
+    echo '<div class="mlw-wishlist-action">'
+       . '<div class="mlw-wishlist-qty"><input type="number" class="mlw-wishlist-qty__input" value="1" min="1" step="1" inputmode="numeric" aria-label="Menge"></div>'
+       . $btn
+       . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- Button-HTML bereits escaped
+}, 31 );
+
+// Preis hinter Mengenfeld und Anfrage-Button (Prio 31), vor die Mengenstaffel (33).
+// Verschoben wird erst bei Prio 9, direkt vor dem Standard-Preis (10), und nur wenn er
+// dort noch haengt: Catalog Mode ("Preise verstecken") und der Konfigurator entfernen
+// ihn selbst bei Prio 10, diese Faelle bleiben so unberuehrt.
+add_action( 'woocommerce_single_product_summary', function() {
+    if ( has_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price' ) === 10 ) {
+        remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
+        add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 32 );
+    }
+}, 9 );
+
+// Produktkarte (Shop-Grid, Kategorien, "Aehnliche Produkte"): Marke und Verfuegbarkeit (03.10.2026).
+// Marke ueber dem Titel (Hook shop_loop_item_title, Prio 9 vor dem Titel bei 10), reiner Text
+// ohne Link, weil die Karte selbst schon ein Link ist.
+add_action( 'woocommerce_shop_loop_item_title', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) { return; }
+    $terms = get_the_terms( $product->get_id(), 'product_brand' );
+    if ( ! $terms || is_wp_error( $terms ) ) { return; }
+    echo '<span class="ml-loop-brand">' . esc_html( $terms[0]->name ) . '</span>';
+}, 9 );
+
+// Verfuegbarkeit unter dem Preis (Prio 11). Gleiche Quelle wie Einzelproduktseite und Live-Suche.
+add_action( 'woocommerce_after_shop_loop_item_title', function() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) { return; }
+
+    $av = ml_get_grid_availability( $product );
+    if ( is_array( $av ) ) {
+        $label  = $av['label'];
+        $status = $av['status'];
+    } else {
+        $wc     = $product->get_availability();
+        $label  = $wc['availability'] ?? '';
+        $status = $product->is_in_stock() ? 'default' : 'out';
+    }
+    if ( $label === '' ) { return; }
+
+    echo '<span class="ml-loop-availability ml-loop-availability--' . esc_attr( sanitize_html_class( $status ) ) . '">'
+       . esc_html( $label ) . '</span>';
+}, 11 );

@@ -291,3 +291,18 @@ $mlw-item-grid: 72px 1fr 110px 80px 110px 36px;
     @include btn-outline;
     @include btn-sm;
 }
+
+// Text-Button der Wunschliste: Standard-Button-Look des Themes (03.10.2026).
+// Doppelte Klasse statt !important, damit die Plugin-Defaults (wishlist.css) gewinnen.
+.mlw-add-to-wishlist.mlw-add-to-wishlist--text {
+    @include btn-base;
+    @include btn-primary;
+    width:  auto;
+    height: auto;
+    cursor: pointer;
+
+    // Bereits gemerkt: Outline-Variante als Statusanzeige
+    &[aria-pressed="true"] {
+        @include btn-outline;
+    }
+}
