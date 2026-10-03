@@ -61,10 +61,12 @@ class Product {
     $singleVariantPrice = '';
     $singleVariantCostPrice = '';
     $singleVariantStock = '';
+    $singleVariantPriceTiers = '';
     if (!$this->isVariable() && !empty($this->variants)) {
         $singleVariantPrice = $this->variants[0]->price;
         $singleVariantCostPrice = $this->variants[0]->costPrice;
         $singleVariantStock = $this->variants[0]->stock;
+        $singleVariantPriceTiers = !empty($this->variants[0]->priceTiers) ? json_encode($this->variants[0]->priceTiers) : '';
     }
 
     return [
@@ -85,6 +87,7 @@ class Product {
         'single_variant_cost_price' => $singleVariantCostPrice,
         'single_variant_stock'  => $singleVariantStock,
         'product_badge'         => $this->badge,
+        'single_variant_price_tiers' => $singleVariantPriceTiers,
     ];
     }
 }
