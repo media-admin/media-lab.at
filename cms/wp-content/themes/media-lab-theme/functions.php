@@ -193,3 +193,10 @@ if ( ! function_exists('medialab_toggle') ) {
         }
         return $classes;
     });
+
+// ── Einzelprodukt und Produktkarten aus dem Starter-Kit (media-lab-woocommerce ab 2.10.0) ─────────
+add_filter( 'mlw_single_product_layout', '__return_true' );        // Summary-Reihenfolge, Beschreibung im Summary
+add_filter( 'mlw_loop_product_info', '__return_true' );            // Marke + Verfuegbarkeit auf Produktkarten
+add_filter( 'mlw_wishlist_single_quantity', '__return_true' );     // Mengenfeld vor dem Anfrage-Button
+add_filter( 'mlw_wishlist_single_button_style', fn() => 'text' );  // Textbutton statt Herz
+add_filter( 'mlw_reviews_always_open', '__return_true' );          // Bewertungen fuer Produkte offen (Importe legen sie geschlossen an)
