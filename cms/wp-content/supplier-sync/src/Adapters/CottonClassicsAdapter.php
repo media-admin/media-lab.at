@@ -112,7 +112,13 @@ class CottonClassicsAdapter extends AbstractAdapter {
 
                 $data[$styleCode] = [
                     'title'       => $name1,
-                    'description' => trim($materialDescDE . "\n" . $productDescDE),
+                    'description' => trim(implode("\n", array_filter(
+                    array_map(static function ($t) {
+                        $t = trim((string) $t);
+                        return strcasecmp($t, 'NULL') === 0 ? '' : $t;   // Cotton liefert "NULL" als Platzhalter
+                    }, [$materialDescDE, $productDescDE]),
+                    static fn($t) => $t !== ''
+                ))),
                     'categories'  => $categoriesRaw !== '' ? [$categoriesRaw] : [],
                     'picture'     => $picture,
                 ];

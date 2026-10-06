@@ -28,7 +28,9 @@ export default class PriceTiers {
       const tiers = variation.ml_price_tiers;
       const basePrice = parseFloat(variation.display_price);
 
-      if (!tiers || !tiers.length || Number.isNaN(basePrice)) {
+      const hasDiscount = Array.isArray(tiers) && tiers.some((t) => parseFloat(t.discount_percent) > 0);
+
+      if (!hasDiscount || Number.isNaN(basePrice)) {
         this.container.style.display = 'none';
         return;
       }

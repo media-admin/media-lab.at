@@ -838,6 +838,19 @@ function ml_get_simple_product_price_tiers( int $product_id ): ?array {
 }
 
 /**
+ * Eine Staffel ist nur sinnvoll, wenn mindestens eine Stufe einen Rabatt hat.
+ * Sonst stuende dieselbe Zahl mehrfach untereinander (z. B. Produkte ohne Mengenrabatt).
+ */
+function ml_price_tiers_have_discount( array $tiers ): bool {
+    foreach ( $tiers as $tier ) {
+        if ( (float) ( $tier['discount_percent'] ?? 0 ) > 0 ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Container fuer die Mengenstaffel-Tabelle auf der Einzelproduktseite.
  * Prioritaet 15: nach dem Preis (10), vor der Kurzbeschreibung (20).
  * Simple Produkte: Tabelle sofort serverseitig gerendert.
@@ -853,7 +866,7 @@ add_action( 'woocommerce_single_product_summary', function() {
 
     if ( $product->is_type( 'simple' ) ) {
         $tiers = ml_get_simple_product_price_tiers( $product->get_id() );
-        if ( ! $tiers ) {
+        if ( ! $tiers || ! ml_price_tiers_have_discount( $tiers ) ) {
             return;
         }
         echo '<div class="ml-price-tiers">';
@@ -879,7 +892,7 @@ add_action( 'woocommerce_single_product_summary', function() {
         echo '<table class="ml-price-tiers__table"><tbody></tbody></table>';
         echo '</div>';
     }
-}, 33 ); // nach Beschreibung (32), 03.10.2026, vorher 15
+}, 33 ); // nach dem Preis (32), vorher 15
 
 // ── Anbindung an media-lab-woocommerce ab 2.10.0 (Einzelprodukt-Layout, Produktkarten) ──────────
 // Layout, Beschreibung, Mengenfeld, Marke und Preisreihenfolge kommen aus dem Starter-Kit (Filter im
