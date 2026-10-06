@@ -173,7 +173,9 @@ foreach ( array_chunk( $parents, 400 ) as $chunk ) {
 
         if ( $mode === 'run' ) {
             foreach ( $needed as $tax => $term_ids ) {
-                wp_set_object_terms( $pid, array_map( 'intval', $term_ids ), $tax );
+                $have = wp_get_object_terms( $pid, $tax, [ 'fields' => 'ids' ] );
+                $have = is_wp_error( $have ) ? [] : array_map( 'intval', $have );
+                wp_set_object_terms( $pid, array_values( array_unique( array_merge( $have, array_map( 'intval', $term_ids ) ) ) ), $tax );
             }
             update_post_meta( $pid, '_product_attributes', $new );
             wc_delete_product_transients( $pid );

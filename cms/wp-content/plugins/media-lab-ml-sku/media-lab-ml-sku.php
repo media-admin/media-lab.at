@@ -58,6 +58,7 @@ class MediaLab_ML_SKU_Generator {
                 // alle Varianten mit noch nicht-finaler SKU nachträglich korrigiert.
                 add_action('pmxi_import_complete', [$this, 'sweep_fix_stale_variation_skus'], 10, 1);
                 add_action('pmxi_import_complete', [$this, 'sweep_draft_products_without_image'], 10, 1);
+                add_action('pmxi_import_complete', [$this, 'sweep_variation_attributes'], 10, 1);
 
                 // INTERNER LAGERSTAND (Inventur-Feature, 2026-09): eigenes, im
                 // WP-Admin editierbares Feld 'stock_inhouse' - unabhängig vom per
@@ -286,6 +287,161 @@ class MediaLab_ML_SKU_Generator {
                 }
 
                 error_log("[ML IMAGE SWEEP] Sweep fertig - {$drafted} Produkte auf Entwurf gesetzt.");
+        }
+
+        /**
+         * Variationsmerkmale an variablen Eltern-Produkten sicherstellen (10/2026).
+         * Auswahlfelder baut WooCommerce nur aus den Merkmalen des Elternprodukts ("fuer Variationen verwenden"),
+         * die Importe liefern sie aber nicht verlaesslich (Cotton praktisch nie, MidOcean teilweise). Die Varianten
+         * tragen attribute_pa_*, daraus werden Merkmale und Begriffe am Elternprodukt abgeleitet.
+         * Nur ergaenzen: bestehende Merkmale bleiben, Begriffe werden nie neu angelegt, neue Merkmale sind
+         * unsichtbar (kein Tab "Zusaetzliche Informationen"). Nur Lieferanten-Sync-Produkte (_ml_supplier_code).
+         * Elternprodukte: die des abgeschlossenen Imports (WP All Import fuehrt sie in {prefix}pmxi_posts, bei
+         * Variantenimporten ueber post_parent), sonst alle. Idempotent, Gegenstueck zu
+         * supplier-sync/repair_variation_attributes.php (Einmal-Reparatur mit Trockenlauf).
+         */
+        public function sweep_variation_attributes($import_id) {
+                global $wpdb;
+
+                $log = function ($msg) {
+                        error_log($msg);
+                        if (defined('WP_CLI') && WP_CLI && class_exists('WP_CLI')) {
+                                WP_CLI::log($msg);
+                        }
+                };
+
+                $suppressed = $wpdb->suppress_errors(true);
+                $parents = $wpdb->get_col($wpdb->prepare(
+                        "SELECT DISTINCT IF(p.post_type = 'product_variation', p.post_parent, p.ID)
+                         FROM {$wpdb->prefix}pmxi_posts ip
+                         INNER JOIN {$wpdb->posts} p ON p.ID = ip.post_id
+                         WHERE ip.import_id = %d",
+                        (int) $import_id
+                ));
+                $wpdb->suppress_errors($suppressed);
+
+                if (empty($parents)) {
+                        $parents = $wpdb->get_col(
+                                "SELECT DISTINCT post_parent FROM {$wpdb->posts}
+                                 WHERE post_type = 'product_variation' AND post_parent > 0"
+                        );
+                }
+                $parents = array_filter(array_map('intval', (array) $parents));
+
+                if (empty($parents)) {
+                        $log("[ML ATTR SWEEP] Import {$import_id} abgeschlossen - keine Produkte mit Varianten gefunden.");
+                        return;
+                }
+
+                $stats     = ['geprueft' => 0, 'ergaenzt' => 0, 'fehlende_begriffe' => 0];
+                $termCache = [];
+
+                foreach (array_chunk($parents, 400) as $chunk) {
+                        $in    = implode(',', $chunk);
+                        $chunk = array_map('intval', $wpdb->get_col(
+                                "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_ml_supplier_code' AND post_id IN ($in)"
+                        ));
+                        if (empty($chunk)) {
+                                continue;
+                        }
+                        $in   = implode(',', $chunk);
+                        $rows = $wpdb->get_results(
+                                "SELECT p.post_parent AS parent, m.meta_key AS k, m.meta_value AS v
+                                 FROM {$wpdb->posts} p
+                                 INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID
+                                 WHERE p.post_type = 'product_variation'
+                                   AND p.post_status IN ('publish','private')
+                                   AND p.post_parent IN ($in)
+                                   AND m.meta_key LIKE 'attribute\\_pa\\_%'
+                                   AND m.meta_value <> ''"
+                        );
+
+                        $by = [];
+                        foreach ($rows as $r) {
+                                $tax = substr($r->k, strlen('attribute_'));   // attribute_pa_color -> pa_color
+                                $by[(int) $r->parent][$tax][$r->v] = true;
+                        }
+
+                        update_meta_cache('post', $chunk);
+                        update_object_term_cache($chunk, 'product');
+
+                        foreach ($chunk as $pid) {
+                                $stats['geprueft']++;
+                                $taxSlugs = $by[$pid] ?? [];
+                                if (!$taxSlugs) {
+                                        continue;
+                                }
+
+                                $existing = get_post_meta($pid, '_product_attributes', true);
+                                $existing = is_array($existing) ? $existing : [];
+                                ksort($taxSlugs);
+
+                                $new        = $existing;
+                                $needed     = [];
+                                $changed    = false;
+                                $hasMissing = false;
+
+                                foreach ($taxSlugs as $tax => $slugSet) {
+                                        if (!taxonomy_exists($tax)) {
+                                                continue;
+                                        }
+                                        $ids = [];
+                                        foreach (array_keys($slugSet) as $slug) {
+                                                $ck = $tax . '|' . $slug;
+                                                if (!array_key_exists($ck, $termCache)) {
+                                                        $term           = get_term_by('slug', $slug, $tax);
+                                                        $termCache[$ck] = $term ? (int) $term->term_id : 0;
+                                                }
+                                                if ($termCache[$ck]) {
+                                                        $ids[] = $termCache[$ck];
+                                                } else {
+                                                        $hasMissing = true;
+                                                }
+                                        }
+                                        if (empty($ids)) {
+                                                continue;
+                                        }
+
+                                        if (empty($existing[$tax]['is_variation'])) {
+                                                $entry     = (isset($existing[$tax]) && is_array($existing[$tax])) ? $existing[$tax] : [];
+                                                $new[$tax] = array_merge(
+                                                        ['name' => $tax, 'value' => '', 'position' => count($new), 'is_visible' => 0, 'is_variation' => 1, 'is_taxonomy' => 1],
+                                                        $entry,
+                                                        ['name' => $tax, 'is_variation' => 1, 'is_taxonomy' => 1]
+                                                );
+                                                $changed = true;
+                                        }
+
+                                        $assigned = wp_get_object_terms($pid, $tax, ['fields' => 'ids']);
+                                        $assigned = is_wp_error($assigned) ? [] : array_map('intval', $assigned);
+                                        if (array_diff($ids, $assigned)) {
+                                                $needed[$tax] = array_values(array_unique(array_merge($assigned, $ids)));
+                                                $changed      = true;
+                                        }
+                                }
+
+                                if ($hasMissing) {
+                                        $stats['fehlende_begriffe']++;
+                                }
+                                if (!$changed) {
+                                        continue;
+                                }
+
+                                foreach ($needed as $tax => $termIds) {
+                                        wp_set_object_terms($pid, array_map('intval', $termIds), $tax);
+                                }
+                                update_post_meta($pid, '_product_attributes', $new);
+                                if (function_exists('wc_delete_product_transients')) {
+                                        wc_delete_product_transients($pid);
+                                }
+                                $stats['ergaenzt']++;
+                        }
+                }
+
+                $log(sprintf(
+                        '[ML ATTR SWEEP] Import %s abgeschlossen - %d Eltern geprueft, %d ergaenzt, %d mit fehlenden Begriffen.',
+                        $import_id, $stats['geprueft'], $stats['ergaenzt'], $stats['fehlende_begriffe']
+                ));
         }
 
         /**
