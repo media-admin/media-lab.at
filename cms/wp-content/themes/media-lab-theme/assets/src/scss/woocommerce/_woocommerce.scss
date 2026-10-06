@@ -234,98 +234,6 @@
     }
 
     .yith-wcwl-add-to-wishlist { margin: 0 $spacing-4 $spacing-3 !important; }
-
-    // Marke ueber dem Titel
-    .ml-loop-brand {
-        display:         block;
-        padding:         $spacing-1 $spacing-4 0;
-        font-size:       var(--text-xs);
-        color:           var(--color-text-muted);
-        text-transform:  uppercase;
-        letter-spacing:  0.5px;
-        text-decoration: none;
-    }
-
-    // Titel direkt unter der Marke: oberen Abstand verkleinern
-    .ml-loop-brand + .woocommerce-loop-product__title { padding-top: $spacing-1 !important; }
-    // Abstand zur Trennlinie ueber dem Preis (nur Karten mit Verfuegbarkeitszeile)
-    .woocommerce-loop-product__link:has(.ml-loop-availability) .woocommerce-loop-product__title { padding-bottom: $spacing-4 !important; }
-
-    // Verfuegbarkeit neben dem Preis: Punkt + Text, Farbe nach Status
-    .ml-loop-availability {
-        display:         flex;
-        align-items:     center;
-        gap:             $spacing-2;
-        padding:         0 $spacing-4 $spacing-4;
-        font-size:       var(--text-sm);
-        color:           var(--color-text-muted);
-        text-decoration: none;
-
-        &::before {
-            content:       '';
-            flex-shrink:   0;
-            width:         8px;
-            height:        8px;
-            border-radius: $radius-full;
-            background:    var(--color-border);
-        }
-
-        &--in_house::before { background: $color-info; }
-        &--supplier::before { background: $color-success; }
-        &--out::before      { background: $color-error; }
-    }
-
-    // Das Ribbon "Kurzfristig lieferbar" im Bild entfaellt, die Textzeile zeigt den Status
-    .ml-availability-badge { display: none !important; }
-
-    // Kartenlink als Raster: Bild, Marke und Titel ueber die volle Breite, Preis links und
-    // Verfuegbarkeit rechts in einer Zeile. Absolut positionierte Badges bleiben ausserhalb des Rasters.
-    // Die Unterstreichung kam vom Link um die ganze Karte und liess sich im Kind nicht abschalten.
-    .woocommerce-loop-product__link {
-        display:               grid !important;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-content:         start;
-        padding-bottom:        $spacing-3;
-        text-decoration:       none !important;
-
-        > * { grid-column: 1 / -1; }
-
-        > .price {
-            grid-column: 1;
-            align-self:  center;
-            padding:     $spacing-3 $spacing-2 0 $spacing-4 !important;
-        }
-
-        > .ml-loop-availability {
-            grid-column:  2;
-            align-self:   center;
-            justify-self: end;
-            text-align:   right;
-            padding:      $spacing-3 $spacing-4 0 0;
-        }
-    }
-
-    // Wunschlisten-Herz ueber dem Bild, oben rechts (Badges sitzen links)
-    .mlw-add-to-wishlist--loop {
-        position:        absolute !important;
-        top:             $spacing-3 !important;
-        right:           $spacing-3 !important;
-        left:            auto !important;
-        bottom:          auto !important;
-        z-index:         3 !important;
-        display:         flex !important;
-        align-items:     center !important;
-        justify-content: center !important;
-        width:           36px !important;
-        height:          36px !important;
-        margin:          0 !important;
-        padding:         0 !important;
-        border-radius:   $radius-full !important;
-        background:      var(--color-card-bg) !important;
-
-        // Icon in Textfarbe des Themes; der aktive Zustand behaelt die Farbe des Plugins
-        &:not(.is-active) { color: var(--color-text) !important; }
-    }
 }
 
 // ── 4. Einzelprodukt ─────────────────────────────────────────────────────────
@@ -358,71 +266,17 @@
             }
         }
 
-        // Galerie ist ein Grid (columns-4): Hauptbild und Thumbs über alle Spalten spannen
-        .woocommerce-product-gallery__wrapper,
-        .flex-control-thumbs { grid-column: 1 / -1; }
-
-        .woocommerce-product-gallery__wrapper,
-        .woocommerce-product-gallery__image { width: 100%; margin: 0; }
-
-        // Lupe aus dem Grid-Fluss nehmen, oben rechts im Bild
-        .woocommerce-product-gallery__trigger {
-            // WooCommerce gibt ein Emoji aus - ausblenden, stattdessen Linien-Lupe wie das Such-Icon
-            > span { display: none; }
-
-            &::before {
-                content:          '';
-                display:          block;
-                width:            18px;
-                height:           18px;
-                background-color: var(--color-text);
-                -webkit-mask:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") center / contain no-repeat;
-                mask:             url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") center / contain no-repeat;
-            }
-
-            position:        absolute;
-            top:             $spacing-3;
-            right:           $spacing-3;
-            z-index:         2;
-            display:         flex;
-            align-items:     center;
-            justify-content: center;
-            width:           36px !important;
-            left:            auto !important;
-            height:          36px;
-            border-radius:   $radius-full;
-            background:      var(--color-card-bg);
-            text-decoration: none;
-        }
-        .woocommerce-product-gallery__image a { display: block; }
-
-        img {
-            display:       block;
-            width:         100%;
-            height:        auto;
-            border-radius: $radius-md;
-        }
+        img { border-radius: $radius-md; }
     }
 
     .summary { flex: 1; min-width: 0; }
 
     div.product {
         display:     flex;
-        flex-wrap:   wrap;
         gap:         $spacing-8;
         align-items: flex-start;
 
-        // Alles untereinander in voller Breite (Tabs, Ähnliche Produkte, Upsells ...)
-        > * { flex: 0 0 100%; min-width: 0; }
-
-        // Nur Galerie und Summary stehen ab md nebeneinander (je die Hälfte abzüglich Gap)
-        > .woocommerce-product-gallery,
-        > .entry-summary { flex: 1 1 calc((100% - #{$spacing-8}) / 2); }
-
-        @include respond-below('md') {
-            > .woocommerce-product-gallery,
-            > .entry-summary { flex-basis: 100%; }
-        }
+        @include respond-below('md') { flex-direction: column; }
     }
 
     .ml-product-badge--inline {
@@ -441,54 +295,6 @@
         &.ml-product-badge--bestseller,
         &.ml-product-badge--limited,
         &.ml-product-badge--eco        { background: $color-gray-400; }
-    }
-
-    // Wunschliste/Anfrage: Mengenfeld + Button in einer Zeile
-    .mlw-wishlist-action {
-        display:       flex;
-        align-items:   center;
-        gap:           $spacing-3;
-        flex-wrap:     wrap;
-        margin-bottom: $spacing-4;
-
-        .mlw-wishlist-qty {
-            display:       flex;
-            align-items:   center;
-            border:        2px solid var(--color-border);
-            border-radius: $radius-md;
-            overflow:      hidden;
-            background:    var(--color-input-bg);
-        }
-
-        input.mlw-wishlist-qty__input {
-            width:       72px;
-            height:      48px;
-            border:      none;
-            text-align:  center;
-            font-size:   var(--text-base);
-            font-weight: $font-weight-semibold;
-            background:  transparent;
-            color:       var(--color-text);
-            font-family: inherit;
-
-            &:focus { outline: none; }
-            &::-webkit-inner-spin-button,
-            &::-webkit-outer-spin-button { appearance: none; }
-        }
-
-        .mlw-add-to-wishlist { height: 48px; padding: 0 $spacing-6; }
-
-        // Bereits gemerkt: Menge steht in der Wunschliste, Feld ausblenden
-        &:has(.mlw-add-to-wishlist[aria-pressed="true"]) .mlw-wishlist-qty { display: none; }
-    }
-
-    .ml-product-description {
-        margin:      $spacing-4 0;
-        font-size:   var(--text-base);
-        color:       var(--color-text-muted);
-        line-height: 1.7;
-
-        p { margin: 0 0 $spacing-3; }
     }
 
     .ml-price-tiers {
@@ -600,15 +406,11 @@
     .product_meta {
         font-size:      var(--text-sm);
         color:          var(--color-text-muted);
-        border-bottom:  1px solid var(--color-border);
-        padding-bottom: $spacing-3;
-        margin-bottom:  $spacing-3;
+        border-top:     1px solid var(--color-border);
+        padding-top:    $spacing-4;
         display:        flex;
-        // row-reverse dreht die DOM-Reihenfolge (Artikelnummer, Kategorie, Marke) zu
-        // Marke, Kategorie, Artikelnummer; flex-end packt die Gruppe wieder nach links.
-        flex-flow:       row-reverse wrap;
-        justify-content: flex-end;
-        gap:            $spacing-1 $spacing-5;
+        flex-direction: column;
+        gap:            $spacing-1;
 
         span.sku_wrapper,
         span.posted_in,
@@ -618,7 +420,7 @@
     }
 
     .woocommerce-tabs {
-        margin-top: 0;
+        margin-top: $spacing-10;
 
         ul.tabs {
             display:       flex;
@@ -657,6 +459,29 @@
             h2 { font-size: var(--text-xl); color: var(--color-text); margin-bottom: $spacing-4; }
             p  { margin-bottom: $spacing-3; }
             table { width: 100%; }
+        }
+    }
+
+    #reviews {
+        .comment-form-rating {
+            margin-bottom: $spacing-4;
+            label { font-weight: $font-weight-semibold; font-size: var(--text-sm); }
+            .stars a { color: $color-primary; font-size: var(--text-lg); }
+        }
+
+        .comment_container {
+            display:       flex;
+            gap:           $spacing-4;
+            padding:       $spacing-5 0;
+            border-bottom: 1px solid var(--color-border);
+
+            img.avatar { border-radius: $radius-full; width: 48px; height: 48px; flex-shrink: 0; }
+        }
+
+        .comment-text {
+            flex: 1;
+            .woocommerce-review__author { font-weight: $font-weight-semibold; }
+            .woocommerce-review__date   { font-size: var(--text-sm); color: var(--color-text-muted); }
         }
     }
 
@@ -1470,231 +1295,5 @@
 // ---------------------------------------------------------------------------
 
 .wc-filter-sidebar__footer { display: none; }
-
-// =============================================================================
-// Rezensionen und Sterne (03.10.2026)
-// Nur Theme-Tokens und Mixins, keine Icon-Schrift, keine festen Farben. Die Sterne
-// sind SVG-Masken, die Farbe kommt aus background-color (Dark-Mode-faehig).
-// =============================================================================
-
-$ml-star-svg:  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'/%3E%3C/svg%3E";
-$ml-star-size: 16px;
-
-@mixin ml-star-mask($size) {
-    -webkit-mask-image:  url($ml-star-svg);
-    mask-image:          url($ml-star-svg);
-    -webkit-mask-size:   $size $size;
-    mask-size:           $size $size;
-    -webkit-mask-repeat: repeat-x;
-    mask-repeat:         repeat-x;
-}
-
-@mixin ml-form-field {
-    width:         100%;
-    padding:       0 $spacing-4;
-    border:        2px solid var(--color-border);
-    border-radius: $radius-md;
-    background:    var(--color-input-bg);
-    color:         var(--color-text);
-    font-family:   inherit;
-    font-size:     var(--text-base);
-    transition:    border-color $transition-base, box-shadow $transition-base;
-    appearance:    none;
-
-    &:focus { outline: none; border-color: $color-primary; box-shadow: 0 0 0 4px rgba($color-primary, 0.12); }
-}
-
-// Sterne-Anzeige (Bewertungsliste, Produktkarten): Breite der gefuellten Sterne kommt inline (%)
-.woocommerce .star-rating,
-.woocommerce-page .star-rating {
-    position:    relative;
-    display:     block;
-    width:       $ml-star-size * 5;
-    height:      $ml-star-size;
-    overflow:    hidden;
-    font-size:   0;   // Text "Bewertet mit ..." bleibt fuer Screenreader (role=img, aria-label)
-    line-height: 0;
-
-    &::before {
-        content:          '';
-        position:         absolute;
-        inset:            0;
-        background-color: var(--color-border);
-        @include ml-star-mask($ml-star-size);
-    }
-
-    > span {
-        position: absolute;
-        top:      0;
-        left:     0;
-        height:   100%;
-        overflow: hidden;
-
-        &::before {
-            content:          '';
-            position:         absolute;
-            top:              0;
-            left:             0;
-            width:            $ml-star-size * 5;
-            height:           100%;
-            background-color: $color-primary;
-            @include ml-star-mask($ml-star-size);
-        }
-    }
-}
-
-.single-product #reviews {
-
-    .woocommerce-Reviews-title {
-        margin:      0 0 $spacing-4;
-        font-size:   var(--text-xl);
-        font-weight: $font-weight-bold;
-        color:       var(--color-text);
-    }
-
-    .woocommerce-noreviews { margin: 0; font-size: var(--text-base); color: var(--color-text-muted); }
-
-    ol.commentlist { list-style: none; margin: 0; padding: 0; }
-
-    .comment_container {
-        display:       flex;
-        gap:           $spacing-4;
-        padding:       $spacing-5 0;
-        border-bottom: 1px solid var(--color-border);
-
-        img.avatar { border-radius: $radius-full; width: 48px; height: 48px; flex-shrink: 0; }
-    }
-
-    .comment-text {
-        flex:      1;
-        min-width: 0;
-
-        .star-rating { margin-bottom: $spacing-1; }
-        .meta { margin: 0 0 $spacing-2; font-size: var(--text-sm); color: var(--color-text-muted); }
-        .woocommerce-review__author { font-weight: $font-weight-semibold; color: var(--color-text); }
-        .woocommerce-review__dash { display: none; }
-        .woocommerce-review__published-date { margin-left: $spacing-2; }
-        .description p { margin: 0; line-height: 1.7; color: var(--color-text-muted); }
-    }
-
-    #review_form_wrapper { margin-top: $spacing-6; }
-
-    // Formular als Karte
-    #respond {
-        padding:       $spacing-6;
-        background:    var(--color-card-bg);
-        border:        1px solid var(--color-border);
-        border-radius: $radius-lg;
-    }
-
-    .comment-reply-title {
-        display:       block;
-        margin-bottom: $spacing-3;
-        font-size:     var(--text-xl);
-        font-weight:   $font-weight-bold;
-        color:         var(--color-text);
-    }
-
-    .comment-form {
-
-        p { margin: 0 0 $spacing-4; }
-
-        .comment-notes { margin-bottom: $spacing-5; font-size: var(--text-sm); color: var(--color-text-muted); }
-
-        label {
-            display:       block;
-            margin-bottom: $spacing-1;
-            font-size:     var(--text-sm);
-            font-weight:   $font-weight-semibold;
-            color:         var(--color-text);
-
-            .required { color: $color-error; }
-        }
-
-        input[type="text"],
-        input[type="email"] { @include ml-form-field; height: 48px; }
-
-        textarea {
-            @include ml-form-field;
-            min-height: 140px;
-            padding:    $spacing-3 $spacing-4;
-            resize:     vertical;
-        }
-
-        // Checkbox wie in der Filterleiste (accent-color), Label daneben
-        .comment-form-cookies-consent {
-            display:     flex;
-            align-items: flex-start;
-            gap:         $spacing-2;
-
-            input[type="checkbox"] {
-                flex-shrink:  0;
-                width:        1.125rem;
-                height:       1.125rem;
-                margin-top:   0.15rem;
-                accent-color: $color-primary;
-                cursor:       pointer;
-            }
-
-            label {
-                display:     inline;
-                margin:      0;
-                font-weight: 400;
-                color:       var(--color-text-muted);
-                cursor:      pointer;
-            }
-        }
-
-        .form-submit { margin: 0; }
-
-        input#submit {
-            @include btn-base;
-            @include btn-primary;
-            height:  48px;
-            padding: 0 $spacing-6;
-            cursor:  pointer;
-        }
-    }
-
-    // Sterne-Eingabe: Links werden zu Sternen, Hover fuellt bis zum Stern, Klick bleibt stehen
-    .comment-form-rating {
-
-        .stars {
-            margin:      0;
-            line-height: 0;
-
-            span { display: inline-flex; }
-
-            a {
-                position:  relative;
-                display:   block;
-                width:     32px;
-                height:    32px;
-                overflow:  hidden;
-                font-size: 0;
-
-                &::before {
-                    content:             '';
-                    position:            absolute;
-                    inset:               4px;
-                    background-color:    var(--color-border);
-                    transition:          background-color $transition-base;
-                    @include ml-star-mask(24px);
-                    -webkit-mask-repeat: no-repeat;
-                    mask-repeat:         no-repeat;
-                }
-
-                &:focus-visible { outline: 2px solid $color-primary; border-radius: $radius-sm; }
-            }
-
-            a:hover::before,
-            a:has(~ a:hover)::before { background-color: $color-primary; }
-
-            // Gewaehlter Wert (WooCommerce setzt .active bzw. aria-checked), nur ohne Hover
-            span:not(:hover) a.active::before,
-            span:not(:hover) a[aria-checked="true"]::before,
-            span:not(:hover) a:has(~ a.active)::before,
-            span:not(:hover) a:has(~ a[aria-checked="true"])::before { background-color: $color-primary; }
-        }
-    }
-}
+.woocommerce ul.products li.product .ml-availability-badge,
+.woocommerce-page ul.products li.product .ml-availability-badge { display: none !important; }
