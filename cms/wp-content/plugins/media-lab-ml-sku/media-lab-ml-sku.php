@@ -1033,6 +1033,15 @@ add_filter( 'mlw_wishlist_unit_price', function ( $price, $item, $source, $quant
 }, 10, 4 );
 
 /**
+ * Mengeneinheit hinter der Zahl im Lagertext ("1.250 Stück vorrätig", media-lab-woocommerce ab 2.13.0,
+ * Filter mlw_stock_unit). Die Lieferanten-Feeds liefern keine Einheit, die Produkte werden stückweise verkauft.
+ * Eine Einheit am Produkt (z. B. aus Germanized, falls einmal im Einsatz) hat Vorrang.
+ */
+add_filter( 'mlw_stock_unit', function ( $unit ) {
+    return $unit !== '' ? $unit : 'Stück';
+} );
+
+/**
  * Container fuer die Mengenstaffel-Tabelle auf der Einzelproduktseite.
  * Prioritaet 15: nach dem Preis (10), vor der Kurzbeschreibung (20).
  * Simple Produkte: Tabelle sofort serverseitig gerendert.
