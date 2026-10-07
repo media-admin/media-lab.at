@@ -151,8 +151,9 @@ const initApp = async () => {
     await import('./components/load-more');
   }
 
-  // Mengenstaffel (Cotton Classics): Container aus PHP → .ml-price-tiers--variable
-  if (has('.ml-price-tiers--variable')) {
+  // Mengenstaffel (Cotton Classics): Container aus PHP → .ml-price-tiers--variable (variable Produkte)
+  // oder .ml-price-tiers[data-ml-tiers] (einfache Produkte, Preis passt sich der Menge an)
+  if (has('.ml-price-tiers--variable') || has('.ml-price-tiers[data-ml-tiers]')) {
     const { default: PriceTiers } = await import('./components/price-tiers');
     safeInit('PriceTiers', () => new PriceTiers());
   }

@@ -1297,3 +1297,17 @@
 .wc-filter-sidebar__footer { display: none; }
 .woocommerce ul.products li.product .ml-availability-badge,
 .woocommerce-page ul.products li.product .ml-availability-badge { display: none !important; }
+
+// Aktive Staffelstufe (price-tiers.js markiert sie passend zur Menge im Mengenfeld)
+.ml-price-tiers__table tr.is-active td {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+// Gesamtsumme unter dem Preis (price-tiers.js: Stueckpreis mal Menge)
+.ml-price-total {
+    margin-top: -$spacing-2;      // naeher an den Stueckpreis
+    margin-bottom: $spacing-6;    // mehr Luft zur Staffel-Tabelle
+    font-weight: 600;
+    color: var(--color-text);
+}

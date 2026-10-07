@@ -1007,6 +1007,32 @@ function ml_price_tiers_have_discount( array $tiers ): bool {
 }
 
 /**
+ * Mengenstaffel in der Wunschliste (media-lab-woocommerce ab 2.12.0, Filter mlw_wishlist_unit_price):
+ * Stueckpreis nach Menge, gleiche Rechnung wie die Tabelle auf der Produktseite. Einfache Produkte und
+ * Varianten tragen die Staffel in _ml_price_tiers_raw. $source ist die Variante bzw. das einfache Produkt.
+ */
+add_filter( 'mlw_wishlist_unit_price', function ( $price, $item, $source, $quantity ) {
+    if ( $price === null || ! $source instanceof WC_Product ) {
+        return $price;
+    }
+    $raw   = get_post_meta( $source->get_id(), '_ml_price_tiers_raw', true );
+    $tiers = $raw ? json_decode( $raw, true ) : null;
+    if ( ! is_array( $tiers ) || ! ml_price_tiers_have_discount( $tiers ) ) {
+        return $price;
+    }
+    $discount = 0.0;
+    $best_min = -1;
+    foreach ( $tiers as $tier ) {
+        $min = (int) ( $tier['min_quantity'] ?? 0 );
+        if ( (int) $quantity >= $min && $min > $best_min ) {
+            $best_min = $min;
+            $discount = (float) ( $tier['discount_percent'] ?? 0 );
+        }
+    }
+    return $discount > 0 ? round( (float) $price * ( 1 - $discount / 100 ), 2 ) : $price;
+}, 10, 4 );
+
+/**
  * Container fuer die Mengenstaffel-Tabelle auf der Einzelproduktseite.
  * Prioritaet 15: nach dem Preis (10), vor der Kurzbeschreibung (20).
  * Simple Produkte: Tabelle sofort serverseitig gerendert.
@@ -1025,7 +1051,8 @@ add_action( 'woocommerce_single_product_summary', function() {
         if ( ! $tiers || ! ml_price_tiers_have_discount( $tiers ) ) {
             return;
         }
-        echo '<div class="ml-price-tiers">';
+        // Staffel und Einzelpreis fuer price-tiers.js: der Preis oben passt sich der Menge im Mengenfeld an
+        printf( '<div class="ml-price-tiers" data-ml-base="%s" data-ml-tiers="%s">', esc_attr( (string) (float) $product->get_price() ), esc_attr( wp_json_encode( $tiers ) ) );
         echo '<h3 class="ml-price-tiers__title">' . esc_html__( 'Mengenrabatt', 'media-lab-ml-sku' ) . '</h3>';
         echo '<table class="ml-price-tiers__table"><tbody>';
         $basePrice = (float) $product->get_price();
