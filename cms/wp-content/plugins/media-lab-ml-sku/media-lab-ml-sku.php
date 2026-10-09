@@ -769,6 +769,15 @@ function ml_get_on_request_availability( $product ): ?array {
         return null;
     }
 
+    // Restposten (Auslaufware): kein "Lieferzeit auf Anfrage", es bleibt beim WooCommerce-Standard ("Nicht vorrätig")
+    $badge_id = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+    if ( function_exists( 'ml_get_product_badge' ) ) {
+        $badge = ml_get_product_badge( $badge_id );
+        if ( $badge && $badge['value'] === 'restposten' ) {
+            return null;
+        }
+    }
+
     $label = trim( (string) apply_filters( 'ml_availability_on_request_text', MediaLab_Inquiry_Settings::wording( 'availability_on_request' ), $product ) );
     if ( $label === '' ) {
         return null;
