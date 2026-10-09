@@ -753,7 +753,32 @@ function ml_get_product_availability( $product ): ?array {
         ];
     }
 
-    return null;
+    // Fall 3: kein Bestand. Mit hinterlegtem Text ("Lieferzeit auf Anfrage") statt "Nicht vorrätig".
+    return ml_get_on_request_availability( $product );
+}
+
+/**
+ * Hinweistext fuer Produkte ohne Bestand (Einstellung "Verfügbarkeit: ohne Bestand", pro Sprache pflegbar).
+ * null = kein Text hinterlegt: WooCommerce-Standard ("Nicht vorrätig") bleibt.
+ * Filter ml_availability_on_request_text( $text, $product ) erlaubt Ausnahmen (leerer Text = Standard).
+ *
+ * @param WC_Product $product
+ */
+function ml_get_on_request_availability( $product ): ?array {
+    if ( ! $product instanceof WC_Product || ! class_exists( 'MediaLab_Inquiry_Settings' ) ) {
+        return null;
+    }
+
+    $label = trim( (string) apply_filters( 'ml_availability_on_request_text', MediaLab_Inquiry_Settings::wording( 'availability_on_request' ), $product ) );
+    if ( $label === '' ) {
+        return null;
+    }
+
+    return [
+        'status'      => 'on_request',
+        'label'       => $label,
+        'badge_class' => 'ml-availability--on-request',
+    ];
 }
 
 /**
@@ -811,7 +836,7 @@ function ml_get_grid_availability( WC_Product $product ): ?array {
             ];
         }
 
-        return null;
+        return ml_get_on_request_availability( $product );
     }
 
     return ml_get_product_availability( $product );
