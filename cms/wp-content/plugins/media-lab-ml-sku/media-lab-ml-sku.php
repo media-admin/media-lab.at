@@ -733,8 +733,11 @@ function ml_get_product_availability( $product ): ?array {
         if ( $lead_time_raw ) {
             // Format TT-MM-JJJJ (Makito). Bei unbekanntem Format wird das
             // Datum stillschweigend ignoriert, Label bleibt "Lieferbar".
-            $date = DateTime::createFromFormat( 'd-m-Y', trim( (string) $lead_time_raw ) );
-            if ( $date instanceof DateTime ) {
+            // Ein Datum von heute oder aus der Vergangenheit sagt nichts mehr ueber
+            // eine Lieferung aus ("Lieferbar ab 30.09." waere falsch): dann bleibt es bei "Lieferbar".
+            $date  = DateTime::createFromFormat( '!d-m-Y', trim( (string) $lead_time_raw ), wp_timezone() );
+            $today = new DateTime( 'today', wp_timezone() );
+            if ( $date instanceof DateTime && $date > $today ) {
                 $label = sprintf(
                     /* translators: %s: Datum im Format TT.MM. */
                     __( 'Lieferbar ab %s', 'media-lab-ml-sku' ),
@@ -1058,6 +1061,10 @@ add_action( 'woocommerce_single_product_summary', function() {
     if ( $product->is_type( 'simple' ) ) {
         $tiers = ml_get_simple_product_price_tiers( $product->get_id() );
         if ( ! $tiers || ! ml_price_tiers_have_discount( $tiers ) ) {
+            return;
+        }
+        // Konfigurierbare Produkte haben im Wizard eine eigene Staffel-Tabelle (Schritt Menge): nicht doppelt ausgeben
+        if ( function_exists( 'get_field' ) && get_field( 'is_configurable', $product->get_id() ) ) {
             return;
         }
         // Staffel und Einzelpreis fuer price-tiers.js: der Preis oben passt sich der Menge im Mengenfeld an
