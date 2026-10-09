@@ -1231,3 +1231,33 @@ function ml_sweep_clearance_visibility( bool $dry_run = false ): array {
 add_action( 'pmxi_import_complete', function () {
     ml_sweep_clearance_visibility();
 }, 99 );
+
+/**
+ * Suchkarte (Starter-Kit result-card.php): Artikelnummer und Verfügbarkeit
+ * statt Datum, Link-Text "Zum Produkt".
+ */
+add_filter( 'ml_search_card_meta', function ( $meta, $post_type, $post_id ) {
+    if ( $post_type !== 'product' || ! function_exists( 'wc_get_product' ) ) {
+        return $meta;
+    }
+    $product = wc_get_product( $post_id );
+    if ( ! $product instanceof WC_Product ) {
+        return $meta;
+    }
+
+    $sku = $product->get_sku();
+    if ( $sku !== '' ) {
+        $meta[] = [ 'label' => __( 'Art.-Nr.', 'media-lab-ml-sku' ), 'value' => $sku ];
+    }
+
+    $availability = function_exists( 'ml_get_grid_availability' ) ? ml_get_grid_availability( $product ) : null;
+    if ( $availability ) {
+        $meta[] = [ 'label' => __( 'Verfügbarkeit', 'media-lab-ml-sku' ), 'value' => $availability['label'] ];
+    }
+
+    return $meta;
+}, 10, 3 );
+
+add_filter( 'ml_search_card_link_label', function ( $label, $post_type ) {
+    return $post_type === 'product' ? __( 'Zum Produkt', 'media-lab-ml-sku' ) : $label;
+}, 10, 2 );
