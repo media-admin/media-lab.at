@@ -1135,3 +1135,99 @@ add_filter( 'mlw_loop_availability', function ( $data, $product ) {
     $av = ml_get_grid_availability( $product );
     return is_array( $av ) ? [ 'label' => $av['label'], 'status' => $av['status'] ] : $data;
 }, 10, 2 );
+
+/* ============================================================
+ * Ausverkaufte Restposten aus Katalog und Suche ausblenden (ab 09.10.2026)
+ *
+ * Restposten (product_badge = restposten) ohne Bestand bekommen die WooCommerce-
+ * Sichtbarkeit "versteckt" (exclude-from-catalog + exclude-from-search). Die
+ * Produktseite bleibt unter ihrer Adresse erreichbar (Links, Google, Wunschlisten),
+ * zeigt "Nicht vorrätig" und die ähnlichen Produkte. Wird ein Restposten wieder
+ * lieferbar oder verliert das Badge, wird er wieder eingeblendet.
+ *
+ * Nur was dieser Sweep selbst ausgeblendet hat (Marker _ml_auto_hidden) wird auch
+ * wieder eingeblendet. Von Hand versteckte Produkte bleiben unberührt.
+ * Läuft nach jedem WP-All-Import (pmxi_import_complete). Manuell/Trockenlauf:
+ *   wp eval 'var_dump( ml_sweep_clearance_visibility( true ) );'
+ *
+ * @param bool $dry_run true = nur zählen, nichts ändern
+ * @return array{hidden:int[],restored:int[],kept_manual:int}
+ * ============================================================ */
+function ml_sweep_clearance_visibility( bool $dry_run = false ): array {
+    global $wpdb;
+
+    $terms  = [ 'exclude-from-catalog', 'exclude-from-search' ];
+    $result = [ 'hidden' => [], 'restored' => [], 'kept_manual' => 0 ];
+
+    $base = "FROM {$wpdb->posts} p
+             JOIN {$wpdb->postmeta} b ON b.post_id = p.ID AND b.meta_key = 'product_badge' AND b.meta_value = 'restposten'
+             JOIN {$wpdb->postmeta} s ON s.post_id = p.ID AND s.meta_key = '_stock_status' AND s.meta_value = 'outofstock'
+             WHERE p.post_type = 'product' AND p.post_status = 'publish'";
+
+    // Auszublenden: ausverkaufte Restposten, die dieser Sweep noch nicht ausgeblendet hat
+    $to_hide = $wpdb->get_col(
+        "SELECT p.ID $base AND NOT EXISTS (
+            SELECT 1 FROM {$wpdb->postmeta} h WHERE h.post_id = p.ID AND h.meta_key = '_ml_auto_hidden'
+        )"
+    );
+
+    // Wieder einzublenden: von diesem Sweep ausgeblendet, aber kein ausverkaufter Restposten mehr
+    $to_restore = $wpdb->get_col(
+        "SELECT h.post_id FROM {$wpdb->postmeta} h
+         WHERE h.meta_key = '_ml_auto_hidden' AND h.post_id NOT IN ( SELECT p.ID $base )"
+    );
+
+    if ( ! $dry_run ) {
+        wp_defer_term_counting( true );
+    }
+
+    foreach ( (array) $to_hide as $id ) {
+        $id = (int) $id;
+        if ( has_term( $terms, 'product_visibility', $id ) ) {
+            $result['kept_manual']++; // schon (teilweise) von Hand versteckt: nicht anfassen
+            continue;
+        }
+        $result['hidden'][] = $id;
+        if ( ! $dry_run ) {
+            wp_set_object_terms( $id, $terms, 'product_visibility', true );
+            update_post_meta( $id, '_ml_auto_hidden', 1 );
+            if ( function_exists( 'wc_delete_product_transients' ) ) {
+                wc_delete_product_transients( $id );
+            }
+        }
+    }
+
+    foreach ( (array) $to_restore as $id ) {
+        $id = (int) $id;
+        $result['restored'][] = $id;
+        if ( ! $dry_run ) {
+            wp_remove_object_terms( $id, $terms, 'product_visibility' );
+            delete_post_meta( $id, '_ml_auto_hidden' );
+            if ( function_exists( 'wc_delete_product_transients' ) ) {
+                wc_delete_product_transients( $id );
+            }
+        }
+    }
+
+    if ( ! $dry_run ) {
+        wp_defer_term_counting( false );
+
+        if ( ( $result['hidden'] || $result['restored'] ) && function_exists( 'wc_get_logger' ) ) {
+            wc_get_logger()->info(
+                sprintf(
+                    'Restposten-Sichtbarkeit: %d ausgeblendet, %d wieder eingeblendet, %d von Hand versteckt (unberührt)',
+                    count( $result['hidden'] ),
+                    count( $result['restored'] ),
+                    $result['kept_manual']
+                ),
+                [ 'source' => 'ml-sku' ]
+            );
+        }
+    }
+
+    return $result;
+}
+
+add_action( 'pmxi_import_complete', function () {
+    ml_sweep_clearance_visibility();
+}, 99 );
