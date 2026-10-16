@@ -16,8 +16,34 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.4] - 2026-10-16
+
+### Changed
+- **Mobiles Menü: Such-Auslöser und Wunschliste** erscheinen als Textzeilen wie die übrigen Einträge (Höhe 3 rem, gleicher Einzug und gleiche Schrift), unabhängig davon, ob das Plugin Icon oder Text rendert. Ohne Label zeigt der Such-Auslöser den Text seines `aria-label`, die Wunschliste ihren `aria-label` mit dem Zähler als Badge rechts (`_navigation.scss`). Desktop unverändert
+
+## [1.18.3] - 2026-10-16
+
+### Changed
+- **Mobiler Header (unter 992 px, Burger statt Desktop-Menü):** flach (Mindesthöhe 4rem statt bisher ca. 140 px durch doppeltes Padding) und sticky. `--header-height` wird weiterhin per Skript aus der echten Höhe gesetzt, Hero-Offset, Menü und Theme-Switcher folgen automatisch. Pro Projekt überschreibbar mit `--header-mobile-height` und `--header-mobile-position` (`relative` schaltet das Mitscrollen ab) (`_navigation.scss`)
+- **Mobiles Menü kompakt:** Zeilenhöhe 48 px (Untermenüs 44 px, WCAG 2.5.5) statt ca. 90 px, kleinerer Rahmen, Höhe `100dvh`, `overscroll-behavior: contain`. Scrollen bleibt als Rückfall bei vielen Einträgen
+- **Theme-Switcher mobil:** unter 992 px links neben dem Burger im Header (44 px, mittig zur Header-Höhe, über dem Header), statt darunter zu schweben (`_theme-toggle.scss`). Position pro Projekt mit `--theme-toggle-mobile-top` und `--theme-toggle-mobile-right` anpassbar. Desktop unverändert
+
+### Fixed
+- **Mobiles Menü:** Untermenüs werden angezeigt, sobald der Listenpunkt `.is-open` trägt (`.menu-item-has-children.is-open > .sub-menu`). `navigation.js` setzt die Klasse am Listenpunkt, das CSS erwartete sie am `.sub-menu`
+- **Logo mobil:** Ein langer Seitenname läuft nicht mehr unter Burger und Theme-Switcher, er wird mit „…" gekürzt (`.site-logo` reserviert den Platz)
+- **Suche mobil:** Das Suchfeld bekam keine `min-width: 0` und schob den Button „Suchen" aus dem Bildschirm (`serp-search-form`). Im Seitenkopf der Suche ist der Button unter 768 px nur noch visuell ausgeblendet (Enter und Screenreader funktionieren weiter), das Feld nutzt die volle Breite
+- **Suche mit Produktfiltern:** Weniger Abstand zwischen Seitenkopf und Filterleiste (unter 992 px), mehr Abstand über der Trefferanzeige und über dem ersten Ergebnis, die Trefferanzeige schließt unter 992 px bündig mit dem Schalter „Filter" ab (`_search-results.scss`)
+
+### Hinweis
+- Projekte mit Hero direkt unter dem Header: nach dem Abgleich mobil prüfen, der Header ist jetzt kürzer und sticky. Mitscrollen abschalten: `:root { --header-mobile-position: relative; }`
+
+## [1.18.2] - 2026-10-16
+
 ### Added
 - `ajax-search.js`, `_ajax-search.scss`: optionale Treffer-Felder `availability_badge`, `product_badge_label` und `product_badge_class` (Badge unter dem Preis, z. B. von einem Projekt-Plugin über den Filter `media_lab_ajax_search_result`). Ohne die Felder ändert sich nichts. Abgeleitet aus dem Stand in at.media-lab
+
+### Fixed
+- Suche: Der Schalter „Filter" der Produktfilter (`.wc-filter-bar__toggle`, Markup aus media-lab-woocommerce ab 2.17.0) hatte keine Stile und erschien auf dem Desktop als ungestylter Knopf. Unterhalb von 992 px klappt er die Filtergruppen jetzt auf (mit Zähler der aktiven Filter und Pfeil), ab 992 px ist er ausgeblendet und die Gruppen stehen als Pills neben der Sortierung (`_search-results.scss`, abgeleitet aus juwelier-janecka)
 
 ## [1.18.1] - 2026-10-15
 
