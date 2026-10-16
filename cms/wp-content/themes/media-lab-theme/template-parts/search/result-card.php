@@ -24,7 +24,7 @@
  *   ml_search_card_link_label( string $label, string $post_type, int $post_id )
  *       Link-Text der Karte je Inhaltstyp (Standard: "Mehr erfahren").
  *
- * @package media-lab-theme
+ * @package custom-theme
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -99,7 +99,7 @@ $card_meta = is_array( $card_meta ) ? $card_meta : [];
 
 $link_label = (string) apply_filters(
     'ml_search_card_link_label',
-    __( 'Mehr erfahren', 'media-lab-theme' ),
+    __( 'Mehr erfahren', 'custom-theme' ),
     $post_type,
     get_the_ID()
 );

@@ -32,7 +32,7 @@
  *                                   sich über post_card_show abschalten.
  *   post_card_show          array   thumbnail|excerpt|date|author|link => bool (Standard: alle true)
  *
- * @package media-lab-theme
+ * @package custom-theme
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -105,7 +105,7 @@ if ( $card_type !== '' ) {
 // Hervorhebung: nur <mark> zulassen (Quelle ist bereits escaped, das hier ist Absicherung)
 $allowed_mark = [ 'mark' => [] ];
 
-$link_label = $card_link_label !== '' ? $card_link_label : __( 'Lesen', 'media-lab-theme' );
+$link_label = $card_link_label !== '' ? $card_link_label : __( 'Lesen', 'custom-theme' );
 
 // Eigene Meta-Angaben: leere Einträge entfernen
 $card_meta = is_array( $card_meta ) ? array_filter( $card_meta, static function ( $item ) {

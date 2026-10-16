@@ -17,6 +17,38 @@ möglich.
 ## [Unreleased]
 
 ### Added
+- `ajax-search.js`, `_ajax-search.scss`: optionale Treffer-Felder `availability_badge`, `product_badge_label` und `product_badge_class` (Badge unter dem Preis, z. B. von einem Projekt-Plugin über den Filter `media_lab_ajax_search_result`). Ohne die Felder ändert sich nichts. Abgeleitet aus dem Stand in at.media-lab
+
+## [1.18.1] - 2026-10-15
+
+### Added
+- Standard-Styles für die Shop-Modus-Wunschlisten-Tabelle (`_wishlist.scss`): Tabelle, Auswahl-Zelle mit Checkbox und Entfernen-Button, Karten-Ansicht unter 1100px (Zellen mit `data-label`-Präfix), Teilen-Zeile im Fußbereich (`.mlw-wishlist__share--footer`) und Modifier `.mlw-wishlist-message--warning`. Abgeleitet aus dem Stand in juwelier-janecka
+
+### Hinweis
+- Gehört zu `media-lab-woocommerce` 2.19.1 (Markup in `templates/wishlist/item-row-shop.php` und `page.php`)
+
+## [1.18.0] - 2026-10-14
+
+### Changed
+- **`mlwf-filters.js`: Unterkategorie-Filter als Mehrfachauswahl** –
+  `collectFormData()` sammelt `subcat[]` als Liste, `updateUrl()` schreibt
+  `?subcat=a,b` in die URL, `syncFromUrl()` stellt die Haken beim Laden wieder
+  her, `updateActiveCount()` und `hasActiveFilters()` berücksichtigen die
+  Unterkategorien (Zähler, „Zurücksetzen“).
+
+### Hinweis
+- Gehört zu `media-lab-woocommerce` 2.19.0 (Markup `subcat[]` und AJAX-Handler).
+
+## [1.17.0] - 2026-10-13
+
+### Added
+- `ajax-search.js`: Typ-Labels „Kategorie“ (`product_cat`) und „Marke“ (`product_brand`) für Treffer ohne Post-ID, `_ajax-search.scss`: `.ajax-search__count` (Produktanzahl hinter dem Namen)
+- `search.php`: Zeile „Passende Kategorien und Marken“ unter dem Suchfeld, wenn das WooCommerce-Plugin (ab 2.18.0) sie liefert (`mlw_get_search_term_links()`); `_search-results.scss`: `.search-terms`
+
+## [1.16.0] - 2026-10-13
+
+### Added
+
 - `woocommerce/_single-product.scss`: Einzelprodukt-Layout (Galerie und Summary nebeneinander), Linien-Lupe, Rezensionen mit SVG-Sternen und Theme-Formularfeldern, Produktkarten (Marke, Verfuegbarkeit, Herz ueber dem Bild), Anfrage-Mengenfeld und Textbutton
 - `functions.php`: Standard-Filter fuer `media-lab-woocommerce` ab 2.10.0
 - `_single-product.scss`: Variationsformular im Theme-Stil (Catalog-Mode-Variantenauswahl), Meta-Zeile ordnet Marke, Kategorie und Artikelnummer per `order`
@@ -37,12 +69,27 @@ möglich.
 - **`post-card.php`: optionale Erweiterungen** (`post_card_badge`, `post_card_type`, `post_card_price`,
   `post_card_title_html`, `post_card_excerpt_html`, `post_card_link_label`, `post_card_show`) –
   vollständig abwärtskompatibel, Archiv und Load-More bleiben unverändert.
+- **`post-card.php`: eigene Meta-Angaben im Footer** (`post_card_meta`) – Liste aus
+  `[ 'label' => …, 'value' => … ]` oder Strings, z. B. Artikelnummer und Verfügbarkeit statt Datum;
+  leere Werte werden übersprungen, abwärtskompatibel (`_cards.scss`: `.post-card__meta-item`,
+  `__meta-label`, `__meta-value`).
+- **`result-card.php`: Filter für projektspezifische Suchkarten** – `ml_search_card_meta`
+  (Meta-Angaben je Inhaltstyp, ersetzt das Datum) und `ml_search_card_link_label` (Link-Text je
+  Inhaltstyp). Dadurch braucht es keine eigene `card-{post_type}.php` mehr, wenn nur Meta oder
+  Link-Text abweichen.
 - **`comments.php`** (neu) – Kommentar-Liste und -Formular im Theme-Stil (Avatar links, Text rechts,
   getrennte Einträge, Theme-Formularfelder wie die WooCommerce-Rezensionen), Styles in
   `templates/_comments.scss` (neu, in `style.scss` einbinden). Verschachtelte Antworten,
   Kommentar-Paginierung, Freischaltungs-Hinweis.
+- `search.php`: Produktfilter und Trefferanzeige über den Ergebnissen, wenn das WooCommerce-Plugin aktiv ist (`mlwf_get_search_filter_bar()`, media-lab-woocommerce 2.17.0). Die Ergebnisse stehen dann in `.wc-products-container`, damit das Filter-JS sie per AJAX austauschen kann; der Wrapper bekommt die Klasse `search-layout--filters`. Die Sortier-Auswahl des Cores entfällt in dem Fall (die Filterleiste hat eine eigene)
+- `search.php`: Filter `ml_search_pagination_args` für die Argumente der Pagination (Pfeiltexte, `end_size`, `mid_size`), ohne das Template zu ändern
+- `mlwf-filters.js`: Such-Kontext. Der Suchbegriff geht bei jedem Request mit, die Preisspanne gilt für die gefundenen Produkte, Filter stehen mit Präfix `f_` in der URL (`?s=ring&f_product_cat=…`), beim Neuladen werden die Checkboxen gesetzt, „Zurücksetzen" lädt die ungefilterte Ergebnisseite. Trefferanzeige (`.js-product-count`, Text aus `data-range`) und Zähler im Seitenkopf (`.js-search-count`) werden nach dem Filtern aktualisiert
+- `assets/src/js/components/mlwf-filters.js`: interaktive Filter-Bar für WooCommerce (Dropdowns, Preis-Slider, AJAX), portiert aus Janecka; eingebunden über `main.js`
+- `assets/src/scss/woocommerce/_woocommerce.scss`, `style.scss`: Styling der Filter-Bar (Tokens, Breakpoints), noUiSlider-CSS über die Sass-Pipeline. `package.json` und `package-lock.json` wurden im selben Commit angepasst
+- `footer.php`: 4 Zeilen für das neue Plugin `media-lab-ai-agent`
 
 ### Changed
+
 - **`.single-post-layout`: volle Container-Breite, linksbündig** (bisher 760 px zentriert) – wie
   Archive und Seiten. Lesebreite bei Bedarf über `$single-layout-max-width` (Standard `none`).
 - **`archive.php`: Zähler mit dem Namen des Inhaltstyps** – statt immer „N Beiträge“ zeigen Archive
@@ -77,8 +124,13 @@ möglich.
   bei Polylang/WPML nur Treffer der aktuellen Sprache liefert.
 - Fehlerantworten des Servers (z. B. Rate-Limit 429, ungültiger Nonce) zeigen
   den Fehlertext statt „Keine Ergebnisse gefunden."
+- `_ajax-search.scss`: Farben über Theme-Tokens (Dark Mode), Meldungen „Keine Ergebnisse" und Fehler im Ergebnis-Container statt absolut positioniert, `:focus-visible`, Höhe des Dropdowns an den Viewport gekoppelt
+- `mlwf-filters.js`: `/page/N/` bleibt nach einem Filterwechsel nicht mehr in der URL stehen (auch im Shop)
+- `woocommerce/_single-product.scss`: Begleitänderungen zur Variantenauswahl-Politur in media-lab-woocommerce 2.11.0 (siehe dort)
+- `woocommerce/_single-product.scss`: drei Zeilen entfernt (Begleitänderung zur Wunschliste im WooCommerce-Plugin: Gesamtsumme unter dem Preis, Menge auf der Liste änderbar)
 
 ### Fixed
+
 - **„Deprecated: Theme ohne comments.php“ unter Einzelbeiträgen** – dem Theme fehlte eine `comments.php`,
   WordPress fiel auf die veraltete Kern-Datei zurück (inkl. ungestyltem Formular). Mit `comments.php` behoben.
 - **`<mark>`-Hervorhebung zerriss Wörter** (z. B. „Arbeits jack e“) – seitliches Padding entfernt
@@ -102,6 +154,24 @@ möglich.
   der Titel kommt mit `<mark>`-Highlighting vom Server und wurde unverändert in
   das `alt`-Attribut übernommen (zerbrach das Markup, sobald ein Treffer
   hervorgehoben war). `alt` bekommt jetzt den reinen, escapten Text.
+- **Ajax-Suche: Submit-Button auf WooCommerce-Seiten zu breit** (`woocommerce/_woocommerce.scss`) –
+  die Regel `.woocommerce form button[type="submit"]` (Theme-Button-Look inkl. Padding) griff auch auf
+  den runden Submit-Button im Such-Overlay und drückte ihn auf Shop- und Produktseiten breit.
+  Der Selektor nimmt `.ajax-search__submit` jetzt aus (`:not(.ajax-search__submit)`).
+- **`.post-card`-Footer: Meta-Angaben brachen mitten im Wert um** (`components/_cards.scss`) – bei
+  eigenen Meta-Angaben (`post_card_meta`, z. B. Artikelnummer) blieb neben dem Link zu wenig Platz,
+  sodass Werte wie die Artikelnummer zerrissen wurden. Meta-Angaben stehen jetzt untereinander in
+  voller Breite, der Link folgt rechts darunter; Karten ohne eigene Meta-Angaben unverändert.
+- `_archive.scss`: Die Pagination-Regeln galten für alle verschachtelten `a` und `span` und verzerrten Pfeile mit Screenreader-Text. Jetzt nur für direkte Kinder (`> a`, `> span`)
+- `inc/woocommerce.php`, `woocommerce/_single-product.scss`: Die Standard-Sidebar erscheint nicht mehr unter WooCommerce-Archiven, dazu mehr Abstand unter den Produktlisten
+- `inc/enqueue.php`: Die Version von `main.js` richtet sich nach der Änderungszeit der Datei statt nach der festen Theme-Version. Verhindert eine veraltete `main.js`, die auf gelöschte Chunks verweist
+- `base/_global.scss`: Abstand über dem Seitentitel (`.entry-header`); Hero und Breadcrumbs bleiben unberührt
+- `components/_wishlist.scss`: Formular auf der Wunschzettel-Seite mit Klasse, Abständen und schmalem Absenden-Button
+
+### Hinweis zum Update
+
+- Das Kit-Theme bringt das Grundstyling der Filterleiste mit (Shop), aber keine Regeln für die Leiste auf der Suche (`.wc-filter-bar--search`: Schalter „Filter" mobil, Zeilen neben der Sortierung). Projekte, die die Filter auf der Suche nutzen, ergänzen sie im Theme
+- Projekt-Kopien von `mlwf-filters.js` aktualisieren, sonst stimmen die URLs der Filter nicht mehr mit dem Plugin überein
 
 ## [1.15.4] - 2026-08-22
 
