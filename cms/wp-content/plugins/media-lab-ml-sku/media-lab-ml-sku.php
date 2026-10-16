@@ -56,9 +56,14 @@ class MediaLab_ML_SKU_Generator {
                 // einen Teil der Varianten pro Importlauf (Timing-Rennen).
                 // Lösung: Einmaliger Sweep nach Abschluss des GESAMTEN Imports, der
                 // alle Varianten mit noch nicht-finaler SKU nachträglich korrigiert.
+                // WP All Import Pro feuert 'pmxi_after_xml_import' ($import_id, $import), nicht 'pmxi_import_complete'.
+                // Beide Hooks bedienen, die Sweeps sind idempotent.
                 add_action('pmxi_import_complete', [$this, 'sweep_fix_stale_variation_skus'], 10, 1);
+                add_action('pmxi_after_xml_import', [$this, 'sweep_fix_stale_variation_skus'], 10, 1);
                 add_action('pmxi_import_complete', [$this, 'sweep_draft_products_without_image'], 10, 1);
+                add_action('pmxi_after_xml_import', [$this, 'sweep_draft_products_without_image'], 10, 1);
                 add_action('pmxi_import_complete', [$this, 'sweep_variation_attributes'], 10, 1);
+                add_action('pmxi_after_xml_import', [$this, 'sweep_variation_attributes'], 10, 1);
 
                 // INTERNER LAGERSTAND (Inventur-Feature, 2026-09): eigenes, im
                 // WP-Admin editierbares Feld 'stock_inhouse' - unabhängig vom per
@@ -1228,9 +1233,13 @@ function ml_sweep_clearance_visibility( bool $dry_run = false ): array {
     return $result;
 }
 
-add_action( 'pmxi_import_complete', function () {
-    ml_sweep_clearance_visibility();
-}, 99 );
+// WP All Import Pro feuert 'pmxi_after_xml_import', nicht 'pmxi_import_complete': beide Hooks bedienen.
+foreach ( array( 'pmxi_import_complete', 'pmxi_after_xml_import' ) as $ml_import_done_hook ) {
+    add_action( $ml_import_done_hook, function () {
+        ml_sweep_clearance_visibility();
+    }, 99 );
+}
+unset( $ml_import_done_hook );
 
 /**
  * Suchkarte (Starter-Kit result-card.php): Artikelnummer und Verfügbarkeit
