@@ -1270,3 +1270,67 @@ add_filter( 'ml_search_card_meta', function ( $meta, $post_type, $post_id ) {
 add_filter( 'ml_search_card_link_label', function ( $label, $post_type ) {
     return $post_type === 'product' ? __( 'Zum Produkt', 'media-lab-ml-sku' ) : $label;
 }, 10, 2 );
+
+// ML-KONFIG-SYNC (19.10.2026): Rohdaten des Konfigurators in die ACF-Wiederholfelder übertragen.
+// Import 5 aktualisiert config_steps und tier_pricing nicht (nur is_configurable, config_type, show_tier_table),
+// und WP All Import kann JSON nicht in Zeilen eines Wiederholfelds umsetzen. Marker _ml_config_synced_hash.
+if ( ! function_exists( 'ml_sync_configurator_fields' ) ) {
+    function ml_sync_configurator_fields( $post_id, $force = false ) {
+        $post_id = (int) $post_id;
+        if ( ! $post_id || ! function_exists( 'update_field' ) ) {
+            return false;
+        }
+        $raw_steps = (string) get_post_meta( $post_id, '_config_steps_raw', true );
+        if ( $raw_steps === '' ) {
+            return false;
+        }
+        $raw_tiers = (string) get_post_meta( $post_id, '_ml_price_tiers_raw', true );
+        $hash      = md5( $raw_steps . '|' . $raw_tiers );
+        $stored    = (string) get_post_meta( $post_id, '_ml_config_synced_hash', true );
+        if ( ! $force && (int) get_post_meta( $post_id, 'config_steps', true ) > 0 ) {
+            if ( $stored === $hash ) {
+                return false;
+            }
+            if ( $stored === '' ) {
+                update_post_meta( $post_id, '_ml_config_synced_hash', $hash );
+                return false;
+            }
+        }
+        $steps = json_decode( $raw_steps, true );
+        $tiers = $raw_tiers === '' ? array() : json_decode( $raw_tiers, true );
+        if ( ! is_array( $steps ) || ! $steps || ! is_array( $tiers ) ) {
+            return false;
+        }
+        $rows = array();
+        foreach ( $steps as $s ) {
+            $r = array(
+                'step_id'         => (string) ( $s['step_id'] ?? '' ),
+                'step_label'      => (string) ( $s['step_label'] ?? '' ),
+                'step_type'       => (string) ( $s['step_type'] ?? 'select' ),
+                'required'        => (int) ( $s['required'] ?? 0 ),
+                'show_in_summary' => 1,
+                'use_as_filter'   => 0,
+            );
+            foreach ( array( 'min_value', 'max_value' ) as $k ) {
+                if ( isset( $s[ $k ] ) ) {
+                    $r[ $k ] = $s[ $k ];
+                }
+            }
+            $rows[] = $r;
+        }
+        $tier_rows = array();
+        foreach ( $tiers as $t ) {
+            $tier_rows[] = array(
+                'min_quantity'     => (int) ( $t['min_quantity'] ?? 0 ),
+                'discount_percent' => (float) ( $t['discount_percent'] ?? 0 ),
+            );
+        }
+        update_field( 'field_config_steps', $rows, $post_id );
+        update_field( 'field_tier_pricing', $tier_rows, $post_id );
+        update_post_meta( $post_id, '_ml_config_synced_hash', $hash );
+        return true;
+    }
+}
+add_action( 'pmxi_saved_post', function ( $post_id ) {
+    ml_sync_configurator_fields( $post_id );
+}, 99, 1 );
