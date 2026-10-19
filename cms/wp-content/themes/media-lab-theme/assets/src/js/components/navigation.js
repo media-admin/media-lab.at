@@ -53,6 +53,12 @@ export default class Navigation {
 
         this.mobileToggle.addEventListener('click', () => this._toggleMobileMenu());
 
+        // Such-Overlay (Agency Core) aus dem Mobil-Menü öffnen: das Menü schließen, sonst bleibt es dahinter offen
+        // (und der Burger im X-Zustand). Der Listener des Plugins am Auslöser läuft vorher und öffnet das Overlay.
+        this.mobileMenu.addEventListener('click', (e) => {
+            if (e.target.closest('.mlc-nav-search-toggle')) this._closeMobileMenu();
+        });
+
         if (this.mobileOverlay) {
             this.mobileOverlay.addEventListener('click', () => this._closeMobileMenu());
         }
@@ -76,14 +82,14 @@ export default class Navigation {
         this.mobileToggle?.classList.add('is-active');
         this.mobileMenu.classList.add('is-active');
         this.mobileOverlay?.classList.add('is-active');
-        document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('is-menu-open'); // Scroll-Sperre am Viewport (html), nicht am body
     }
 
     _closeMobileMenu() {
         this.mobileToggle?.classList.remove('is-active');
         this.mobileMenu.classList.remove('is-active');
         this.mobileOverlay?.classList.remove('is-active');
-        document.body.style.overflow = '';
+        document.documentElement.classList.remove('is-menu-open');
 
         // Alle Submenüs schließen
         this.mobileItems.forEach(item => item.classList.remove('is-open'));

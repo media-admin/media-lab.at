@@ -22,9 +22,17 @@
 
 // Verhindert horizontalen Overflow
 html, body {
-  overflow-x: hidden;
   max-width: 100vw;
 }
+
+// "overflow-x: hidden" auf html UND body macht den body zum Scroll-Container, der selbst nicht scrollt. Ein sticky
+// Header bezieht sich auf den nächsten Scroll-Container und klebte deshalb nie (gemessen: position: sticky, nach dem
+// Scrollen trotzdem 1325 px über dem Bildschirm). Jetzt nur html (der Wert geht an den Viewport), body clip.
+html { overflow-x: hidden; }
+body { overflow-x: clip; }
+
+// Der Header klebt oben: Anker-Sprünge und Fokus-Scrollen landen nicht unter ihm.
+html { scroll-padding-top: var(--header-height, 0px); }
 
 .hero-slider {
   position:  relative;
@@ -170,3 +178,22 @@ html, body {
   width:         32px !important;
   border-radius: 6px !important;
 }
+
+
+// Scroll-Sperren, die den overflow am body setzen (Lightbox und Top-Header per JS inline, Cookie-Dialog, Popups, Such-
+// Overlay des Cores): gleiche Ursache wie bei .is-menu-open (_navigation.scss). Weil html selbst overflow-x: hidden
+// hat, wirkt der Wert des body nicht mehr auf den Viewport: die Seite dahinter scrollt weiter, der sticky Header
+// klebt nicht. Die Sperre wird deshalb auf html übertragen.
+html:has(body[style*="overflow: hidden"]),
+html:has(body.cookie-modal-open),
+html:has(body.popup-open),
+html:has(body.mlc-search-overlay-active) { overflow: hidden; }
+
+// Der body darf dabei selbst kein Scroll-Container werden: steht auf html UND body overflow: hidden, klebt der sticky
+// Header nicht mehr (gemessen bei offenem Cookie-Dialog nach 1622 px Scrollen: Header 1622 px über dem Bildschirm).
+// overflow: visible am body (!important gegen den inline-Wert der Lightbox) lässt nur html sperren. Nur overflow-y
+// reicht nicht: body.cookie-modal-open setzt auch overflow-x: hidden, und visible wird neben hidden zu auto.
+html:has(body[style*="overflow: hidden"]) body,
+html:has(body.cookie-modal-open) body,
+html:has(body.popup-open) body,
+html:has(body.mlc-search-overlay-active) body { overflow: visible !important; }

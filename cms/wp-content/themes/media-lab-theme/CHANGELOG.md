@@ -16,6 +16,42 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.10] - 2026-10-19
+
+### Fixed
+- **Filterleiste im Shop- und Kategorie-Archiv:** Die Gruppen liegen dort direkt in `.wc-filter-bar__groups` (kein `.wc-filter-bar__groups-filters` wie auf der Suchseite), die Sortierung steht als Geschwister neben dem Formular. Mit `justify-content: space-between` verteilten sich die Chips über die ganze Breite und die Sortierung stand darunter. Jetzt stehen die Chips links und die Sortierung rechts in derselben Zeile (schmal darunter), die aktiven Filter folgen darunter. Die Suchseite (`.wc-filter-bar--search`) bleibt unverändert (`woocommerce/_woocommerce.scss`)
+
+## [1.18.9] - 2026-10-19
+
+### Fixed
+- **Such-Overlay (Agency Core) und Header:** Der Schließen-Knopf des Overlays sitzt 2,5 rem über dem Panel (`top: -2.5rem`) und lag mit dem flachen sticky Header mobil auf dem Burger, am Desktop auf dem Menü. Das Panel beginnt jetzt unter dem Header (`margin-top: max(10vh, header-height + 3.5rem)`, `_navigation.scss`). `navigation.js` schließt das Mobil-Menü, wenn der Such-Auslöser darin angetippt wird (vorher blieb es hinter dem Overlay offen, der Burger blieb im X-Zustand)
+
+## [1.18.8] - 2026-10-19
+
+### Fixed
+- **WooCommerce-Hinweise im Dunkelmodus:** `.woocommerce-info`, `-message` und `-error` nutzten feste Hell-Farben (`$color-*-light-bg`, `$color-*-dark`) und erschienen im dunklen Theme als grelle blaue, grüne oder rote Kästen (z. B. „Es wurden keine Produkte gefunden“). Hintergrund und Rahmen entstehen jetzt per `color-mix` aus der Akzentfarbe (`--color-info`, `--color-success`, `--color-error`) und der Kartenfarbe, der Text bleibt in `--color-text`, das Symbol trägt die Akzentfarbe
+- **WooCommerce-Hinweise: Innenabstand:** Der Kasten hatte 32 px oben und unten und 40 px seitlich (`$spacing-4 $spacing-5`), mobil wurde aus einer Zeile Text ein hoher Block. Jetzt `$spacing-2 $spacing-3` und `gap: $spacing-2` (`woocommerce/_woocommerce.scss`)
+
+## [1.18.7] - 2026-10-16
+
+### Fixed
+- **Weitere Scroll-Sperren am `body`** (Lightbox, Top-Header, Cookie-Dialog, Popups, Such-Overlay des Cores) bekamen dieselbe Ursache: `html { overflow-x: hidden; }` lässt den `overflow` des `body` nicht mehr auf den Viewport wirken. Sie werden jetzt per `html:has(body…)` auf `html` übertragen, der `body` bleibt dabei kein Scroll-Container, damit der sticky Header klebt (`_hero-slider.scss`)
+- **Mobil-Menü, Scroll-Sperre:** `navigation.js` setzte beim Öffnen `overflow: hidden` inline am `body`. Seit `html` selbst `overflow-x: hidden` hat (1.18.5), macht das den `body` zum Scroll-Container: Der sticky Header klebte bei offenem Menü nicht mehr (nach dem Scrollen weg, nur der Theme-Switcher blieb), und der Hintergrund ließ sich weiter scrollen. Jetzt setzt `navigation.js` die Klasse `is-menu-open` an `html`, `html.is-menu-open { overflow: hidden; }` sperrt am Viewport (`navigation.js`, `_navigation.scss`)
+
+## [1.18.6] - 2026-10-16
+
+### Fixed
+- **Suche, Suchfeld am Desktop:** Das Suchfeld im Seitenkopf und im Leer-Zustand blieb so breit wie ein Standard-Input (ca. 250 px), weil das `<label>` als Flex-Item nicht wuchs. Das Label wächst jetzt, das Feld füllt den Platz neben dem Button (Seitenkopf bis 560 px Formularbreite, Leer-Zustand bis 520 px Feldbreite) (`_search-results.scss`)
+- **Suche, Leer-Zustand mobil:** Der Button „Suchen“ lief aus dem Bildschirm (eigenes Formular `.archive-empty__form`, Feld bis 320 px, `<label>` als Flex-Item). Das Feld nutzt jetzt die volle Breite, der Button ist mobil nur visuell ausgeblendet (`_search-results.scss`)
+- **WooCommerce-Pagination:** Die Regel `nav.woocommerce-pagination ul li a, … li span` galt auch für die Spans innerhalb der Pfeil-Links (Pfeil und Screenreader-Text), der Pfeil bekam einen Rahmen im Rahmen und einen leeren Kasten daneben. Die Selektoren gelten jetzt nur für direkte Kinder (`li > a`, `li > span`)
+- **Suche mobil:** Der Suchbegriff steht in der Überschrift in einer eigenen Zeile, die Anführungszeichen gehören dazu (`search.php`). Das Suchfeld im Seitenkopf nutzt die volle Breite (WordPress rendert es in einem `<label>`, das Label war das Flex-Item und blieb so breit wie ein Standard-Input), der Text beginnt links mit `$spacing-2` statt `$spacing-4`
+- **Suchfelder:** Das Löschen-Kreuz (WebKit, `type="search"`) erscheint in der Textfarbe statt im Browser-Blau (`_search-results.scss`)
+
+## [1.18.5] - 2026-10-16
+
+### Fixed
+- **Sticky Header (alle Breiten):** `html, body { overflow-x: hidden; }` in `components/_hero-slider.scss` machte den `body` zum Scroll-Container, deshalb klebte der sticky Header nie (gemessen: `position: sticky`, nach dem Scrollen trotzdem 1325 px über dem Bildschirm). Jetzt `html { overflow-x: hidden; }` und `body { overflow-x: clip; }`, dazu `html { scroll-padding-top: var(--header-height, 0px); }`, damit Anker-Sprünge nicht unter dem Header landen. Projekte mit eigener Kopie der Regel haben denselben Fehler
+
 ## [1.18.4] - 2026-10-16
 
 ### Changed
