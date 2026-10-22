@@ -1355,7 +1355,7 @@ if ( ! function_exists( 'ml_configurator_plan' ) ) {
         $sizes  = ml_configurator_options( 'pa_size', isset( $attrs['pa_size'] ) ? array_keys( $attrs['pa_size'] ) : array() );
         $hash   = md5( $raw_steps . '|' . $raw_tiers );
         if ( $colors || $sizes ) {
-            $hash = md5( $hash . '|v2|' . wp_json_encode( array( $type, $colors, $sizes ) ) );
+            $hash = md5( $hash . '|v3|' . wp_json_encode( array( $type, $colors, $sizes ) ) );
         }
         $to_rows = function ( array $list ) {
             return array_map( function ( $o ) {
@@ -1366,7 +1366,7 @@ if ( ! function_exists( 'ml_configurator_plan' ) ) {
         $rows     = array();
         $quantity = true;
         if ( count( $colors ) > 1 ) {
-            $rows[] = $base + array( 'step_id' => 'color', 'step_label' => 'Farbe', 'step_type' => 'radio', 'options' => $to_rows( $colors ) );
+            $rows[] = $base + array( 'step_id' => 'color', 'step_label' => 'Farbe', 'step_type' => 'color_picker', 'options' => $to_rows( $colors ) );
         }
         if ( count( $sizes ) > 1 ) {
             if ( $type === 'textile' ) {
@@ -1489,3 +1489,122 @@ foreach ( array( 'pmxi_after_xml_import', 'pmxi_import_complete' ) as $ml_cfg_do
         ml_sync_configurator_all( true );
     }, 99, 0 );
 }
+
+// ML-KONFIG-FARBEN v1 (22.10.2026): CSS-Werte für die Farbfelder des Konfigurators (Schritt-Typ color_picker).
+// Schlüssel ist der Slug des Begriffs in pa_color. Was hier nicht steht (Formen, Motive, Sorten, Länder),
+// bekommt keinen erfundenen Farbton und bleibt ein Button mit dem Namen. Das sind Produktfarben, keine Theme-Farben.
+if ( ! function_exists( 'ml_configurator_color_css' ) ) {
+    function ml_configurator_color_css( $slug ) {
+        static $solid = null, $special = null, $pairs = null;
+        if ( $solid === null ) {
+            $solid   = array(
+                'schwarz'         => '#111111',
+                'weiss'           => '#ffffff',
+                'rot'             => '#d71920',
+                'blau'            => '#1e50c8',
+                'gruen'           => '#2e9e4a',
+                'gelb'            => '#f7d417',
+                'orange'          => '#f28a1c',
+                'grau'            => '#8c8c8c',
+                'fuchsie'         => '#d6247f',
+                'marineblau'      => '#14213d',
+                'navy-blue-dark'  => '#0f1b3a',
+                'hellblau'        => '#7ec8ee',
+                'himmelblau'      => '#87ceeb',
+                'koenigsblau'     => '#1a3fa8',
+                'hellgruen'       => '#8fd27a',
+                'dunkelgruen'     => '#14532d',
+                'gruen-bottle'    => '#0b4f33',
+                'militaergruen'   => '#4b5320',
+                'mintgruen'       => '#98e0c0',
+                'verde-aguamarina' => '#5fd3b4',
+                'tuerkis'         => '#1fb5ad',
+                'rosa'            => '#f4a6c0',
+                'lila'            => '#7b3fa0',
+                'bordeaux'        => '#6d1a2b',
+                'braun'           => '#6b4226',
+                'beige'           => '#e8d9b5',
+                'sand'            => '#d8c39a',
+                'dunkelsand'      => '#b8a27a',
+                'kaki'            => '#9c9560',
+                'naturfarbe'      => '#d9c7a3',
+                'hellnaturfarbe'  => '#ece0c8',
+                'mostaza'         => '#e1ad01',
+                'salmon'          => '#f49a82',
+                'hellgrau'        => '#cfcfcf',
+                'dunkelgrau'      => '#4a4a4a',
+                'silber'          => '#b8b8b8',
+                'matt-silber'     => '#b5b5b5',
+                'gold'            => '#d4af37',
+                'bronze'          => '#b0733a',
+                'fluor-gelb'      => '#e6ff00',
+                'fluor-orange'    => '#ff6a13',
+                'fluor-gruen'     => '#39e639',
+                'fluor-fuchsie'   => '#ff2bb0',
+                'fluor-blau'      => '#1e7bff',
+                'neonrosa'        => '#ff4fa3',
+                'pastellblau'     => '#b7d4f0',
+                'pastellgruen'    => '#b9e3c6',
+                'pastellrosa'     => '#f8cddd',
+                'pastellbeige'    => '#efe4cf',
+                'pastellgelb'     => '#faf0a8',
+            );
+            $special = array(
+                'silber'       => 'linear-gradient(135deg, #f2f2f2, #a8a8a8 50%, #e6e6e6)',
+                'dunkelsilber' => 'linear-gradient(135deg, #cfcfcf, #7d7d7d 50%, #bdbdbd)',
+                'vergoldet'    => 'linear-gradient(135deg, #f5e6a8, #c9a227 50%, #ecd98a)',
+                'transparent'  => 'conic-gradient(#d9d9d9 25%, #ffffff 0 50%, #d9d9d9 0 75%, #ffffff 0) 0 0 / 0.6rem 0.6rem',
+                'multicolor'   => 'conic-gradient(#d71920, #f7d417, #2e9e4a, #1e50c8, #7b3fa0, #d71920)',
+                'rainbow'      => 'conic-gradient(#d71920, #f28a1c, #f7d417, #2e9e4a, #1e50c8, #7b3fa0, #d71920)',
+                'tarnfarbe'    => 'conic-gradient(#4b5320 0 33%, #7a6a3a 0 66%, #2d3a1e 0)',
+            );
+            // Zweifarbige Begriffe: linke und rechte Hälfte
+            $pairs   = array(
+                'weiss-rot'       => array( 'weiss', 'rot' ),
+                'rot-weiss'       => array( 'rot', 'weiss' ),
+                'weiss-blau'      => array( 'weiss', 'blau' ),
+                'blau-weiss'      => array( 'blau', 'weiss' ),
+                'gruen-weiss'     => array( 'gruen', 'weiss' ),
+                'weiss-gruen'     => array( 'weiss', 'gruen' ),
+                'weiss-gelb'      => array( 'weiss', 'gelb' ),
+                'gelb-weiss'      => array( 'gelb', 'weiss' ),
+                'weiss-orange'    => array( 'weiss', 'orange' ),
+                'orange-weiss'    => array( 'orange', 'weiss' ),
+                'weiss-fuchsie'   => array( 'weiss', 'fuchsie' ),
+                'weiss-schwarz'   => array( 'weiss', 'schwarz' ),
+                'schwarz-weiss'   => array( 'schwarz', 'weiss' ),
+                'schwarz-blau'    => array( 'schwarz', 'blau' ),
+                'schwarz-rot'     => array( 'schwarz', 'rot' ),
+                'grau-schwarz'    => array( 'grau', 'schwarz' ),
+                'rot-gelb'        => array( 'rot', 'gelb' ),
+                'rot-gold'        => array( 'rot', 'gold' ),
+                'rot-silber'      => array( 'rot', 'silber' ),
+                'rot-bronze'      => array( 'rot', 'bronze' ),
+            );
+        }
+        $slug = (string) $slug;
+        if ( isset( $special[ $slug ] ) ) {
+            return $special[ $slug ];
+        }
+        if ( $slug === 'schwarz-schwarz' ) {
+            $slug = 'schwarz';
+        }
+        if ( isset( $solid[ $slug ] ) ) {
+            return $solid[ $slug ];
+        }
+        if ( isset( $pairs[ $slug ] ) ) {
+            return 'linear-gradient(90deg, ' . $solid[ $pairs[ $slug ][0] ] . ' 50%, ' . $solid[ $pairs[ $slug ][1] ] . ' 50%)';
+        }
+        // "<farbe>-lichtdurchlaessig": Grundfarbe halbtransparent
+        if ( preg_match( '/^(.+)-lichtdurchlaessig$/', $slug, $m ) && isset( $solid[ $m[1] ] ) ) {
+            return 'color-mix(in srgb, ' . $solid[ $m[1] ] . ' 55%, transparent)';
+        }
+        return '';
+    }
+}
+add_filter( 'mlw_configurator_color_value', function ( $value, $option ) {
+    if ( $value !== '' ) {
+        return $value;
+    }
+    return ml_configurator_color_css( isset( $option['value'] ) ? $option['value'] : '' );
+}, 10, 2 );
