@@ -1479,15 +1479,31 @@ add_action( 'pmxi_saved_post', function ( $post_id ) {
 }, 99, 1 );
 // Am Ende eines Imports alle Produkte abgleichen (Varianten und Begriffe sind dann vollständig). WP All Import Pro feuert
 // 'pmxi_after_xml_import'; beide Hooks bedienen, einmal pro Request.
-foreach ( array( 'pmxi_after_xml_import', 'pmxi_import_complete' ) as $ml_cfg_done_hook ) {
-    add_action( $ml_cfg_done_hook, function () {
+// Sweep am Ende eines Imports: alle Produkte mit Rohdaten abgleichen. Beide Hooks bedienen, aber nur einmal pro Request:
+// das static steht in einer benannten Funktion (in einer Closure hätte jeder Hook sein eigenes).
+if ( ! function_exists( 'ml_configurator_sweep_after_import' ) ) {
+    function ml_configurator_sweep_after_import( $import_id = 0 ) {
         static $done = false;
         if ( $done ) {
             return;
         }
         $done = true;
-        ml_sync_configurator_all( true );
-    }, 99, 0 );
+        $r = ml_sync_configurator_all( true );
+        if ( ! empty( $r['stat'] ) ) {
+            $st = $r['stat'];
+            error_log( sprintf(
+                '[ML KONFIG SWEEP] Import %s abgeschlossen - %d Produkte mit Rohdaten, %d geschrieben, %d Optionen, %d ohne Plan.',
+                ( is_scalar( $import_id ) && $import_id ) ? $import_id : '?',
+                $st['mit Rohdaten'],
+                $st['geschrieben'],
+                $st['Optionen'],
+                $st['ohne Plan']
+            ) );
+        }
+    }
+}
+foreach ( array( 'pmxi_after_xml_import', 'pmxi_import_complete' ) as $ml_cfg_done_hook ) {
+    add_action( $ml_cfg_done_hook, 'ml_configurator_sweep_after_import', 99, 1 );
 }
 
 // ML-KONFIG-FARBEN v1 (22.10.2026): CSS-Werte für die Farbfelder des Konfigurators (Schritt-Typ color_picker).
