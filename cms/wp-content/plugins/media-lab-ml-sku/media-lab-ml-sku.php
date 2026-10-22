@@ -1271,66 +1271,221 @@ add_filter( 'ml_search_card_link_label', function ( $label, $post_type ) {
     return $post_type === 'product' ? __( 'Zum Produkt', 'media-lab-ml-sku' ) : $label;
 }, 10, 2 );
 
-// ML-KONFIG-SYNC (19.10.2026): Rohdaten des Konfigurators in die ACF-Wiederholfelder übertragen.
-// Import 5 aktualisiert config_steps und tier_pricing nicht (nur is_configurable, config_type, show_tier_table),
-// und WP All Import kann JSON nicht in Zeilen eines Wiederholfelds umsetzen. Marker _ml_config_synced_hash.
-if ( ! function_exists( 'ml_sync_configurator_fields' ) ) {
-    function ml_sync_configurator_fields( $post_id, $force = false ) {
-        $post_id = (int) $post_id;
-        if ( ! $post_id || ! function_exists( 'update_field' ) ) {
-            return false;
-        }
-        $raw_steps = (string) get_post_meta( $post_id, '_config_steps_raw', true );
-        if ( $raw_steps === '' ) {
-            return false;
-        }
-        $raw_tiers = (string) get_post_meta( $post_id, '_ml_price_tiers_raw', true );
-        $hash      = md5( $raw_steps . '|' . $raw_tiers );
-        $stored    = (string) get_post_meta( $post_id, '_ml_config_synced_hash', true );
-        if ( ! $force && (int) get_post_meta( $post_id, 'config_steps', true ) > 0 ) {
-            if ( $stored === $hash ) {
-                return false;
-            }
-            if ( $stored === '' ) {
-                update_post_meta( $post_id, '_ml_config_synced_hash', $hash );
-                return false;
-            }
-        }
-        $steps = json_decode( $raw_steps, true );
-        $tiers = $raw_tiers === '' ? array() : json_decode( $raw_tiers, true );
-        if ( ! is_array( $steps ) || ! $steps || ! is_array( $tiers ) ) {
-            return false;
-        }
-        $rows = array();
-        foreach ( $steps as $s ) {
-            $r = array(
-                'step_id'         => (string) ( $s['step_id'] ?? '' ),
-                'step_label'      => (string) ( $s['step_label'] ?? '' ),
-                'step_type'       => (string) ( $s['step_type'] ?? 'select' ),
-                'required'        => (int) ( $s['required'] ?? 0 ),
-                'show_in_summary' => 1,
-                'use_as_filter'   => 0,
-            );
-            foreach ( array( 'min_value', 'max_value' ) as $k ) {
-                if ( isset( $s[ $k ] ) ) {
-                    $r[ $k ] = $s[ $k ];
+// ML-KONFIG-SYNC v2 (19.10.2026): Konfigurator-Schritte aus Rohdaten UND veröffentlichten Varianten in die
+// ACF-Wiederholfelder config_steps / tier_pricing schreiben. Import 5 fasst diese Felder nicht an (nur is_configurable,
+// config_type, show_tier_table), und WP All Import kann JSON nicht in Wiederholfelder umsetzen.
+// Marker: _ml_config_synced_hash. Opt-out je Produkt: _ml_config_manual = 1.
+if ( ! function_exists( 'ml_configurator_terms' ) ) {
+    function ml_configurator_terms( $tax ) {
+        static $cache = array();
+        if ( ! isset( $cache[ $tax ] ) ) {
+            $cache[ $tax ] = array();
+            $terms         = get_terms( array( 'taxonomy' => $tax, 'hide_empty' => false, 'number' => 0 ) );
+            if ( is_array( $terms ) ) {
+                foreach ( $terms as $t ) {
+                    $cache[ $tax ][ $t->slug ] = array(
+                        'name'  => html_entity_decode( $t->name, ENT_QUOTES ),
+                        'order' => (int) get_term_meta( $t->term_id, 'order', true ),
+                    );
                 }
             }
-            $rows[] = $r;
+        }
+        return $cache[ $tax ];
+    }
+}
+if ( ! function_exists( 'ml_configurator_options' ) ) {
+    function ml_configurator_options( $tax, array $slugs ) {
+        $terms = ml_configurator_terms( $tax );
+        $list  = array();
+        foreach ( $slugs as $slug ) {
+            $slug   = (string) $slug;
+            $list[] = array(
+                'value' => $slug,
+                'label' => isset( $terms[ $slug ] ) ? $terms[ $slug ]['name'] : $slug,
+                'order' => isset( $terms[ $slug ] ) ? $terms[ $slug ]['order'] : 0,
+            );
+        }
+        usort( $list, function ( $a, $b ) use ( $tax ) {
+            if ( $tax === 'pa_size' && $a['order'] !== $b['order'] ) {
+                return $a['order'] <=> $b['order'];
+            }
+            return strnatcasecmp( $a['label'], $b['label'] );
+        } );
+        return $list;
+    }
+}
+if ( ! function_exists( 'ml_configurator_variant_attrs' ) ) {
+    function ml_configurator_variant_attrs( array $parent_ids ) {
+        global $wpdb;
+        $out = array();
+        foreach ( array_chunk( array_map( 'intval', $parent_ids ), 1000 ) as $chunk ) {
+            $rows = $wpdb->get_results(
+                "SELECT v.post_parent AS parent, pm.meta_key AS k, pm.meta_value AS val
+                 FROM {$wpdb->posts} v JOIN {$wpdb->postmeta} pm ON pm.post_id = v.ID
+                 WHERE v.post_type = 'product_variation' AND v.post_status = 'publish'
+                   AND pm.meta_key IN ('attribute_pa_color','attribute_pa_size') AND pm.meta_value <> ''
+                   AND v.post_parent IN (" . implode( ',', $chunk ) . ')'
+            );
+            foreach ( (array) $rows as $r ) {
+                $out[ (int) $r->parent ][ substr( $r->k, 10 ) ][ $r->val ] = 1;
+            }
+        }
+        return $out;
+    }
+}
+if ( ! function_exists( 'ml_configurator_plan' ) ) {
+    function ml_configurator_plan( $post_id, $attrs = null ) {
+        $post_id   = (int) $post_id;
+        $raw_steps = (string) get_post_meta( $post_id, '_config_steps_raw', true );
+        if ( $raw_steps === '' || get_post_meta( $post_id, 'is_configurable', true ) !== '1' || get_post_meta( $post_id, '_ml_config_manual', true ) ) {
+            return null;
+        }
+        $raw_tiers = (string) get_post_meta( $post_id, '_ml_price_tiers_raw', true );
+        $steps_in  = json_decode( $raw_steps, true );
+        $tiers_in  = $raw_tiers === '' ? array() : json_decode( $raw_tiers, true );
+        if ( ! is_array( $steps_in ) || ! $steps_in || ! is_array( $tiers_in ) ) {
+            return null;
+        }
+        if ( $attrs === null ) {
+            $all   = ml_configurator_variant_attrs( array( $post_id ) );
+            $attrs = isset( $all[ $post_id ] ) ? $all[ $post_id ] : array();
+        }
+        $type   = (string) get_post_meta( $post_id, 'config_type', true );
+        $colors = ml_configurator_options( 'pa_color', isset( $attrs['pa_color'] ) ? array_keys( $attrs['pa_color'] ) : array() );
+        $sizes  = ml_configurator_options( 'pa_size', isset( $attrs['pa_size'] ) ? array_keys( $attrs['pa_size'] ) : array() );
+        $hash   = md5( $raw_steps . '|' . $raw_tiers );
+        if ( $colors || $sizes ) {
+            $hash = md5( $hash . '|v2|' . wp_json_encode( array( $type, $colors, $sizes ) ) );
+        }
+        $to_rows = function ( array $list ) {
+            return array_map( function ( $o ) {
+                return array( 'value' => $o['value'], 'label' => $o['label'], 'price_modifier' => 0, 'available' => 1 );
+            }, $list );
+        };
+        $base     = array( 'required' => 1, 'show_in_summary' => 1, 'use_as_filter' => 0 );
+        $rows     = array();
+        $quantity = true;
+        if ( count( $colors ) > 1 ) {
+            $rows[] = $base + array( 'step_id' => 'color', 'step_label' => 'Farbe', 'step_type' => 'radio', 'options' => $to_rows( $colors ) );
+        }
+        if ( count( $sizes ) > 1 ) {
+            if ( $type === 'textile' ) {
+                $rows[]   = $base + array( 'step_id' => 'sizes', 'step_label' => 'Größen', 'step_type' => 'size_matrix', 'options' => $to_rows( $sizes ) );
+                $quantity = false;
+            } else {
+                $rows[] = $base + array( 'step_id' => 'size', 'step_label' => 'Größe', 'step_type' => 'radio', 'options' => $to_rows( $sizes ) );
+            }
+        }
+        if ( $quantity ) {
+            foreach ( $steps_in as $s ) {
+                $r = array(
+                    'step_id'         => (string) ( $s['step_id'] ?? '' ),
+                    'step_label'      => (string) ( $s['step_label'] ?? '' ),
+                    'step_type'       => (string) ( $s['step_type'] ?? 'number' ),
+                    'required'        => (int) ( $s['required'] ?? 0 ),
+                    'show_in_summary' => 1,
+                    'use_as_filter'   => 0,
+                );
+                foreach ( array( 'min_value', 'max_value' ) as $k ) {
+                    if ( isset( $s[ $k ] ) ) {
+                        $r[ $k ] = $s[ $k ];
+                    }
+                }
+                $rows[] = $r;
+            }
         }
         $tier_rows = array();
-        foreach ( $tiers as $t ) {
+        foreach ( $tiers_in as $t ) {
             $tier_rows[] = array(
                 'min_quantity'     => (int) ( $t['min_quantity'] ?? 0 ),
                 'discount_percent' => (float) ( $t['discount_percent'] ?? 0 ),
             );
         }
-        update_field( 'field_config_steps', $rows, $post_id );
-        update_field( 'field_tier_pricing', $tier_rows, $post_id );
-        update_post_meta( $post_id, '_ml_config_synced_hash', $hash );
+        $n_opts = 0;
+        foreach ( $rows as $r ) {
+            $n_opts += isset( $r['options'] ) ? count( $r['options'] ) : 0;
+        }
+        return array( 'hash' => $hash, 'steps' => $rows, 'tiers' => $tier_rows, 'options' => $n_opts );
+    }
+}
+if ( ! function_exists( 'ml_configurator_write' ) ) {
+    function ml_configurator_write( $post_id, array $plan ) {
+        update_field( 'field_config_steps', $plan['steps'], $post_id );
+        update_field( 'field_tier_pricing', $plan['tiers'], $post_id );
+        update_post_meta( $post_id, '_ml_config_synced_hash', $plan['hash'] );
+    }
+}
+if ( ! function_exists( 'ml_sync_configurator_fields' ) ) {
+    function ml_sync_configurator_fields( $post_id, $force = false ) {
+        if ( ! function_exists( 'update_field' ) ) {
+            return false;
+        }
+        $plan = ml_configurator_plan( $post_id );
+        if ( ! $plan ) {
+            return false;
+        }
+        if ( ! $force && (string) get_post_meta( $post_id, '_ml_config_synced_hash', true ) === $plan['hash'] ) {
+            return false;
+        }
+        ml_configurator_write( (int) $post_id, $plan );
         return true;
+    }
+}
+if ( ! function_exists( 'ml_sync_configurator_all' ) ) {
+    // Alle Produkte mit Rohdaten durchgehen. $apply = false: nur zählen. $limit > 0: nach so vielen zu schreibenden Produkten stoppen.
+    function ml_sync_configurator_all( $apply = true, $limit = 0 ) {
+        global $wpdb;
+        if ( ! function_exists( 'update_field' ) ) {
+            return array();
+        }
+        if ( function_exists( 'set_time_limit' ) ) {
+            @set_time_limit( 600 );
+        }
+        $ids  = array_map( 'intval', $wpdb->get_col( "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_config_steps_raw' AND meta_value <> ''" ) );
+        $stat = array( 'mit Rohdaten' => count( $ids ), 'ohne Plan' => 0, 'aktuell' => 0, 'zu schreiben' => 0, 'geschrieben' => 0, 'Optionen' => 0 );
+        $lay  = array();
+        foreach ( array_chunk( $ids, 500 ) as $chunk ) {
+            update_meta_cache( 'post', $chunk );
+            $attrs = ml_configurator_variant_attrs( $chunk );
+            foreach ( $chunk as $id ) {
+                $plan = ml_configurator_plan( $id, isset( $attrs[ $id ] ) ? $attrs[ $id ] : array() );
+                if ( ! $plan ) {
+                    $stat['ohne Plan']++;
+                    continue;
+                }
+                if ( (string) get_post_meta( $id, '_ml_config_synced_hash', true ) === $plan['hash'] ) {
+                    $stat['aktuell']++;
+                    continue;
+                }
+                $stat['zu schreiben']++;
+                $stat['Optionen'] += $plan['options'];
+                $key         = implode( '+', array_column( $plan['steps'], 'step_id' ) );
+                $lay[ $key ] = ( isset( $lay[ $key ] ) ? $lay[ $key ] : 0 ) + 1;
+                if ( $apply ) {
+                    ml_configurator_write( $id, $plan );
+                    $stat['geschrieben']++;
+                }
+                if ( $limit && $stat['zu schreiben'] >= $limit ) {
+                    break 2;
+                }
+            }
+        }
+        arsort( $lay );
+        return array( 'stat' => $stat, 'schritte' => $lay );
     }
 }
 add_action( 'pmxi_saved_post', function ( $post_id ) {
     ml_sync_configurator_fields( $post_id );
 }, 99, 1 );
+// Am Ende eines Imports alle Produkte abgleichen (Varianten und Begriffe sind dann vollständig). WP All Import Pro feuert
+// 'pmxi_after_xml_import'; beide Hooks bedienen, einmal pro Request.
+foreach ( array( 'pmxi_after_xml_import', 'pmxi_import_complete' ) as $ml_cfg_done_hook ) {
+    add_action( $ml_cfg_done_hook, function () {
+        static $done = false;
+        if ( $done ) {
+            return;
+        }
+        $done = true;
+        ml_sync_configurator_all( true );
+    }, 99, 0 );
+}
