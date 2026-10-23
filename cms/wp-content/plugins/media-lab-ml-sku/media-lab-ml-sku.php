@@ -1624,3 +1624,14 @@ add_filter( 'mlw_configurator_color_value', function ( $value, $option ) {
     }
     return ml_configurator_color_css( isset( $option['value'] ) ? $option['value'] : '' );
 }, 10, 2 );
+
+
+// ML-SUCHE-DATUM (23.10.2026): Live-Suche zeigt bei Produkten kein Datum (ein Erscheinungsdatum sagt bei Katalogprodukten nichts).
+// Beiträge und Seiten behalten es, die Einstellung "Datum" in Agency Core (Suche / Live-Suche) bleibt unberührt. Leerer Text statt
+// entferntem Feld, damit das JS nichts Undefiniertes ausgibt.
+add_filter( 'media_lab_ajax_search_result', function ( $result, $post_id, $post_type ) {
+    if ( $post_type === 'product' && is_array( $result ) ) {
+        $result['date'] = '';
+    }
+    return $result;
+}, 30, 3 );
