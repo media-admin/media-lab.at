@@ -1394,6 +1394,22 @@ if ( ! function_exists( 'ml_configurator_plan' ) ) {
                 $rows[] = $r;
             }
         }
+        // Kontaktschritt: Die Anfrage-Engine verlangt Name, E-Mail (und je nach Einstellung Telefon). Der Wizard zeigt diese Felder
+        // nur als Schritt vom Typ contact_form (templates/configurator/fields/contact-form.php). Ohne ihn meldet der Server
+        // "Bitte geben Sie Ihren Namen an". Filter ml_configurator_contact_step: Schritt anpassen oder false zurückgeben.
+        $contact = apply_filters( 'ml_configurator_contact_step', array(
+            'step_id'         => 'contact',
+            'step_label'      => 'Ihre Kontaktdaten',
+            'step_type'       => 'contact_form',
+            'required'        => 1,
+            'show_in_summary' => 0,
+            'use_as_filter'   => 0,
+        ), $post_id );
+        if ( is_array( $contact ) && $contact ) {
+            $rows[] = $contact;
+        }
+        $hash = md5( $hash . '|kontakt|' . wp_json_encode( $contact ) );
+
         $tier_rows = array();
         foreach ( $tiers_in as $t ) {
             $tier_rows[] = array(
