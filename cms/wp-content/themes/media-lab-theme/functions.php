@@ -201,4 +201,4 @@ add_filter( 'mlw_configurator_hide_wizard_attributes', '__return_true' );
 add_filter( 'mlw_loop_product_info', '__return_true' );            // Marke + Verfuegbarkeit auf Produktkarten
 add_filter( 'mlw_wishlist_single_quantity', '__return_true' );     // Mengenfeld vor dem Anfrage-Button
 add_filter( 'mlw_wishlist_single_button_style', fn() => 'text' );  // Textbutton statt Herz
-add_filter( 'mlw_reviews_always_open', '__return_true' );          // Bewertungen fuer Produkte offen (Importe legen sie geschlossen an)
+// Bewertungen sind abgeschaltet (Entscheidung 22.10.2026). Wieder einschalten: add_filter( 'mlw_reviews_always_open', '__return_true' ); und vorher die Moderation klären (siehe Launch-Checkliste).
