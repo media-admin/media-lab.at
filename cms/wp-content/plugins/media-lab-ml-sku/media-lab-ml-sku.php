@@ -493,27 +493,27 @@ class MediaLab_ML_SKU_Generator {
         }
 
         private function process_parent($post_id) {
-                error_log("[ML SKU DEBUG] process_parent() gestartet für Post {$post_id}");
+                ml_sku_debug("[ML SKU DEBUG] process_parent() gestartet für Post {$post_id}");
 
                 $product = wc_get_product($post_id);
                 if (!$product) {
-                        error_log("[ML SKU DEBUG] wc_get_product() lieferte NICHTS für Post {$post_id} - Abbruch");
+                        ml_sku_debug("[ML SKU DEBUG] wc_get_product() lieferte NICHTS für Post {$post_id} - Abbruch");
                         return;
                 }
 
                 $supplierCode = get_post_meta($post_id, '_ml_supplier_code', true);
                 $supplierSku  = get_post_meta($post_id, '_ml_supplier_sku', true);
 
-                error_log("[ML SKU DEBUG] _ml_supplier_code = '{$supplierCode}', _ml_supplier_sku = '{$supplierSku}'");
+                ml_sku_debug("[ML SKU DEBUG] _ml_supplier_code = '{$supplierCode}', _ml_supplier_sku = '{$supplierSku}'");
 
                 // Importer hasn't written supplier data (yet) -> nothing to do.
                 if (!$supplierCode || !$supplierSku) {
-                        error_log("[ML SKU DEBUG] supplierCode oder supplierSku leer - Abbruch für Post {$post_id}");
+                        ml_sku_debug("[ML SKU DEBUG] supplierCode oder supplierSku leer - Abbruch für Post {$post_id}");
                         return;
                 }
 
                 $token = $this->token_for_supplier($supplierCode);
-                error_log("[ML SKU DEBUG] token_for_supplier('{$supplierCode}') = " . var_export($token, true));
+                ml_sku_debug("[ML SKU DEBUG] token_for_supplier('{$supplierCode}') = " . var_export($token, true));
 
                 if (!$token) {
                         // Unknown supplier code — don't silently assign a broken SKU.
@@ -522,23 +522,23 @@ class MediaLab_ML_SKU_Generator {
                 }
 
                 $parentNumber = $this->ensure_parent_number($post_id, $token);
-                error_log("[ML SKU DEBUG] parentNumber = {$parentNumber}");
+                ml_sku_debug("[ML SKU DEBUG] parentNumber = {$parentNumber}");
 
                 // Assign SKU to parent if missing ODER falls die aktuelle SKU noch
                 // nicht unserem ML-Format entspricht (z.B. eine temporäre
                 // Import-SKU wie "DIM|AR1249", die WP All Import zur
                 // Varianten-Zuordnung braucht, aber final ersetzt werden soll).
                 $currentSku = $product->get_sku();
-                error_log("[ML SKU DEBUG] currentSku = '{$currentSku}'");
+                ml_sku_debug("[ML SKU DEBUG] currentSku = '{$currentSku}'");
 
                 if (!$currentSku || !str_starts_with($currentSku, self::SKU_PREFIX . '-')) {
                         $sku = $this->format_parent_sku($token, $parentNumber);
-                        error_log("[ML SKU DEBUG] Setze neue SKU: '{$sku}'");
+                        ml_sku_debug("[ML SKU DEBUG] Setze neue SKU: '{$sku}'");
                         $product->set_sku($sku);
                         $saveResult = $product->save();
-                        error_log("[ML SKU DEBUG] save() Ergebnis: " . var_export($saveResult, true));
+                        ml_sku_debug("[ML SKU DEBUG] save() Ergebnis: " . var_export($saveResult, true));
                 } else {
-                        error_log("[ML SKU DEBUG] currentSku beginnt schon mit ML- Prefix, keine Änderung");
+                        ml_sku_debug("[ML SKU DEBUG] currentSku beginnt schon mit ML- Prefix, keine Änderung");
                 }
 
                 // If it's a variable product, make sure any children already present
@@ -549,26 +549,26 @@ class MediaLab_ML_SKU_Generator {
                         }
                 }
 
-                error_log("[ML SKU DEBUG] process_parent() fertig für Post {$post_id}");
+                ml_sku_debug("[ML SKU DEBUG] process_parent() fertig für Post {$post_id}");
         }
 
         private function process_variation_via_import($variation_id) {
-                error_log("[ML SKU DEBUG] process_variation_via_import() gestartet für Variation {$variation_id}");
+                ml_sku_debug("[ML SKU DEBUG] process_variation_via_import() gestartet für Variation {$variation_id}");
 
                 $variation = wc_get_product($variation_id);
                 if (!$variation || !$variation->is_type('variation')) {
-                        error_log("[ML SKU DEBUG] Post {$variation_id} ist keine gültige Variation - Abbruch");
+                        ml_sku_debug("[ML SKU DEBUG] Post {$variation_id} ist keine gültige Variation - Abbruch");
                         return;
                 }
 
                 $parent_id = $variation->get_parent_id();
-                error_log("[ML SKU DEBUG] parent_id für Variation {$variation_id} = {$parent_id}");
+                ml_sku_debug("[ML SKU DEBUG] parent_id für Variation {$variation_id} = {$parent_id}");
                 if (!$parent_id) return;
 
                 $supplierCode = get_post_meta($parent_id, '_ml_supplier_code', true);
-                error_log("[ML SKU DEBUG] _ml_supplier_code des Parents {$parent_id} = '{$supplierCode}'");
+                ml_sku_debug("[ML SKU DEBUG] _ml_supplier_code des Parents {$parent_id} = '{$supplierCode}'");
                 if (!$supplierCode) {
-                        error_log("[ML SKU DEBUG] Parent {$parent_id} hat keinen supplierCode - Abbruch (Parent noch nicht verarbeitet?)");
+                        ml_sku_debug("[ML SKU DEBUG] Parent {$parent_id} hat keinen supplierCode - Abbruch (Parent noch nicht verarbeitet?)");
                         return;
                 }
 
@@ -576,11 +576,11 @@ class MediaLab_ML_SKU_Generator {
                 if (!$token) return;
 
                 $parentNumber = $this->ensure_parent_number($parent_id, $token);
-                error_log("[ML SKU DEBUG] parentNumber = {$parentNumber}, rufe assign_variation_sku auf");
+                ml_sku_debug("[ML SKU DEBUG] parentNumber = {$parentNumber}, rufe assign_variation_sku auf");
 
                 $this->assign_variation_sku($variation_id, $parent_id, $token, $parentNumber);
 
-                error_log("[ML SKU DEBUG] process_variation_via_import() fertig für Variation {$variation_id}, aktuelle SKU: " . $variation->get_sku());
+                ml_sku_debug("[ML SKU DEBUG] process_variation_via_import() fertig für Variation {$variation_id}, aktuelle SKU: " . $variation->get_sku());
         }
 
         /* ------------------------------------------------------------------ *
@@ -1651,3 +1651,15 @@ add_filter( 'media_lab_ajax_search_result', function ( $result, $post_id, $post_
     }
     return $result;
 }, 30, 3 );
+
+
+// ML-SKU-DEBUG-SCHALTER (24.10.2026): Die Debug-Ausgaben von process_parent() und process_variation_via_import() schrieben bei jedem
+// Import mehrere Zeilen pro Produkt ins Log (rund 84 % der letzten 20.000 Zeilen). Jetzt nur noch bei gesetzter Konstante, in der
+// wp-config.php: define( 'ML_SKU_DEBUG', true );
+if ( ! function_exists( 'ml_sku_debug' ) ) {
+    function ml_sku_debug( $message ) {
+        if ( defined( 'ML_SKU_DEBUG' ) && ML_SKU_DEBUG ) {
+            error_log( $message );
+        }
+    }
+}
