@@ -136,6 +136,7 @@ class MakitoAdapter extends AbstractAdapter {
         $product->importUid    = $product->supplierCode . '|' . $masterCode;
 
         $product->productTitle       = $title;
+        $product->brand = $this->normalizeBrand((string) $masterNode->brand);  // <brand> im Produkt-Feed, Bereinigung: AbstractAdapter::normalizeBrand()
         $product->productDescription = $this->sanitizeDescription((string) $masterNode->extendedinfo);
 
         if (isset($masterNode->categories)) {

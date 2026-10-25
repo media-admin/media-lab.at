@@ -187,6 +187,7 @@ class MidOceanAdapter extends AbstractAdapter {
             $product->productTitle = trim((string) ($raw['short_description'] ?? ''));
         }
 
+        $product->brand = $this->normalizeBrand((string) ($raw['brand'] ?? ''));  // Bereinigung: AbstractAdapter::normalizeBrand()
         $product->productDescription = $this->sanitizeDescription(
             (string) ($raw['long_description'] ?? $raw['short_description'] ?? '')
         );
