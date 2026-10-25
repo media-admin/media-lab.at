@@ -11,6 +11,30 @@ siehe Notion „WooCommerce Import – Entscheidungen & Setup" →
 
 ---
 
+## 2026-10-25
+
+### Added
+- `FeedGenerator::generateCsv()` prüft die erste Zeile jeder CSV-Datei gegen
+  den Kopf: Weichen Kopf und Schlüssel von `Product::toArray()` bzw.
+  `ProductVariant::toArray()` ab (Name oder Reihenfolge), bricht der Lauf
+  mit einer Meldung ab, statt Werte still unter falschen Spaltennamen zu
+  schreiben. Kopf und Schlüssel waren zum Zeitpunkt der Prüfung identisch
+
+### Changed
+- Marken (`brand`): MidOcean liefert `brand` (Test 24.10.2026, 2.768
+  Produkte: `midocean` 2.350, `Sol's` 328, `NEOBLU` 67, `ATF` 17,
+  `Skross` 3, `RTP APPAREL` 3), Makito `<brand>` im Produkt-Feed. Beide
+  Adapter lasen das Feld bisher nicht (Cotton Classics schon, aus
+  `$rows[0][2]`). Neue Regeln in `AbstractAdapter::normalizeBrand()`
+  (Entscheidung Markus Tritremmel, 25.10.2026): Der Lieferantenname
+  `midocean` ist keine Marke und wird zu leer (`BRAND_IGNORE`); `Sol's`
+  wird auf die Cotton-Schreibweise `SOL's Collection` vereinheitlicht
+  (`BRAND_ALIASES`). Die Makito-Werte sind noch nicht gezählt. Vor dem
+  nächsten Import in WP All Import prüfen, ob die Spalte `brand` einer
+  Taxonomie zugeordnet ist
+
+---
+
 ## 2026-09-18
 
 ### Removed
