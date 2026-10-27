@@ -11,6 +11,16 @@ siehe Notion „WooCommerce Import – Entscheidungen & Setup" →
 
 ---
 
+## 2026-10-27
+
+### Changed
+- Marken (`brand`) von Makito (Feed vom 27.10.2026, 4.515 Produkte): 4.437 ohne Marke, 78 mit Marke (KEYA 25,
+  ANTONIO MIRÓ 18, Antonio Miro 14, Parker 9, cross 6, Alexluca 3, ORIZONS 3). Der Lieferantenname kommt nicht als Marke
+  vor, `BRAND_IGNORE` bleibt unverändert. Neue Schreibweisen in `BRAND_ALIASES` (`AbstractAdapter`): „Antonio Miro“ und
+  „ANTONIO MIRÓ“ werden zu „Antonio Miró“, „cross“ wird zu „Cross“
+
+---
+
 ## 2026-10-25
 
 ### Added

@@ -36,7 +36,12 @@ abstract class AbstractAdapter {
      * Neue Fälle hier eintragen. Der Vergleich ignoriert Groß- und Kleinschreibung und typografische Apostrophe.
      */
     protected const BRAND_IGNORE  = ['midocean'];
-    protected const BRAND_ALIASES = ["sol's" => "SOL's Collection"];
+    protected const BRAND_ALIASES = [
+        "sol's"        => "SOL's Collection", // MidOcean "Sol's" = Cotton "SOL's Collection"
+        'antonio miro' => 'Antonio Miró',     // Makito liefert "Antonio Miro" und "ANTONIO MIRÓ" für dieselbe Marke
+        'antonio miró' => 'Antonio Miró',
+        'cross'        => 'Cross',            // Makito: kleingeschrieben
+    ];
 
     protected function normalizeBrand(string $brand): string {
         $brand = trim($brand);
