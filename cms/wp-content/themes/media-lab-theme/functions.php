@@ -202,3 +202,4 @@ add_filter( 'mlw_loop_product_info', '__return_true' );            // Marke + Ve
 add_filter( 'mlw_wishlist_single_quantity', '__return_true' );     // Mengenfeld vor dem Anfrage-Button
 add_filter( 'mlw_wishlist_single_button_style', fn() => 'text' );  // Textbutton statt Herz
 // Bewertungen sind abgeschaltet (Entscheidung 22.10.2026). Wieder einschalten: add_filter( 'mlw_reviews_always_open', '__return_true' ); und vorher die Moderation klären (siehe Launch-Checkliste).
+add_filter( 'mlw_single_brand', '__return_true' );                 // Marke auf der Produktseite (Link auf das Archiv)
