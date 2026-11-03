@@ -6,6 +6,7 @@
  *   ml_deco_enabled                  yes|no   Veredelungs-Tab insgesamt an/aus
  *   ml_deco_show_prices_<lieferant>  yes|no   Preise anzeigen (Standard: no)
  *   ml_deco_factor_<lieferant>       float    Faktor auf den Einkaufspreis der Veredelung (Standard: 1)
+ *   ml_deco_calc_enabled             yes|no   Auswahl + Preisrechner im Tab anzeigen (Standard: yes)
  *   ml_deco_tab_title                string
  *   ml_deco_price_note               string   Hinweis unter den Preisen
  *   ml_deco_noprice_note             string   Hinweis, wenn Preise ausgeblendet sind
@@ -32,6 +33,10 @@ class ML_Deco_Settings {
 
 	public static function enabled(): bool {
 		return get_option( 'ml_deco_enabled', 'yes' ) === 'yes';
+	}
+
+	public static function calc_enabled(): bool {
+		return get_option( 'ml_deco_calc_enabled', 'yes' ) === 'yes';
 	}
 
 	public static function show_prices( string $key ): bool {
@@ -66,6 +71,7 @@ class ML_Deco_Settings {
 		$yesno = static fn( $v ) => $v === 'yes' ? 'yes' : 'no';
 
 		register_setting( self::GROUP, 'ml_deco_enabled', [ 'type' => 'string', 'sanitize_callback' => $yesno, 'default' => 'yes' ] );
+		register_setting( self::GROUP, 'ml_deco_calc_enabled', [ 'type' => 'string', 'sanitize_callback' => $yesno, 'default' => 'yes' ] );
 		register_setting( self::GROUP, 'ml_deco_tab_title', [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ] );
 		register_setting( self::GROUP, 'ml_deco_price_note', [ 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ] );
 		register_setting( self::GROUP, 'ml_deco_noprice_note', [ 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ] );
@@ -181,6 +187,9 @@ class ML_Deco_Settings {
 		echo '<tr><th scope="row">' . esc_html__( 'Veredelungs-Tab', 'media-lab-ml-decoration' ) . '</th><td><label>';
 		echo '<input type="checkbox" name="ml_deco_enabled" value="yes"' . checked( self::enabled(), true, false ) . '> ';
 		echo esc_html__( 'Auf Produktseiten anzeigen', 'media-lab-ml-decoration' ) . '</label></td></tr>';
+		echo '<tr><th scope="row">' . esc_html__( 'Auswahl & Preisrechner', 'media-lab-ml-decoration' ) . '</th><td><label>';
+		echo '<input type="checkbox" name="ml_deco_calc_enabled" value="yes"' . checked( self::calc_enabled(), true, false ) . '> ';
+		echo esc_html__( 'Kunden können Position, Technik und Farben wählen (mit Preisen nur, wenn "Preise anzeigen" aktiv ist)', 'media-lab-ml-decoration' ) . '</label></td></tr>';
 		echo '<tr><th scope="row"><label for="ml_deco_tab_title">' . esc_html__( 'Tab-Titel', 'media-lab-ml-decoration' ) . '</label></th><td>';
 		echo '<input type="text" class="regular-text" id="ml_deco_tab_title" name="ml_deco_tab_title" value="' . esc_attr( (string) get_option( 'ml_deco_tab_title', '' ) ) . '" placeholder="' . esc_attr__( 'Veredelung', 'media-lab-ml-decoration' ) . '"></td></tr>';
 		echo '</tbody></table>';

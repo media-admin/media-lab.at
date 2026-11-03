@@ -5,6 +5,8 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.2.1: Menge wird aus dem Mengenfeld des Wunschlisten-Blocks (.mlw-wishlist-qty__input) übernommen; Suche zuerst innerhalb des eigenen Produkts.
+- 1.2.0: Auswahl + Preisrechner im Tab: Position, Technik, Farben, (Flächenstufe / Motivfläche), Menge und Wiederholungsauftrag. Mehrere Positionen kombinierbar, Summe mit Einrichtung. Ohne "Preise anzeigen" nur die Auswahl, ohne Beträge im Quelltext. Beträge im Shop-Format (WooCommerce-Einstellungen).
 - 1.1.0: Bilder der Druckpositionen (Makito) öffnen per Klick in einer Vergrößerung (Lightbox, ohne Fremdbibliothek, ESC/Klick schließt).
 - 1.0.2: Bei Vollfarbtechniken (Fullcolor/Vollfarbe im Namen) wird keine Farbanzahl mehr angezeigt.
 - 1.0.1: Aufeinanderfolgende Mengenstufen mit gleichem Preis werden zu "ab X" zusammengefasst.
@@ -37,10 +39,19 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 - Shortcode für Themes ohne Tabs: `[ml_decoration]` oder `[ml_decoration id="123"]`.
 - Filter: `ml_deco_suppliers`, `ml_deco_feeds_dir`, `ml_deco_include_handling`, `ml_deco_position_label`, `ml_deco_is_full_colour`.
 
+## Preisrechner
+
+- Menge: übernimmt das Mengenfeld der Produktseite (Selector per Filter `ml_deco_qty_selector`, Standard `.mlw-wishlist-qty__input, form.cart input.qty, input[name="quantity"]`) und folgt Änderungen; das Feld im Rechner ist zusätzlich änderbar.
+- Stückpreis wie in den Tabellen (inkl. Handling, weitere Farben, cm²-Preise, Mindeststückpreis); Summe = Einrichtung + max(Menge × Stückpreis, Mindestauftragswert).
+- Flächenstufe (MidOcean): Vorbelegung = größte erreichbare Stufe (vorsichtige Schätzung). Preis je cm² (Makito): Motivfläche, Vorbelegung = max. Druckfläche.
+- Über der letzten Makito-Staffel: "Preis auf Anfrage". Einstellung: WooCommerce → Veredelung → "Auswahl & Preisrechner".
+- Noch ohne Übergabe an Anfrage/Wunschliste (geplant, Etappe 2).
+
 ## Vor Go-Live prüfen (Annahmen)
 
 - MidOcean: Handling-Zuschlag (`print_manipulation`) wird pro Stück zum Preis addiert (Filter `ml_deco_include_handling`).
 - Makito: Staffel gilt „bis einschließlich"; Preis bei cm²-Techniken = Grundpreis + cm²-Preis × Fläche, mindestens
   Mindeststückpreis; „Mindestauftragswert" = `minjob`. Gegen `tarifa_general_marcaje_2026_ing.pdf` prüfen.
+- Mindestauftragswert (Makito, `minjob`) wird je Linie einmal angewendet (nicht je Farbe); gegen das Tarif-PDF prüfen.
 - Makito-Zuschlagstexte (Einzelverpackung usw.) werden bewusst nicht ausgegeben.
 - Flächenstufen bei MidOcean sind in cm² (aus den Größenordnungen abgeleitet, nicht dokumentiert).

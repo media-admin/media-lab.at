@@ -48,6 +48,7 @@ class ML_Deco_Frontend {
 	private static function enqueue_assets(): void {
 		wp_enqueue_style( 'ml-deco', ML_DECO_URL . 'assets/css/decoration.css', [], ML_DECO_VERSION );
 		wp_enqueue_script( 'ml-deco', ML_DECO_URL . 'assets/js/decoration.js', [], ML_DECO_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
+		wp_enqueue_script( 'ml-deco-calc', ML_DECO_URL . 'assets/js/calculator.js', [], ML_DECO_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
 		wp_localize_script( 'ml-deco', 'mldL10n', [
 			'close'    => __( 'Schließen', 'media-lab-ml-decoration' ),
 			'fallback' => __( 'Druckposition', 'media-lab-ml-decoration' ),

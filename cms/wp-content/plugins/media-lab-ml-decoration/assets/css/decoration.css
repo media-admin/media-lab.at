@@ -226,3 +226,133 @@
 	text-align: center;
 	color: var(--color-text-muted);
 }
+
+/* Auswahl + Preisrechner */
+.mld__h {
+	margin: 0;
+	font-size: 1.15rem;
+}
+
+.mld-calc {
+	display: grid;
+	gap: 0.75rem;
+	padding: 1rem 1.25rem;
+	background: var(--color-card-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 0.5rem;
+}
+
+.mld-calc__ui {
+	display: grid;
+	gap: 1rem;
+}
+
+.mld-calc__hint,
+.mld-calc__empty,
+.mld-calc__avg {
+	margin: 0;
+	font-size: 0.9rem;
+	color: var(--color-text-muted);
+}
+
+.mld-calc__form {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.mld-calc__pos {
+	min-width: 0;
+	margin: 0;
+	padding: 0.75rem 1rem 1rem;
+	border: 1px solid var(--color-border);
+	border-radius: 0.375rem;
+}
+
+.mld-calc__legend {
+	padding: 0 0.5rem;
+	font-weight: 600;
+}
+
+.mld-calc__size {
+	font-weight: 400;
+	color: var(--color-text-muted);
+}
+
+.mld-calc__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 0.75rem 1rem;
+}
+
+.mld-calc__field {
+	display: grid;
+	gap: 0.25rem;
+	min-width: 9rem;
+}
+
+.mld-calc__field[hidden] {
+	display: none;
+}
+
+.mld-calc__field label {
+	font-size: 0.85rem;
+	color: var(--color-text-muted);
+}
+
+.mld-calc__field select,
+.mld-calc__field input[type="number"] {
+	min-height: 2.5rem;
+	padding: 0.35rem 0.6rem;
+	font: inherit;
+	color: var(--color-text);
+	background: var(--color-input-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 0.375rem;
+}
+
+.mld-calc__field select:focus-visible,
+.mld-calc__field input:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 1px;
+}
+
+.mld-calc__check {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 2.5rem;
+}
+
+.mld-calc__check label {
+	font-size: 0.9rem;
+	color: var(--color-text);
+}
+
+.mld-calc__h {
+	margin: 0 0 0.5rem;
+	font-size: 1rem;
+}
+
+.mld-calc__list {
+	margin: 0;
+	padding-left: 1.25rem;
+}
+
+.mld-calc__table td:first-child {
+	white-space: normal;
+}
+
+.mld-calc__table tfoot th {
+	text-align: left;
+}
+
+.mld-calc__table tfoot td,
+.mld-calc__sum {
+	font-weight: 700;
+}
+
+.mld-calc__request {
+	text-align: left;
+	color: var(--color-text-muted);
+}

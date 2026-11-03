@@ -60,6 +60,13 @@ class ML_Deco_Render {
 		ob_start();
 		echo '<div class="mld">';
 
+		// Auswahl + Preisrechner (nur wenn aktiviert), darunter die Übersicht aller Möglichkeiten
+		$withCalc = ML_Deco_Settings::calc_enabled() && apply_filters( 'ml_deco_calculator_enabled', true, $product_id );
+		if ( $withCalc ) {
+			echo ML_Deco_Calculator::markup( $data, $pricelist, $show, $factor, $handling ); // phpcs:ignore WordPress.Security.EscapeOutput -- intern escaped / JSON-kodiert
+			echo '<h3 class="mld__h">' . esc_html__( 'Alle Möglichkeiten im Überblick', 'media-lab-ml-decoration' ) . '</h3>';
+		}
+
 		$printed = 0;
 		foreach ( (array) $data['positions'] as $position ) {
 			$techs = [];
@@ -229,17 +236,17 @@ class ML_Deco_Render {
 	}
 
 	/** Techniken, bei denen "x Farben" nichts aussagt (Name enthält Fullcolor / Vollfarbe). */
-	private static function is_full_colour( string $name ): bool {
+	public static function is_full_colour( string $name ): bool {
 		return (bool) apply_filters( 'ml_deco_is_full_colour', (bool) preg_match( '/full\s?colou?r|vollfarb/iu', $name ), $name );
 	}
 
-	private static function technique_name( array $tech ): string {
+	public static function technique_name( array $tech ): string {
 		$names = (array) ( $tech['name'] ?? [] );
 		$name  = (string) ( $names['de'] ?? $names['en'] ?? '' );
 		return $name !== '' ? $name : __( 'Veredelung', 'media-lab-ml-decoration' );
 	}
 
-	private static function position_label( array $position ): string {
+	public static function position_label( array $position ): string {
 		$name = trim( (string) ( $position['name'] ?? '' ) );
 		if ( $name !== '' ) {
 			return $name; // Makito liefert fertige deutsche Namen
@@ -255,7 +262,7 @@ class ML_Deco_Render {
 		return (string) apply_filters( 'ml_deco_position_label', $label !== '' ? $label : $id, $position );
 	}
 
-	private static function size_label( array $position ): string {
+	public static function size_label( array $position ): string {
 		$w = (float) ( $position['w'] ?? 0 );
 		$h = (float) ( $position['h'] ?? 0 );
 		if ( $w <= 0 || $h <= 0 ) {
