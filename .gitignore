@@ -223,3 +223,5 @@ cms/wp-content/supplier-sync/imports/
 /cms/wp-content/supplier-sync/inventur/*.csv
 /cms/wp-content/supplier-sync/inventur/*.tsv
 cms/wp-content/supplier-sync/tools/samples/
+/cms/wp-content/plugins/media-lab-backup/
+/cms/wp-content/plugins/media-lab-seo/
