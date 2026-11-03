@@ -5,6 +5,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.1.0: Bilder der Druckpositionen (Makito) öffnen per Klick in einer Vergrößerung (Lightbox, ohne Fremdbibliothek, ESC/Klick schließt).
 - 1.0.2: Bei Vollfarbtechniken (Fullcolor/Vollfarbe im Namen) wird keine Farbanzahl mehr angezeigt.
 - 1.0.1: Aufeinanderfolgende Mengenstufen mit gleichem Preis werden zu "ab X" zusammengefasst.
 - 1.0.0: Erste Version (Tab, Preisliste, Faktor, Preis-Schalter je Lieferant).

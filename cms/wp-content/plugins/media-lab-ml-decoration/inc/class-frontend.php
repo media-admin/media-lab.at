@@ -35,17 +35,22 @@ class ML_Deco_Frontend {
 		if ( ! $id ) {
 			return '';
 		}
-		self::enqueue_style();
+		self::enqueue_assets();
 		return ML_Deco_Render::render( $id );
 	}
 
 	public static function assets(): void {
 		if ( function_exists( 'is_product' ) && is_product() ) {
-			self::enqueue_style();
+			self::enqueue_assets();
 		}
 	}
 
-	private static function enqueue_style(): void {
+	private static function enqueue_assets(): void {
 		wp_enqueue_style( 'ml-deco', ML_DECO_URL . 'assets/css/decoration.css', [], ML_DECO_VERSION );
+		wp_enqueue_script( 'ml-deco', ML_DECO_URL . 'assets/js/decoration.js', [], ML_DECO_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
+		wp_localize_script( 'ml-deco', 'mldL10n', [
+			'close'    => __( 'Schließen', 'media-lab-ml-decoration' ),
+			'fallback' => __( 'Druckposition', 'media-lab-ml-decoration' ),
+		] );
 	}
 }

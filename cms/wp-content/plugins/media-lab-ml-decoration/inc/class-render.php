@@ -98,7 +98,10 @@ class ML_Deco_Render {
 		echo '<section class="mld__position">';
 		echo '<div class="mld__pos-head">';
 		if ( ! empty( $position['image'] ) ) {
-			echo '<img class="mld__img" loading="lazy" src="' . esc_url( $position['image'] ) . '" alt="' . esc_attr( $label ) . '">';
+			// Vorschaubild öffnet per Klick die Vergrößerung (assets/js/decoration.js)
+			echo '<button type="button" class="mld__img-btn" data-mld-full="' . esc_url( $position['image'] ) . '" data-mld-title="' . esc_attr( $label ) . '"'
+				. ' aria-label="' . esc_attr( sprintf( __( 'Druckposition „%s“ vergrößern', 'media-lab-ml-decoration' ), $label ) ) . '">'
+				. '<img class="mld__img" loading="lazy" src="' . esc_url( $position['image'] ) . '" alt=""></button>';
 		}
 		echo '<div>';
 		echo '<h4 class="mld__pos-title">' . esc_html( $label ) . '</h4>';
