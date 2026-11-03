@@ -117,7 +117,10 @@ class ML_Deco_Render {
 	private static function render_technique( array $tech, int $max_colours, float $area, bool $show, float $factor, float $handling ): void {
 		$name    = self::technique_name( $tech );
 		$colours = '';
-		if ( $max_colours === 1 ) {
+		if ( self::is_full_colour( $name ) ) {
+			// Vollfarbtechnik (Digital, Sublimation, DTF ...): Farbanzahl ist nicht relevant, Lieferant meldet hier "1"
+			$colours = '';
+		} elseif ( $max_colours === 1 ) {
 			$colours = __( '1 Farbe', 'media-lab-ml-decoration' );
 		} elseif ( $max_colours > 1 ) {
 			$colours = sprintf( __( 'bis %d Farben', 'media-lab-ml-decoration' ), $max_colours );
@@ -220,6 +223,11 @@ class ML_Deco_Render {
 			return number_format_i18n( $from );
 		}
 		return number_format_i18n( $from ) . ' – ' . number_format_i18n( $to );
+	}
+
+	/** Techniken, bei denen "x Farben" nichts aussagt (Name enthält Fullcolor / Vollfarbe). */
+	private static function is_full_colour( string $name ): bool {
+		return (bool) apply_filters( 'ml_deco_is_full_colour', (bool) preg_match( '/full\s?colou?r|vollfarb/iu', $name ), $name );
 	}
 
 	private static function technique_name( array $tech ): string {

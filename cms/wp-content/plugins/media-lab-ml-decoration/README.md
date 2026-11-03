@@ -5,6 +5,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.0.2: Bei Vollfarbtechniken (Fullcolor/Vollfarbe im Namen) wird keine Farbanzahl mehr angezeigt.
 - 1.0.1: Aufeinanderfolgende Mengenstufen mit gleichem Preis werden zu "ab X" zusammengefasst.
 - 1.0.0: Erste Version (Tab, Preisliste, Faktor, Preis-Schalter je Lieferant).
 
@@ -33,7 +34,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 - MidOcean: Flächenstufen werden angezeigt, soweit sie auf der Position erreichbar sind (Untergrenze < max. Druckfläche).
 - Makito: Die Flächenstufe steckt in der Technik (Tampondruck A–K, Digital W1–W11 …), das Produkt nennt die passende.
 - Shortcode für Themes ohne Tabs: `[ml_decoration]` oder `[ml_decoration id="123"]`.
-- Filter: `ml_deco_suppliers`, `ml_deco_feeds_dir`, `ml_deco_include_handling`, `ml_deco_position_label`.
+- Filter: `ml_deco_suppliers`, `ml_deco_feeds_dir`, `ml_deco_include_handling`, `ml_deco_position_label`, `ml_deco_is_full_colour`.
 
 ## Vor Go-Live prüfen (Annahmen)
 
