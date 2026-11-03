@@ -97,6 +97,12 @@ foreach ($suppliers as $key => $config) {
 
         // Produkte abrufen (inkl. Stock + Preise, je nach Adapter)
         $products = $adapter->fetchProducts();
+        if (method_exists($adapter, 'getDecorationPricelist') && ($decorationPricelist = $adapter->getDecorationPricelist())) {
+            file_put_contents(
+                __DIR__ . "/feeds/{$key}_decoration_pricelist.json",
+                json_encode($decorationPricelist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            );
+        }
         $logger->info("Fetched " . count($products) . " products from {$config['name']}");
 
         $variantCount = array_sum(array_map(fn($p) => count($p->variants), $products));

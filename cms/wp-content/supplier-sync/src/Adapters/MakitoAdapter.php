@@ -42,8 +42,8 @@
  *  - matnr vs. refct als Unique Identifier: refct gewählt (wirkt wie
  *    Bestell-/Referenzcode), matnr wie reine Lagernummer - gegenchecken,
  *    falls Bestellungen später matnr erwarten.
- *  - Preise (PriceListFile.php) und Druckflächen (ItemPrintingFile.php)
- *    noch nicht angebunden.
+ *  - Veredelung (ItemPrintingFile.php + PrintJobsPrices.php): angebunden ueber
+ *    Services/MakitoDecorations.php. Config-Keys: print_api_url, print_price_api_url.
  *  - "ldl"-Sprachparameter noch nicht genutzt.
  */
 
@@ -63,6 +63,13 @@ class MakitoAdapter extends AbstractAdapter {
      * NICHT als pa_color gesetzt werden.
      */
     private const NO_COLOR_VALUES = ['S/C', ''];
+
+    /** Veredelungs-Preisliste (normalisiert), wird von sync.php nach feeds/ geschrieben */
+    private ?array $decorationPricelist = null;
+
+    public function getDecorationPricelist(): ?array {
+        return $this->decorationPricelist;
+    }
 
     public function fetchProducts(): array {
         $productXml = $this->fetchXml($this->config['api_url']);
@@ -84,7 +91,48 @@ class MakitoAdapter extends AbstractAdapter {
             }
         }
 
+        $this->applyDecorations($products);
+
         return $products;
+    }
+
+    /**
+     * Veredelung (Druckflaechen + Druckpreise) aus ItemPrintingFile.php und
+     * PrintJobsPrices.php. Darf den Produkt-Sync nie blockieren. Wird nur
+     * ausgefuehrt, wenn beide URLs in der Config stehen.
+     *
+     * @param Product[] $products
+     */
+    private function applyDecorations(array $products): void {
+        if (empty($this->config['print_api_url']) || empty($this->config['print_price_api_url'])) {
+            $this->logger?->info('Makito Veredelung: print_api_url / print_price_api_url nicht gesetzt - uebersprungen');
+            return;
+        }
+
+        try {
+            $deco = (new \SupplierSync\Services\MakitoDecorations(
+                fn(string $which) => $this->fetchXml(
+                    $which === 'printing' ? $this->config['print_api_url'] : $this->config['print_price_api_url']
+                ),
+                (string) ($this->config['supplier_code'] ?? 'TKM')
+            ))->build();
+
+            $this->decorationPricelist = $deco['pricelist'];
+
+            foreach ($products as $product) {
+                $data = $deco['products'][$product->supplierSku] ?? null;
+                $product->decorationJson = $data
+                    ? json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                    : '';
+            }
+
+            foreach ($deco['warnings'] as $warning) {
+                $this->logger?->warning("Makito Veredelung: {$warning}");
+            }
+            $this->logger?->info('Makito Veredelung: ' . count($deco['products']) . ' Produkte mit Druckdaten');
+        } catch (\Throwable $e) {
+            $this->logger?->warning('Makito Veredelung uebersprungen: ' . $e->getMessage());
+        }
     }
 
         private const CATEGORY_TO_CONFIG_TYPE = [
@@ -370,7 +418,7 @@ class MakitoAdapter extends AbstractAdapter {
     }
 
     private function fetchXml(string $url): \SimpleXMLElement {
-        $response = $this->apiClient->get($url);
+        $response = $this->apiClient->get($url, ['timeout' => 300]); // Makito-Feeds sind gross (ItemDataFile ~17 MB), der Server langsam
         $body = (string) $response->getBody();
 
         $previous = libxml_use_internal_errors(true);

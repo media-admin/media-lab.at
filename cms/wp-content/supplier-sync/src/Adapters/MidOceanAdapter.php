@@ -31,6 +31,13 @@ class MidOceanAdapter extends AbstractAdapter {
     private array $stockBySku = [];
     private array $priceBySku = [];
 
+    /** Veredelungs-Preisliste (normalisiert), wird von sync.php nach feeds/ geschrieben */
+    private ?array $decorationPricelist = null;
+
+    public function getDecorationPricelist(): ?array {
+        return $this->decorationPricelist;
+    }
+
     public function fetchProducts(): array {
         $baseUrl = ($this->config['use_test_environment'] ?? false)
             ? self::BASE_URL_TEST
@@ -60,6 +67,30 @@ class MidOceanAdapter extends AbstractAdapter {
         }
         $this->logger?->info('MidOcean: ' . count($skipped) . ' Produkte der Klasse Catalogues uebersprungen: ' . implode(',', array_slice($skipped, 0, 60)));
         $this->logger?->info('MidOcean Badges: ' . json_encode($this->badgeStats, JSON_UNESCAPED_UNICODE));
+        unset($rawProducts); // Speicher freigeben, die Veredelungsdaten sind ~20 MB gross
+
+        // Veredelung (printdata/1.0 + printpricelist/2.0) - darf den Produkt-Sync nie blockieren
+        try {
+            $deco = (new \SupplierSync\Services\MidOceanDecorations(
+                fn(string $path) => $this->fetchViaPresignedUrl("{$baseUrl}/{$path}")
+            ))->build();
+
+            $this->decorationPricelist = $deco['pricelist'];
+
+            foreach ($products as $product) {
+                $data = $deco['products'][$product->supplierSku] ?? null;
+                $product->decorationJson = $data
+                    ? json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                    : '';
+            }
+
+            foreach ($deco['warnings'] as $warning) {
+                $this->logger?->warning("MidOcean Veredelung: {$warning}");
+            }
+            $this->logger?->info('MidOcean Veredelung: ' . count($deco['products']) . ' Produkte mit Druckdaten');
+        } catch (\Throwable $e) {
+            $this->logger?->warning('MidOcean Veredelung uebersprungen: ' . $e->getMessage());
+        }
 
         return $products;
     }
@@ -188,6 +219,7 @@ class MidOceanAdapter extends AbstractAdapter {
         }
 
         $product->brand = $this->normalizeBrand((string) ($raw['brand'] ?? ''));  // Bereinigung: AbstractAdapter::normalizeBrand()
+
         $product->productDescription = $this->sanitizeDescription(
             (string) ($raw['long_description'] ?? $raw['short_description'] ?? '')
         );

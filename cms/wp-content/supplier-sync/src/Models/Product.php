@@ -16,6 +16,7 @@ class Product {
     public string $productDescription;
     public string $brand = '';
     public string $badge = '';       // ACF product_badge: 'new' | 'restposten' | ''
+    public string $decorationJson = '';
     public array $categories = [];
 
     // Lager / Verfügbarkeit (Option A aus Notion-Dok)
@@ -88,6 +89,7 @@ class Product {
         'single_variant_stock'  => $singleVariantStock,
         'product_badge'         => $this->badge,
         'single_variant_price_tiers' => $singleVariantPriceTiers,
+        'decoration_json' => $this->decorationJson,
     ];
     }
 }

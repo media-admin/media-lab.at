@@ -222,3 +222,4 @@ cms/wp-content/supplier-sync/imports/
 /cms/wp-content/supplier-sync/inventur/*.xlsx
 /cms/wp-content/supplier-sync/inventur/*.csv
 /cms/wp-content/supplier-sync/inventur/*.tsv
+cms/wp-content/supplier-sync/tools/samples/
