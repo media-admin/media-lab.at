@@ -23,6 +23,12 @@ return [
         'api_url' => 'http://print.makito.es:8080/user/xml/ItemDataFile.php?pszinternal=YOUR_TOKEN_HERE',
         'stock_api_url' => 'http://print.makito.es:8080/user/xml/allstockfile.php?pszinternal=YOUR_TOKEN_HERE',
         'price_api_url' => 'http://print.makito.es:8080/user/xml/PriceListFile.php?pszinternal=YOUR_TOKEN_HERE',
+         'print_api_url' => ml_env('MAKITO_CUSTOMER_TOKEN')
+            ? 'http://print.makito.es:8080/user/xml/ItemPrintingFile.php?pszinternal=' . ml_env('MAKITO_CUSTOMER_TOKEN')
+            : '',
+        'print_price_api_url' => ml_env('MAKITO_CUSTOMER_TOKEN')
+            ? 'http://print.makito.es:8080/user/xml/PrintJobsPrices.php?pszinternal=' . ml_env('MAKITO_CUSTOMER_TOKEN')
+            : '',
         'enabled' => true,
         'category_mapping' => [],
     ],
