@@ -5,6 +5,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.2.2: Menge wird auch aus dem Mengenfeld des Konfigurators (Makito, Alpine.js, +/- Knöpfe) übernommen.
 - 1.2.1: Menge wird aus dem Mengenfeld des Wunschlisten-Blocks (.mlw-wishlist-qty__input) übernommen; Suche zuerst innerhalb des eigenen Produkts.
 - 1.2.0: Auswahl + Preisrechner im Tab: Position, Technik, Farben, (Flächenstufe / Motivfläche), Menge und Wiederholungsauftrag. Mehrere Positionen kombinierbar, Summe mit Einrichtung. Ohne "Preise anzeigen" nur die Auswahl, ohne Beträge im Quelltext. Beträge im Shop-Format (WooCommerce-Einstellungen).
 - 1.1.0: Bilder der Druckpositionen (Makito) öffnen per Klick in einer Vergrößerung (Lightbox, ohne Fremdbibliothek, ESC/Klick schließt).
@@ -41,7 +42,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Preisrechner
 
-- Menge: übernimmt das Mengenfeld der Produktseite (Selector per Filter `ml_deco_qty_selector`, Standard `.mlw-wishlist-qty__input, form.cart input.qty, input[name="quantity"]`) und folgt Änderungen; das Feld im Rechner ist zusätzlich änderbar.
+- Menge: übernimmt das Mengenfeld der Produktseite (Selector per Filter `ml_deco_qty_selector`, Standard `.mlw-wishlist-qty__input, .configurator-number__input[x-model\.number*="quantity"], form.cart input.qty, input[name="quantity"]`) und folgt Änderungen; das Feld im Rechner ist zusätzlich änderbar.
 - Stückpreis wie in den Tabellen (inkl. Handling, weitere Farben, cm²-Preise, Mindeststückpreis); Summe = Einrichtung + max(Menge × Stückpreis, Mindestauftragswert).
 - Flächenstufe (MidOcean): Vorbelegung = größte erreichbare Stufe (vorsichtige Schätzung). Preis je cm² (Makito): Motivfläche, Vorbelegung = max. Druckfläche.
 - Über der letzten Makito-Staffel: "Preis auf Anfrage". Einstellung: WooCommerce → Veredelung → "Auswahl & Preisrechner".

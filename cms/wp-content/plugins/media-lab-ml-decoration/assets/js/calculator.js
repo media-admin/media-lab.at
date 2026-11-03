@@ -389,6 +389,21 @@
 			};
 			pageQty.addEventListener( 'input', follow );
 			pageQty.addEventListener( 'change', follow );
+
+			// Alpine.js (Konfigurator) setzt den Wert bei +/- und beim Start ohne input-Ereignis:
+			// deshalb auch auf Klicks im Feldblock, auf den Alpine-Start und auf das Laden reagieren.
+			var host = pageQty.closest( '.configurator-number, .mlw-wishlist-qty, .quantity' ) || pageQty.parentNode;
+			if ( host ) {
+				host.addEventListener( 'click', function () {
+					setTimeout( follow, 50 );
+				} );
+			}
+			document.addEventListener( 'alpine:initialized', function () {
+				setTimeout( follow, 0 );
+			} );
+			window.addEventListener( 'load', function () {
+				setTimeout( follow, 100 );
+			} );
 		}
 
 		var result = el( 'div', 'mld-calc__result' );

@@ -22,7 +22,7 @@ class ML_Deco_Calculator {
 		}
 
 		$json = wp_json_encode( $payload, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-		$qty  = (string) apply_filters( 'ml_deco_qty_selector', '.mlw-wishlist-qty__input, form.cart input.qty, input[name="quantity"]' );
+		$qty  = (string) apply_filters( 'ml_deco_qty_selector', '.mlw-wishlist-qty__input, .configurator-number__input[x-model\\.number*="quantity"], form.cart input.qty, input[name="quantity"]' );
 
 		return '<section class="mld-calc" data-qty-selector="' . esc_attr( $qty ) . '">'
 			. '<h3 class="mld__h">' . esc_html__( 'Veredelung wählen', 'media-lab-ml-decoration' ) . '</h3>'
