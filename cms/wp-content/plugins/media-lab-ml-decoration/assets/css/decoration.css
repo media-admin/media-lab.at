@@ -1,0 +1,147 @@
+/* Veredelung (media-lab-ml-decoration)
+ * Nur Variablen/Tokens des Themes, keine festen Farbwerte. */
+
+.mld {
+	display: grid;
+	gap: 1.25rem;
+	color: var(--color-text);
+}
+
+.mld__position {
+	padding: 1rem 1.25rem;
+	background: var(--color-card-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 0.5rem;
+}
+
+.mld__pos-head {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 0.75rem;
+}
+
+.mld__img {
+	flex: 0 0 auto;
+	width: 4.5rem;
+	height: 4.5rem;
+	object-fit: contain;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 0.375rem;
+}
+
+.mld__pos-title {
+	margin: 0;
+	font-size: 1.05rem;
+}
+
+.mld__meta {
+	margin: 0.15rem 0 0;
+	font-size: 0.875rem;
+	color: var(--color-text-muted);
+}
+
+.mld__techs {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.mld__tech {
+	padding-top: 0.5rem;
+	border-top: 1px solid var(--color-border);
+}
+
+.mld__tech summary,
+.mld__tech--plain {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.25rem 1rem;
+}
+
+.mld__tech summary {
+	position: relative;
+	padding-right: 1.5rem;
+	cursor: pointer;
+	list-style: none;
+}
+
+.mld__tech summary::-webkit-details-marker {
+	display: none;
+}
+
+.mld__tech summary::after {
+	content: "";
+	position: absolute;
+	top: 0.35em;
+	right: 0.25rem;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform 0.15s ease;
+}
+
+.mld__tech[open] summary::after {
+	transform: rotate(-135deg);
+	top: 0.5em;
+}
+
+.mld__tech-name {
+	font-weight: 600;
+}
+
+.mld__tech-colours {
+	font-size: 0.875rem;
+	color: var(--color-text-muted);
+}
+
+.mld__tech-body {
+	padding: 0.75rem 0 0.25rem;
+}
+
+.mld__scroll {
+	overflow-x: auto;
+	margin-bottom: 0.75rem;
+}
+
+.mld__table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.9rem;
+}
+
+.mld__table caption {
+	padding: 0.25rem 0;
+	text-align: left;
+	font-weight: 600;
+	color: var(--color-text-muted);
+}
+
+.mld__table th,
+.mld__table td {
+	padding: 0.4rem 0.5rem;
+	text-align: right;
+	white-space: nowrap;
+	border-bottom: 1px solid var(--color-border);
+}
+
+.mld__table th:first-child,
+.mld__table td:first-child {
+	text-align: left;
+}
+
+.mld__table thead th {
+	font-weight: 600;
+	color: var(--color-text-muted);
+}
+
+.mld__facts,
+.mld__note {
+	margin: 0.25rem 0 0;
+	font-size: 0.875rem;
+	color: var(--color-text-muted);
+}
