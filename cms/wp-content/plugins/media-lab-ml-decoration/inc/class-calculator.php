@@ -15,11 +15,12 @@ class ML_Deco_Calculator {
 		return $value === null ? null : round( (float) $value * $factor, 4 );
 	}
 
-	public static function markup( array $data, array $pricelist, bool $show, float $factor, float $handling ): string {
+	public static function markup( array $data, array $pricelist, bool $show, float $factor, float $handling, int $product_id = 0 ): string {
 		$payload = self::payload( $data, $pricelist, $show, $factor, $handling );
 		if ( empty( $payload['positions'] ) ) {
 			return '';
 		}
+		$payload['productId'] = $product_id;
 
 		$json = wp_json_encode( $payload, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		$qty  = (string) apply_filters( 'ml_deco_qty_selector', '.mlw-wishlist-qty__input, .configurator-number__input[x-model\\.number*="quantity"], form.cart input.qty, input[name="quantity"]' );
@@ -69,6 +70,79 @@ class ML_Deco_Calculator {
 			'positions'    => $positions,
 			'i18n'         => self::strings( $show ),
 		];
+	}
+
+	// ── Berechnung (Spiegel von assets/js/calculator.js, arbeitet auf dem Payload) ──────────────
+
+	/** Passende Mengenstaffel, oder null (über der letzten Makito-Staffel: Preis auf Anfrage). */
+	public static function find_scale( array $range, int $qty ): ?array {
+		$scales = array_values( (array) ( $range['scales'] ?? [] ) );
+		$found  = null;
+		foreach ( $scales as $s ) {
+			if ( $qty >= (int) ( $s['qty'] ?? 1 ) ) {
+				$found = $s;
+			}
+		}
+		if ( $found === null ) {
+			$found = $scales[0] ?? null;
+		}
+		if ( $found === null ) {
+			return null;
+		}
+		$last = $scales[ count( $scales ) - 1 ];
+		if ( $found === $last && isset( $last['upto'] ) && $last['upto'] !== null && $qty > (int) $last['upto'] ) {
+			return null;
+		}
+		return $found;
+	}
+
+	public static function unit_price( array $tech, array $scale, int $colours, float $area ): float {
+		$price = (float) ( $scale['price'] ?? 0 );
+		$unit  = $price;
+		if ( array_key_exists( 'cm', $scale ) ) {
+			$unit = $price + (float) $scale['cm'] * $area;
+		} elseif ( ( $tech['pricing'] ?? '' ) === 'area' ) {
+			$unit = $price * $area;
+		}
+		if ( $colours > 1 && ! empty( $scale['next'] ) ) {
+			$unit += (float) $scale['next'] * ( $colours - 1 );
+		}
+		$min = (float) ( $tech['minUnit'] ?? 0 );
+		if ( $min > 0 ) {
+			$unit = max( $unit, $min );
+		}
+		return $unit;
+	}
+
+	/**
+	 * Eine Linie (Position + Technik) berechnen. Werte sind bereits mit dem Faktor verrechnet.
+	 *
+	 * @return array{onRequest:bool, unit:float, setup:float, running:float, total:float, minJob:bool, minQty:int}
+	 */
+	public static function compute_line( array $tech, array $range, int $qty, int $colours, float $area, bool $repeat, float $handling ): array {
+		$res   = [ 'onRequest' => false, 'unit' => 0.0, 'setup' => 0.0, 'running' => 0.0, 'total' => 0.0, 'minJob' => false, 'minQty' => 0 ];
+		$scale = self::find_scale( $range, $qty );
+		if ( $scale === null ) {
+			$res['onRequest'] = true;
+			return $res;
+		}
+
+		$res['unit']    = self::unit_price( $tech, $scale, $colours, $area ) + $handling;
+		$res['running'] = $qty * $res['unit'];
+
+		$minJob = (float) ( $tech['minJob'] ?? 0 );
+		if ( $minJob > 0 && $res['running'] < $minJob ) {
+			$res['running'] = $minJob;
+			$res['minJob']  = true;
+		}
+
+		$res['setup'] = $repeat ? (float) ( $tech['setupRepeat'] ?? 0 ) : (float) ( $tech['setup'] ?? 0 );
+		$res['total'] = round( $res['running'], 2 ) + round( $res['setup'], 2 );
+
+		if ( ! empty( $tech['minQty'] ) && $qty < (int) $tech['minQty'] ) {
+			$res['minQty'] = (int) $tech['minQty'];
+		}
+		return $res;
 	}
 
 	/**
@@ -130,6 +204,10 @@ class ML_Deco_Calculator {
 		];
 	}
 
+	public static function payload_strings(): array {
+		return self::strings( true );
+	}
+
 	private static function strings( bool $show ): array {
 		return [
 			'hint'        => $show
@@ -159,6 +237,7 @@ class ML_Deco_Calculator {
 			'minQty'      => __( 'Mindestmenge für diese Technik: %s Stück.', 'media-lab-ml-decoration' ),
 			'minJob'      => __( 'Mindestauftragswert angewendet.', 'media-lab-ml-decoration' ),
 			'maxArea'     => __( 'Preis bei Motivfläche %s cm².', 'media-lab-ml-decoration' ),
+			'sendNote'    => __( 'Ihre Auswahl wird mit Ihrer Anfrage übermittelt.', 'media-lab-ml-decoration' ),
 		];
 	}
 }

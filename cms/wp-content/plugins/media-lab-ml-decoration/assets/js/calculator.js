@@ -194,6 +194,12 @@
 
 		var uid = 'mldc' + Math.floor( Math.random() * 1e6 );
 		var state = { positions: [], qty: 1, repeat: false };
+		var controls = [];                                  // je Position: set(line) für das Vorbelegen
+		var repeatInput = null;
+		var cfg = root.mldCalc || null;                     // {ajaxUrl, nonce} (wp_localize_script)
+		var saveTimer = null;
+		var lastSaved = '';
+		var suppressSave = false;
 
 		// Menge aus dem Produktfeld der Seite übernehmen (Seite führt, Feld hier ist änderbar)
 		var qtyInput = null;
@@ -338,6 +344,17 @@
 				render();
 			} );
 
+			controls[ pi ] = {
+				set: function ( line ) {
+					ps.techId = line.tech;
+					selTech.value = line.tech;
+					ps.colours = line.colours > 0 ? line.colours : 1;
+					ps.rangeIdx = line.range >= 0 ? line.range : null;
+					ps.area = line.area > 0 ? line.area : ( pos.maxArea || 0 );
+					refresh();
+				},
+			};
+
 			fs.appendChild( row );
 			form.appendChild( fs );
 		} );
@@ -360,6 +377,7 @@
 		if ( showPrices ) {
 			var rWrap = el( 'div', 'mld-calc__field mld-calc__check' );
 			var rInput = el( 'input' );
+			repeatInput = rInput;
 			rInput.type = 'checkbox';
 			rInput.id = uid + '-repeat';
 			var rLabel = el( 'label', null, t.repeat );
@@ -428,7 +446,83 @@
 			return lines;
 		}
 
+		/** Auswahl in der Form, die der Server prüft (keine Preise!). */
+		function serialize() {
+			var lines = [];
+			data.positions.forEach( function ( pos, pi ) {
+				var ps = state.positions[ pi ];
+				if ( ps.techId ) {
+					lines.push( { pos: pos.id, tech: ps.techId, colours: ps.colours, range: ps.rangeIdx || 0, area: ps.area || pos.maxArea || 0 } );
+				}
+			} );
+			return { lines: lines, repeat: !! state.repeat };
+		}
+
+		function postAjax( action, extra ) {
+			var body = new FormData();
+			body.append( 'action', action );
+			body.append( 'nonce', cfg.nonce );
+			body.append( 'product_id', String( data.productId || 0 ) );
+			Object.keys( extra || {} ).forEach( function ( k ) {
+				body.append( k, extra[ k ] );
+			} );
+			return fetch( cfg.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } ).then( function ( r ) {
+				return r.json();
+			} );
+		}
+
+		/** Auswahl serverseitig merken (für die Anfrage), leicht verzögert und nur bei Änderung. */
+		function scheduleSave() {
+			if ( ! cfg || ! data.productId || suppressSave || typeof fetch !== 'function' ) {
+				return;
+			}
+			clearTimeout( saveTimer );
+			saveTimer = setTimeout( function () {
+				var json = JSON.stringify( serialize() );
+				if ( json === lastSaved ) {
+					return;
+				}
+				lastSaved = json;
+				postAjax( 'mld_selection_save', { selection: json } ).catch( function () {
+					lastSaved = '';
+				} );
+			}, 400 );
+		}
+
+		/** Beim Laden die zuletzt gemerkte Auswahl wieder anzeigen (Server hat sie geprüft). */
+		function restoreSelection() {
+			if ( ! cfg || ! data.productId || typeof fetch !== 'function' ) {
+				return;
+			}
+			postAjax( 'mld_selection_get' ).then( function ( res ) {
+				var sel = res && res.success && res.data ? res.data.selection : null;
+				if ( ! sel || ! sel.lines || ! sel.lines.length ) {
+					return;
+				}
+				suppressSave = true;
+				sel.lines.forEach( function ( line ) {
+					for ( var i = 0; i < data.positions.length; i++ ) {
+						var pos = data.positions[ i ];
+						var known = pos.id === line.pos && pos.techniques.some( function ( t ) { return t.id === line.tech; } );
+						if ( known && controls[ i ] ) {
+							controls[ i ].set( line );
+						}
+					}
+				} );
+				if ( repeatInput && sel.repeat ) {
+					repeatInput.checked = true;
+					state.repeat = true;
+				}
+				suppressSave = false;
+				lastSaved = JSON.stringify( serialize() );
+				render();
+			} ).catch( function () {
+				suppressSave = false;
+			} );
+		}
+
 		function render() {
+			scheduleSave();
 			result.innerHTML = '';
 			var lines = selectedLines();
 			if ( ! lines.length ) {
@@ -443,6 +537,9 @@
 					ul.appendChild( el( 'li', null, l.pos.label + ': ' + l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) ) );
 				} );
 				result.appendChild( ul );
+				if ( t.sendNote ) {
+					result.appendChild( el( 'p', 'mld__note', t.sendNote ) );
+				}
 				return;
 			}
 
@@ -529,9 +626,13 @@
 			notes.forEach( function ( n ) {
 				result.appendChild( el( 'p', 'mld__note', n ) );
 			} );
+			if ( t.sendNote ) {
+				result.appendChild( el( 'p', 'mld__note', t.sendNote ) );
+			}
 		}
 
 		render();
+		restoreSelection();
 	}
 
 	function boot() {

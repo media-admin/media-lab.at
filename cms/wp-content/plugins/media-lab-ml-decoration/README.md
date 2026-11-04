@@ -5,6 +5,8 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.4.0: Veredelung wird auch auf der Wunschlisten-Seite angezeigt (benötigt den Filter mlw_wishlist_display_items in media-lab-woocommerce). Die Auswahl liegt am selben Ort wie die Wunschliste: Gast = Session, eingeloggt = User-Meta (dauerhaft, 90 Tage), Gast-Auswahl wird beim Login übernommen.
+- 1.3.0: Auswahl wird mit der Anfrage übermittelt (Anfrage-Mail und Anfrage-Eintrag), serverseitig geprüft und neu berechnet. Auswahl bleibt in der WooCommerce-Session erhalten und wird auf der Produktseite wieder angezeigt.
 - 1.2.2: Menge wird auch aus dem Mengenfeld des Konfigurators (Makito, Alpine.js, +/- Knöpfe) übernommen.
 - 1.2.1: Menge wird aus dem Mengenfeld des Wunschlisten-Blocks (.mlw-wishlist-qty__input) übernommen; Suche zuerst innerhalb des eigenen Produkts.
 - 1.2.0: Auswahl + Preisrechner im Tab: Position, Technik, Farben, (Flächenstufe / Motivfläche), Menge und Wiederholungsauftrag. Mehrere Positionen kombinierbar, Summe mit Einrichtung. Ohne "Preise anzeigen" nur die Auswahl, ohne Beträge im Quelltext. Beträge im Shop-Format (WooCommerce-Einstellungen).
@@ -46,7 +48,25 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 - Stückpreis wie in den Tabellen (inkl. Handling, weitere Farben, cm²-Preise, Mindeststückpreis); Summe = Einrichtung + max(Menge × Stückpreis, Mindestauftragswert).
 - Flächenstufe (MidOcean): Vorbelegung = größte erreichbare Stufe (vorsichtige Schätzung). Preis je cm² (Makito): Motivfläche, Vorbelegung = max. Druckfläche.
 - Über der letzten Makito-Staffel: "Preis auf Anfrage". Einstellung: WooCommerce → Veredelung → "Auswahl & Preisrechner".
-- Noch ohne Übergabe an Anfrage/Wunschliste (geplant, Etappe 2).
+
+## Übergabe an die Anfrage
+
+- Der Browser schickt nur die AUSWAHL (Position, Technik, Farben, Stufe, Fläche, Wiederholung) per Ajax
+  (`mld_selection_save`, mit Nonce). Sie wird je Produkt in der WooCommerce-Session gespeichert (max. 100 Produkte).
+  Gäste: WooCommerce-Session (dieselbe wie bei der Wunschliste, kein neuer Cookie). Eingeloggte Nutzer: User-Meta
+  `ml_deco_selection` (dauerhaft wie ihre Wunschliste, Einträge älter als 90 Tage entfallen, Filter
+  `ml_deco_selection_ttl_days`). Beim Login wird die Gast-Auswahl übernommen.
+- Der Server prüft jede Linie gegen die Produktdaten (Position, erlaubte Technik, max. Farben, erreichbare Stufe,
+  max. Fläche). Preise aus dem Browser werden nie verwendet.
+- Beim Absenden einer Anfrage (Warenkorb, Konfigurator, Wunschliste) hängt der Filter `mlw_before_save_inquiry`
+  der Inquiry-Engine je Produktzeile Zeilen an `config_display` an: `Veredelung – <Position>`, bei aktivem
+  "Preise anzeigen" mit Stückpreis, Einrichtung und Summe, dazu `Veredelung gesamt (ca., netto)`. Es wird mit der
+  Menge der Anfragezeile gerechnet. Ohne "Preise anzeigen" stehen nur Position, Technik und Farben in der Mail
+  (die Kundenmail enthält dieselbe Produktliste).
+- Beim Laden der Produktseite wird die gemerkte Auswahl wieder angezeigt (`mld_selection_get`).
+- Wunschlisten-Seite: Der Filter `mlw_wishlist_display_items` (media-lab-woocommerce, Ende von
+  `MediaLab_Wishlist_Storage::get_items_for_display()`) liefert die Items; das Plugin ergänzt `config_display`.
+  Gilt nur für die eigene Liste, nie für die geteilte Token-Ansicht. Die Wunschlisten-Summe enthält die Veredelung nicht.
 
 ## Vor Go-Live prüfen (Annahmen)
 

@@ -63,7 +63,7 @@ class ML_Deco_Render {
 		// Auswahl + Preisrechner (nur wenn aktiviert), darunter die Übersicht aller Möglichkeiten
 		$withCalc = ML_Deco_Settings::calc_enabled() && apply_filters( 'ml_deco_calculator_enabled', true, $product_id );
 		if ( $withCalc ) {
-			echo ML_Deco_Calculator::markup( $data, $pricelist, $show, $factor, $handling ); // phpcs:ignore WordPress.Security.EscapeOutput -- intern escaped / JSON-kodiert
+			echo ML_Deco_Calculator::markup( $data, $pricelist, $show, $factor, $handling, $product_id ); // phpcs:ignore WordPress.Security.EscapeOutput -- intern escaped / JSON-kodiert
 			echo '<h3 class="mld__h">' . esc_html__( 'Alle Möglichkeiten im Überblick', 'media-lab-ml-decoration' ) . '</h3>';
 		}
 

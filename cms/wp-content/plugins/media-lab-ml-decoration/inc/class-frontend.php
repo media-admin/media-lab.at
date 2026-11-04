@@ -49,6 +49,10 @@ class ML_Deco_Frontend {
 		wp_enqueue_style( 'ml-deco', ML_DECO_URL . 'assets/css/decoration.css', [], ML_DECO_VERSION );
 		wp_enqueue_script( 'ml-deco', ML_DECO_URL . 'assets/js/decoration.js', [], ML_DECO_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
 		wp_enqueue_script( 'ml-deco-calc', ML_DECO_URL . 'assets/js/calculator.js', [], ML_DECO_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
+		wp_localize_script( 'ml-deco-calc', 'mldCalc', [
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( ML_Deco_Selection::NONCE_ACTION ),
+		] );
 		wp_localize_script( 'ml-deco', 'mldL10n', [
 			'close'    => __( 'Schließen', 'media-lab-ml-decoration' ),
 			'fallback' => __( 'Druckposition', 'media-lab-ml-decoration' ),
