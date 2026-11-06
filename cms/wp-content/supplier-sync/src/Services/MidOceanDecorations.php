@@ -268,7 +268,7 @@ class MidOceanDecorations {
                 $h     = (float) ($pos['max_print_size_height'] ?? 0);
                 $shape = (string) ($pos['print_position_type'] ?? 'Rectangle');
 
-                $positions[] = [
+                $entry = [
                     'id'        => (string) ($pos['position_id'] ?? ''),
                     'w'         => $w,
                     'h'         => $h,
@@ -278,6 +278,14 @@ class MidOceanDecorations {
                     'max_area'  => $this->maxAreaCm2($w, $h, (string) ($pos['print_size_unit'] ?? 'mm'), $shape),
                     'techniques'=> $techs,
                 ];
+
+                // Bild der Druckposition (zeigt die Druckfläche auf dem Produkt). Die Daten enthalten je Farbvariante
+                // ein Bild; wir nehmen das erste als Beispielbild.
+                $image = $this->positionImage($pos);
+                if ($image !== '') {
+                    $entry['image'] = $image;
+                }
+                $positions[] = $entry;
             }
 
             if (!$positions) {
@@ -296,6 +304,22 @@ class MidOceanDecorations {
         }
 
         return $out;
+    }
+
+    /**
+     * Beispielbild einer Druckposition: bevorzugt das Bild mit eingezeichneter Druckfläche, sonst das ohne.
+     */
+    private function positionImage(array $pos): string {
+        foreach ((array) ($pos['images'] ?? []) as $img) {
+            $url = trim((string) ($img['print_position_image_with_area'] ?? ''));
+            if ($url === '') {
+                $url = trim((string) ($img['print_position_image_blank'] ?? ''));
+            }
+            if ($url !== '' && str_starts_with($url, 'http')) {
+                return $url;
+            }
+        }
+        return '';
     }
 
     /**
