@@ -215,6 +215,20 @@
 		var initialQty = pageQty ? parseInt( pageQty.value, 10 ) : 1;
 		state.qty = initialQty > 0 ? initialQty : 1;
 
+		function imageButton( pos ) {
+			var btn = el( 'button', 'mld__img-btn' );
+			btn.type = 'button';
+			btn.setAttribute( 'data-mld-full', pos.image );
+			btn.setAttribute( 'data-mld-title', pos.label );
+			btn.setAttribute( 'aria-label', fill( t.zoomImage || '%s', [ pos.label ] ) );
+			var img = el( 'img', 'mld__img' );
+			img.loading = 'lazy';
+			img.alt = '';
+			img.src = pos.image;
+			btn.appendChild( img );
+			return btn;
+		}
+
 		var hint = el( 'p', 'mld-calc__hint', t.hint );
 		var form = el( 'div', 'mld-calc__form' );
 
@@ -355,7 +369,13 @@
 				},
 			};
 
-			fs.appendChild( row );
+			// Bild der Druckposition links neben den Feldern (Klick: Vergrößerung wie in der Übersicht)
+			var body = el( 'div', 'mld-calc__pos-body' );
+			if ( pos.image ) {
+				body.appendChild( imageButton( pos ) );
+			}
+			body.appendChild( row );
+			fs.appendChild( body );
 			form.appendChild( fs );
 		} );
 

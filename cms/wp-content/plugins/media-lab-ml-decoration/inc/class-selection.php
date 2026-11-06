@@ -267,7 +267,7 @@ class ML_Deco_Selection {
 		}
 
 		if ( $rows && $show && $any ) {
-			$rows[ __( 'Veredelung gesamt (ca., netto)', 'media-lab-ml-decoration' ) ] = sprintf(
+			$rows[ __( 'Veredelung gesamt (ca., netto, zusätzlich zum Produktpreis)', 'media-lab-ml-decoration' ) ] = sprintf(
 				__( '%1$s bei %2$d Stück (davon Einrichtung %3$s) – unverbindliche Schätzung', 'media-lab-ml-decoration' ),
 				self::plain( $sum ),
 				$qty,

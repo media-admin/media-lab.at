@@ -58,6 +58,7 @@ class ML_Deco_Calculator {
 				'label'      => ML_Deco_Render::position_label( $position ),
 				'size'       => ML_Deco_Render::size_label( $position ),
 				'maxArea'    => isset( $position['max_area'] ) ? (float) $position['max_area'] : 0.0,
+				'image'      => (string) ( $position['image'] ?? '' ),
 				'techniques' => $entries,
 			];
 		}
@@ -238,6 +239,7 @@ class ML_Deco_Calculator {
 			'minJob'      => __( 'Mindestauftragswert angewendet.', 'media-lab-ml-decoration' ),
 			'maxArea'     => __( 'Preis bei Motivfläche %s cm².', 'media-lab-ml-decoration' ),
 			'sendNote'    => __( 'Ihre Auswahl wird mit Ihrer Anfrage übermittelt.', 'media-lab-ml-decoration' ),
+			'zoomImage'   => __( 'Druckposition „%s“ vergrößern', 'media-lab-ml-decoration' ),
 		];
 	}
 }

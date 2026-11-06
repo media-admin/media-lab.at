@@ -356,3 +356,31 @@
 	text-align: left;
 	color: var(--color-text-muted);
 }
+
+/* Auswahl: Bild der Druckposition neben den Feldern */
+.mld-calc__pos-body {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.mld-calc__pos-body .mld__img-btn {
+	flex: 0 0 auto;
+}
+
+.mld-calc__pos-body .mld-calc__row {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.mld-calc__pos-body .mld__img {
+	width: 5.5rem;
+	height: 5.5rem;
+}
+
+@media (max-width: 30rem) {
+	.mld-calc__pos-body .mld__img {
+		width: 4rem;
+		height: 4rem;
+	}
+}

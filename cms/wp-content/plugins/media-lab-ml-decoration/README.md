@@ -5,6 +5,9 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.5.1: Die Bilder der Druckpositionen stehen nur noch im Auswahlbereich oben, nicht mehr zusätzlich im Überblick darunter (ohne Rechner bleiben sie im Überblick; Filter `ml_deco_overview_images`).
+- 1.5.0: Bilder der Druckpositionen auch im Bereich "Veredelung wählen" (neben den Feldern, mit Vergrößerung). MidOcean liefert ein Beispielbild je Position (benötigt MidOceanDecorations ab dieser Version im Sync und einen neuen Import), Makito hatte die Bilder schon.
+- 1.4.1: Gesamtzeile in Anfrage und Wunschliste heißt jetzt "Veredelung gesamt (ca., netto, zusätzlich zum Produktpreis)", damit sie nicht mit der Produkt-Gesamtsumme verwechselt wird.
 - 1.4.0: Veredelung wird auch auf der Wunschlisten-Seite angezeigt (benötigt den Filter mlw_wishlist_display_items in media-lab-woocommerce). Die Auswahl liegt am selben Ort wie die Wunschliste: Gast = Session, eingeloggt = User-Meta (dauerhaft, 90 Tage), Gast-Auswahl wird beim Login übernommen.
 - 1.3.0: Auswahl wird mit der Anfrage übermittelt (Anfrage-Mail und Anfrage-Eintrag), serverseitig geprüft und neu berechnet. Auswahl bleibt in der WooCommerce-Session erhalten und wird auf der Produktseite wieder angezeigt.
 - 1.2.2: Menge wird auch aus dem Mengenfeld des Konfigurators (Makito, Alpine.js, +/- Knöpfe) übernommen.
@@ -40,7 +43,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 - MidOcean: Flächenstufen werden angezeigt, soweit sie auf der Position erreichbar sind (Untergrenze < max. Druckfläche).
 - Makito: Die Flächenstufe steckt in der Technik (Tampondruck A–K, Digital W1–W11 …), das Produkt nennt die passende.
 - Shortcode für Themes ohne Tabs: `[ml_decoration]` oder `[ml_decoration id="123"]`.
-- Filter: `ml_deco_suppliers`, `ml_deco_feeds_dir`, `ml_deco_include_handling`, `ml_deco_position_label`, `ml_deco_is_full_colour`.
+- Filter: `ml_deco_suppliers`, `ml_deco_feeds_dir`, `ml_deco_include_handling`, `ml_deco_position_label`, `ml_deco_is_full_colour`, `ml_deco_overview_images`.
 
 ## Preisrechner
 

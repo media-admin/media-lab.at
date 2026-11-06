@@ -67,6 +67,10 @@ class ML_Deco_Render {
 			echo '<h3 class="mld__h">' . esc_html__( 'Alle Möglichkeiten im Überblick', 'media-lab-ml-decoration' ) . '</h3>';
 		}
 
+		// Bilder der Druckpositionen: Sind sie schon im Auswahlbereich oben zu sehen, entfallen sie im Überblick darunter.
+		// Ohne Rechner (Einstellung aus) bleiben sie im Überblick. Per Filter änderbar.
+		$overviewImages = (bool) apply_filters( 'ml_deco_overview_images', ! $withCalc, $product_id );
+
 		$printed = 0;
 		foreach ( (array) $data['positions'] as $position ) {
 			$techs = [];
@@ -79,7 +83,7 @@ class ML_Deco_Render {
 			if ( ! $techs ) {
 				continue;
 			}
-			self::render_position( $position, $techs, $show, $factor, $handling );
+			self::render_position( $position, $techs, $show, $factor, $handling, $overviewImages );
 			$printed++;
 		}
 
@@ -97,14 +101,14 @@ class ML_Deco_Render {
 		return (string) ob_get_clean();
 	}
 
-	private static function render_position( array $position, array $techs, bool $show, float $factor, float $handling ): void {
+	private static function render_position( array $position, array $techs, bool $show, float $factor, float $handling, bool $showImage = true ): void {
 		$label = self::position_label( $position );
 		$size  = self::size_label( $position );
 		$area  = isset( $position['max_area'] ) ? (float) $position['max_area'] : 0.0;
 
 		echo '<section class="mld__position">';
 		echo '<div class="mld__pos-head">';
-		if ( ! empty( $position['image'] ) ) {
+		if ( $showImage && ! empty( $position['image'] ) ) {
 			// Vorschaubild öffnet per Klick die Vergrößerung (assets/js/decoration.js)
 			echo '<button type="button" class="mld__img-btn" data-mld-full="' . esc_url( $position['image'] ) . '" data-mld-title="' . esc_attr( $label ) . '"'
 				. ' aria-label="' . esc_attr( sprintf( __( 'Druckposition „%s“ vergrößern', 'media-lab-ml-decoration' ), $label ) ) . '">'
