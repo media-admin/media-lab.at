@@ -24,6 +24,10 @@ class ML_Deco_Selection {
 			add_action( "wp_ajax_nopriv_{$action}", [ __CLASS__, $method ] );
 		}
 		add_filter( 'mlw_before_save_inquiry', [ __CLASS__, 'inject' ], 20 );
+		// Wunschliste: Die Veredelung wird beim Hinzufügen als Teil des Eintrags gespeichert (Filter in
+		// MediaLab_Wishlist_Storage::add(), media-lab-woocommerce ab 2.32.0). Dasselbe Produkt mit anderer Veredelung
+		// ist damit ein eigener Eintrag.
+		add_filter( 'mlw_wishlist_item_extras', [ __CLASS__, 'item_extras' ], 20, 2 );
 		// Anzeige auf der Wunschlisten-Seite (Filter in media-lab-woocommerce, MediaLab_Wishlist_Storage::get_items_for_display)
 		add_filter( 'mlw_wishlist_display_items', [ __CLASS__, 'display_items' ], 20, 2 );
 		// Wie die Wunschliste: Gast-Auswahl beim Login in die dauerhafte Auswahl des Nutzers übernehmen
@@ -138,22 +142,121 @@ class ML_Deco_Selection {
 		if ( ! is_array( $data ) || empty( $data['items'] ) || ! is_array( $data['items'] ) ) {
 			return $data;
 		}
+		// Wunschlisten-Positionen tragen ihre Veredelung selbst (extras am Eintrag). Die zuletzt auf der Produktseite
+		// gewählte Auswahl darf dort nicht dazukommen, sonst bekäme auch ein Eintrag ohne Veredelung eine.
+		if ( ( $data['source'] ?? '' ) === 'wishlist' ) {
+			$data['items'] = self::append_wishlist_rows( $data['items'] );
+			return $data;
+		}
 		$data['items'] = self::append_rows( $data['items'] );
 		return $data;
 	}
 
 	/**
-	 * Filter mlw_wishlist_display_items: zeigt die Veredelung auf der Wunschlisten-Seite (und beim Nachrendern per Ajax).
-	 * Nur für die Liste des aktuellen Besuchers - nie in der geteilten Token-Ansicht (dort wäre es fremde Auswahl).
-	 *
-	 * @param mixed $items     Items wie von MediaLab_Wishlist_Storage::get_items_for_display().
-	 * @param bool  $own_list  true = eigene Wunschliste, false = explizit übergebene Liste (z. B. geteilter Link).
+	 * Anfrage aus der Wunschliste: Die Items der Anfrage stammen aus den gespeicherten Einträgen, tragen aber deren
+	 * Zusatzdaten (extras) nicht mit. Deshalb werden sie hier den Einträgen der Wunschliste des Absenders zugeordnet
+	 * (Produkt, Menge und Konfiguration müssen übereinstimmen, gleiche Einträge der Reihe nach) und bekommen die
+	 * Veredelungszeilen ihres eigenen Eintrags. Die Wunschliste ist zu diesem Zeitpunkt noch nicht geleert.
 	 */
-	public static function display_items( $items, $own_list = true ) {
-		if ( ! $own_list || ! is_array( $items ) || ! $items ) {
+	private static function append_wishlist_rows( array $items ): array {
+		if ( ! class_exists( 'MediaLab_Wishlist_Storage' ) ) {
 			return $items;
 		}
-		return self::append_rows( $items );
+		$queues = [];
+		foreach ( (array) MediaLab_Wishlist_Storage::get_items() as $stored ) {
+			if ( is_array( $stored ) ) {
+				$queues[ self::match_key( $stored ) ][] = $stored;
+			}
+		}
+		foreach ( $items as &$item ) {
+			$key = self::match_key( $item );
+			if ( empty( $queues[ $key ] ) ) {
+				continue;
+			}
+			$stored = array_shift( $queues[ $key ] );
+			$dec    = $stored['extras']['decoration'] ?? null;
+			$pid    = (int) ( $item['product_id'] ?? 0 );
+			if ( ! $pid || ! is_array( $dec ) || empty( $dec['lines'] ) ) {
+				continue;
+			}
+			$clean = self::sanitize( $pid, $dec );
+			if ( $clean === null ) {
+				continue;
+			}
+			$rows = self::rows( $pid, $clean, max( 1, (int) ( $item['quantity'] ?? 1 ) ) );
+			if ( ! $rows ) {
+				continue;
+			}
+			$display = is_array( $item['config_display'] ?? null ) ? $item['config_display'] : [];
+			foreach ( $rows as $label => $value ) {
+				$display[ $label ] = $value;
+			}
+			$item['config_display'] = $display;
+		}
+		unset( $item );
+		return $items;
+	}
+
+	private static function match_key( array $item ): string {
+		return (int) ( $item['product_id'] ?? 0 ) . '|' . max( 1, (int) ( $item['quantity'] ?? 1 ) ) . '|' . md5( (string) wp_json_encode( $item['config'] ?? null ) );
+	}
+
+	/**
+	 * Filter mlw_wishlist_item_extras: legt die aktuelle Auswahl des Besuchers beim Hinzufügen am Wunschlisten-Eintrag ab.
+	 * Die Auswahl kommt aus dem Speicher des Plugins (serverseitig geprüft), nie aus dem Request.
+	 *
+	 * @param mixed $extras Bisherige Zusatzdaten.
+	 * @param array $data   Daten des Hinzufügens (product_id, ...).
+	 */
+	public static function item_extras( $extras, $data = [] ) {
+		$extras = is_array( $extras ) ? $extras : [];
+		$pid    = (int) ( is_array( $data ) ? ( $data['product_id'] ?? 0 ) : 0 );
+		if ( ! $pid ) {
+			return $extras;
+		}
+		$all = self::all();
+		if ( ! empty( $all[ $pid ]['lines'] ) ) {
+			// Nur die Auswahl, ohne Zeitstempel: gleiche Auswahl ergibt gleiche Eintrags-ID.
+			$extras['decoration'] = [ 'lines' => $all[ $pid ]['lines'], 'repeat' => ! empty( $all[ $pid ]['repeat'] ) ];
+		}
+		return $extras;
+	}
+
+	/**
+	 * Filter mlw_wishlist_display_items: zeigt die Veredelung je Wunschlisten-Eintrag (Seite, Ajax-Nachrendern, Anfrage).
+	 * Die Auswahl steht am Eintrag selbst (extras), daher gilt das auch in der geteilten Ansicht: Dort sieht der
+	 * Empfänger die Auswahl des Listeninhabers. Einträge ohne Veredelung bleiben unverändert.
+	 *
+	 * @param mixed $items     Items wie von MediaLab_Wishlist_Storage::get_items_for_display().
+	 * @param bool  $own_list  true = eigene Wunschliste, false = explizit übergebene Liste (geteilter Link).
+	 */
+	public static function display_items( $items, $own_list = true ) {
+		if ( ! is_array( $items ) || ! $items ) {
+			return $items;
+		}
+		foreach ( $items as &$item ) {
+			$stored = $item['extras']['decoration'] ?? null;
+			$pid    = (int) ( $item['product_id'] ?? 0 );
+			if ( ! $pid || ! is_array( $stored ) || empty( $stored['lines'] ) ) {
+				continue;
+			}
+			// Gegen die aktuellen Produktdaten prüfen (Position/Technik könnten sich seit dem Hinzufügen geändert haben).
+			$clean = self::sanitize( $pid, $stored );
+			if ( $clean === null ) {
+				continue;
+			}
+			$rows = self::rows( $pid, $clean, max( 1, (int) ( $item['quantity'] ?? 1 ) ) );
+			if ( ! $rows ) {
+				continue;
+			}
+			$display = is_array( $item['config_display'] ?? null ) ? $item['config_display'] : [];
+			foreach ( $rows as $label => $value ) {
+				$display[ $label ] = $value;
+			}
+			$item['config_display'] = $display;
+		}
+		unset( $item );
+		return $items;
 	}
 
 	/** Hängt je Produktzeile mit gemerkter Auswahl die Veredelungszeilen an config_display. */

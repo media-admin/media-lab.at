@@ -5,6 +5,8 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.7.1: Anfrage aus der Wunschliste (Mail, Eintrag unter Anfragen) enthält die Veredelung je Eintrag: Die Items der Anfrage werden den Wunschlisten-Einträgen des Absenders zugeordnet (Produkt, Menge, Konfiguration).
+- 1.7.0: Die Veredelung gehört zum Wunschlisten-Eintrag (Filter `mlw_wishlist_item_extras`, media-lab-woocommerce ab 2.32.0): dasselbe Produkt mit anderer Veredelung ist ein eigener Eintrag, die Wunschlisten-Seite, die geteilte Ansicht und die Anfrage zeigen je Eintrag seine eigene Veredelung. Bei Anfragen aus der Wunschliste wird die zuletzt gewählte Auswahl nicht mehr zusätzlich angehängt.
 - 1.6.1: Makito: Klischee/Einrichtung gilt bei Techniken mit Farbpreis je Farbe (Tarif "CLICHÉ X COLOR"), die letzte Staffel ist nach oben offen (Tarif "+5000"). Benötigt MakitoDecorations ab dieser Version im Sync.
 - 1.6.0: Makito-Regeln nach dem Tarif-PDF: Mindestauftragswert gilt je Farbe (jede Farbe kostet mindestens den Mindestwert); Staffelgrenzen "unter N" (250 Stück fallen in die zweite Staffel: 1-249, 250-499, ...). Die Staffelgrenzen kommen aus dem Sync (MakitoDecorations ab dieser Version).
 - 1.5.2: Vorschaubilder im Auswahlbereich füllen alle dieselbe Kachel (object-fit: cover), Querformat wirkt nicht mehr kleiner als Hochformat.
