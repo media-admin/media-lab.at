@@ -59,6 +59,8 @@ class ML_Deco_Calculator {
 				'size'       => ML_Deco_Render::size_label( $position ),
 				'maxArea'    => isset( $position['max_area'] ) ? (float) $position['max_area'] : 0.0,
 				'image'      => (string) ( $position['image'] ?? '' ),
+				// Farbcodes mit eigenem Positionsbild (MidOcean): das Bild einer Farbe ergibt sich aus dem Standardbild
+				'colors'     => array_values( array_map( 'strval', (array) ( $position['colors'] ?? [] ) ) ),
 				'techniques' => $entries,
 			];
 		}

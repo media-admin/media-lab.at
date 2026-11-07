@@ -124,6 +124,13 @@
 	}
 
 	root.MLDecoCalc = {
+		imageForColor: function ( pos, code ) {
+			if ( ! code || ! pos.colors || pos.colors.indexOf( code ) === -1 ) {
+				return pos.image;
+			}
+			var m = /^(.*)-([A-Za-z0-9]{2})(_POS\d+\.(?:jpg|png))$/.exec( pos.image );
+			return m ? m[ 1 ] + '-' + code + m[ 3 ] : pos.image;
+		},
 		unitPrice: unitPrice,
 		reachableRanges: reachableRanges,
 		findScale: findScale,
@@ -235,6 +242,28 @@
 		var initialQty = pageQty ? parseInt( pageQty.value, 10 ) : 1;
 		state.qty = initialQty > 0 ? initialQty : 1;
 
+		var posImages = [];   // je Position mit Bild: {pos, btn, img}, für den Farbwechsel
+
+		/** Bildadresse einer Position für einen Farbcode; ohne eigenes Bild für diese Farbe das Standardbild. */
+		function imageFor( pos, code ) {
+			if ( ! code || ! pos.colors || pos.colors.indexOf( code ) === -1 ) {
+				return pos.image;
+			}
+			var m = /^(.*)-([A-Za-z0-9]{2})(_POS\d+\.(?:jpg|png))$/.exec( pos.image );
+			return m ? m[ 1 ] + '-' + code + m[ 3 ] : pos.image;
+		}
+
+		/** Farbe der gewählten Variante: Positionsbilder tauschen (null = keine Variante gewählt). */
+		function setColor( code ) {
+			posImages.forEach( function ( p ) {
+				var url = imageFor( p.pos, code );
+				if ( p.img.getAttribute( 'src' ) !== url ) {
+					p.img.setAttribute( 'src', url );
+					p.btn.setAttribute( 'data-mld-full', url );
+				}
+			} );
+		}
+
 		function imageButton( pos ) {
 			var btn = el( 'button', 'mld__img-btn' );
 			btn.type = 'button';
@@ -246,6 +275,7 @@
 			img.alt = '';
 			img.src = pos.image;
 			btn.appendChild( img );
+			posImages.push( { pos: pos, btn: btn, img: img } );
 			return btn;
 		}
 
@@ -930,6 +960,21 @@
 				result.appendChild( el( 'p', 'mld__note', t.sendNote ) );
 			}
 		}
+
+		// Farbwechsel im Variationsformular (WooCommerce): die Positionsbilder folgen der gewählten Farbe
+		( function () {
+			var scope = section.closest( '.product' ) || document;
+			var form = scope.querySelector( 'form.variations_form' );
+			if ( form && typeof window.jQuery !== 'undefined' && posImages.length ) {
+				window.jQuery( form )
+					.on( 'found_variation', function ( e, variation ) {
+						setColor( variation && variation.mld_color ? String( variation.mld_color ) : null );
+					} )
+					.on( 'reset_data hide_variation', function () {
+						setColor( null );
+					} );
+			}
+		}() );
 
 		wlSetup();
 		render();

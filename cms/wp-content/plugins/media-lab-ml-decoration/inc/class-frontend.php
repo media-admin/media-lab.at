@@ -7,8 +7,32 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ML_Deco_Frontend {
 
+	/**
+	 * Farbcode der Variante aus der Lieferanten-SKU (Variationsfeld _ml_supplier_variant_sku, zum Beispiel "MO6112-03"
+	 * ergibt "03"). Fehlt das Feld, bleibt es beim Standardbild.
+	 *
+	 * @param array                $data      Variationsdaten für das Frontend.
+	 * @param WC_Product           $product   Variables Produkt.
+	 * @param WC_Product_Variation $variation Die Variante.
+	 */
+	public static function variation_color( $data, $product, $variation ) {
+		if ( ! is_array( $data ) || ! is_object( $variation ) || ! method_exists( $variation, 'get_id' ) ) {
+			return $data;
+		}
+		$sku = trim( (string) get_post_meta( $variation->get_id(), '_ml_supplier_variant_sku', true ) );
+		if ( $sku !== '' ) {
+			$parts = explode( '-', $sku );
+			if ( count( $parts ) >= 2 && $parts[1] !== '' ) {
+				$data['mld_color'] = $parts[1];
+			}
+		}
+		return $data;
+	}
+
 	public static function init(): void {
 		add_filter( 'woocommerce_product_tabs', [ __CLASS__, 'tabs' ], 25 );
+		// Farbcode der gewählten Variante (MidOcean) an die Variationsdaten hängen: die Positionsbilder folgen der Farbe
+		add_filter( 'woocommerce_available_variation', [ __CLASS__, 'variation_color' ], 10, 3 );
 		add_shortcode( 'ml_decoration', [ __CLASS__, 'shortcode' ] );
 		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'assets' ] );
 	}

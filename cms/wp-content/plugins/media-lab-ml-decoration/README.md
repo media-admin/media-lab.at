@@ -5,6 +5,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.9.0: MidOcean: Die Positionsbilder folgen der gewählten Produktfarbe. Benötigt (1) MidOceanDecorations mit Farblisten je Position (Sync + Import 1), (2) das Variationsfeld _ml_supplier_variant_sku (Import der Varianten: Feld supplier_variant_sku), (3) den Filter woocommerce_available_variation (liefert mld_color). Ohne diese Daten bleibt das Standardbild.
 - 1.8.3: Smartphone: Die Ergebnistabelle des Rechners wird bis 40 rem Breite zu einer kompakten Liste (Beschriftung links, Wert rechts, Summe sofort sichtbar). Die Zellen tragen dazu data-label.
 - 1.8.2: Smartphone: Grid-Spalten mit minmax(0, 1fr), damit breiter Inhalt (Dropdowns, Tabelle) die Seite nicht mehr auseinanderschiebt; Felder untereinander, engere Abstände, kompaktere Tabelle; "Zurücksetzen" steht in der Beschriftungszeile der Technik.
 - 1.8.1: Zurücksetzen: Knopf "Zurücksetzen" je Position (nur sichtbar, solange eine Technik gewählt ist) und "Auswahl zurücksetzen" für alle Positionen samt Wiederholungsauftrag, damit sich eine neue Veredelung ohne Handarbeit beginnen lässt.
