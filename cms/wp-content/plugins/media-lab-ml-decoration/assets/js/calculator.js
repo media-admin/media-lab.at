@@ -7,7 +7,8 @@
  *                Makito (Staffel hat "cm"):  Preis + cm * Fläche
  *                MidOcean "area":            Preis * Fläche
  *                mindestens minUnit, dazu Handling je Stück
- *   Summe      = Einrichtung + max(Menge * Stückpreis, Mindestauftragswert)
+ *   Summe      = Einrichtung + Laufkosten; Laufkosten = Menge * Stückpreis, wobei jede Farbe mindestens den
+ *                Mindestauftragswert kostet (erste Farbe zum Preis, weitere zum Preis "weitere Farbe")
  */
 ( function ( root ) {
 	'use strict';
@@ -87,16 +88,33 @@
 			return res;
 		}
 
-		res.unit = unitPrice( tech, scale, o.colours, o.area ) + ( o.handling || 0 );
+		var handling = o.handling || 0;
+		res.unit = unitPrice( tech, scale, o.colours, o.area ) + handling;
 		res.running = o.qty * res.unit;
 
+		// Mindestauftragswert (Makito-Tarif): gilt je Farbe. Jede Farbe kostet mindestens minJob,
+		// die erste Farbe mit dem Preis, jede weitere mit dem Preis "weitere Farbe".
 		var minJob = Number( tech.minJob ) || 0;
-		if ( minJob > 0 && res.running < minJob ) {
-			res.running = minJob;
-			res.minJob = true;
+		if ( minJob > 0 ) {
+			var running;
+			if ( o.colours > 1 && scale.next ) {
+				var first = o.qty * ( unitPrice( tech, scale, 1, o.area ) + handling );
+				var more = o.qty * Number( scale.next );
+				running = Math.max( first, minJob ) + ( o.colours - 1 ) * Math.max( more, minJob );
+			} else {
+				running = Math.max( res.running, minJob );
+			}
+			if ( running > res.running + 1e-9 ) {
+				res.minJob = true;
+				res.running = running;
+			}
 		}
 
+		// Klischee/Einrichtung: bei Techniken mit "je Farbe" (Makito-Tarif "CLICHÉ X COLOR") für jede Farbe
 		res.setup = o.repeat ? ( Number( tech.setupRepeat ) || 0 ) : ( Number( tech.setup ) || 0 );
+		if ( tech.setupPerColour && o.colours > 1 ) {
+			res.setup *= o.colours;
+		}
 		res.total = round2( res.running ) + round2( res.setup );
 
 		if ( tech.minQty && o.qty < tech.minQty ) {

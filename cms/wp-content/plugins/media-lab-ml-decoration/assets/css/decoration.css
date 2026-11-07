@@ -376,6 +376,7 @@
 .mld-calc__pos-body .mld__img {
 	width: 5.5rem;
 	height: 5.5rem;
+	object-fit: cover;   /* quer- und hochformatige Bilder füllen dieselbe Kachel; die Vergrößerung zeigt das ganze Bild */
 }
 
 @media (max-width: 30rem) {

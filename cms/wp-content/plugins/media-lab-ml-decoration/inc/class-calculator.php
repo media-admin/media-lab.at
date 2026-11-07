@@ -131,13 +131,28 @@ class ML_Deco_Calculator {
 		$res['unit']    = self::unit_price( $tech, $scale, $colours, $area ) + $handling;
 		$res['running'] = $qty * $res['unit'];
 
+		// Mindestauftragswert (Makito-Tarif): gilt je Farbe. Jede Farbe kostet mindestens minJob,
+		// die erste Farbe mit dem Preis, jede weitere mit dem Preis "weitere Farbe".
 		$minJob = (float) ( $tech['minJob'] ?? 0 );
-		if ( $minJob > 0 && $res['running'] < $minJob ) {
-			$res['running'] = $minJob;
-			$res['minJob']  = true;
+		if ( $minJob > 0 ) {
+			if ( $colours > 1 && ! empty( $scale['next'] ) ) {
+				$first   = $qty * ( self::unit_price( $tech, $scale, 1, $area ) + $handling );
+				$more    = $qty * (float) $scale['next'];
+				$running = max( $first, $minJob ) + ( $colours - 1 ) * max( $more, $minJob );
+			} else {
+				$running = max( $res['running'], $minJob );
+			}
+			if ( $running > $res['running'] + 1e-9 ) {
+				$res['minJob']  = true;
+				$res['running'] = $running;
+			}
 		}
 
+		// Klischee/Einrichtung: bei Techniken mit "je Farbe" (Makito-Tarif "CLICHÉ X COLOR") für jede Farbe
 		$res['setup'] = $repeat ? (float) ( $tech['setupRepeat'] ?? 0 ) : (float) ( $tech['setup'] ?? 0 );
+		if ( ! empty( $tech['setupPerColour'] ) && $colours > 1 ) {
+			$res['setup'] *= $colours;
+		}
 		$res['total'] = round( $res['running'], 2 ) + round( $res['setup'], 2 );
 
 		if ( ! empty( $tech['minQty'] ) && $qty < (int) $tech['minQty'] ) {
@@ -196,6 +211,7 @@ class ML_Deco_Calculator {
 
 		return $payload + [
 			'nextColour' => ! empty( $tech['next_colour'] ),
+			'setupPerColour' => ! empty( $tech['setup_per_colour'] ),
 			'setup'      => self::r( $tech['setup'] ?? 0, $factor ),
 			'setupRepeat'=> self::r( $tech['setup_repeat'] ?? 0, $factor ),
 			'minJob'     => self::r( $tech['min_job'] ?? 0, $factor ),

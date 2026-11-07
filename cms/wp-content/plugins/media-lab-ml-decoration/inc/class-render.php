@@ -201,13 +201,19 @@ class ML_Deco_Render {
 	private static function render_facts( array $tech, float $factor ): void {
 		$facts = [];
 		if ( ( $tech['setup'] ?? 0 ) > 0 ) {
-			$facts[] = sprintf( __( 'Einrichtung (einmalig): %s', 'media-lab-ml-decoration' ), self::money( $tech['setup'] * $factor ) );
+			$facts[] = sprintf(
+				! empty( $tech['setup_per_colour'] ) ? __( 'Einrichtung (einmalig, je Farbe): %s', 'media-lab-ml-decoration' ) : __( 'Einrichtung (einmalig): %s', 'media-lab-ml-decoration' ),
+				self::money( $tech['setup'] * $factor )
+			);
 		}
 		if ( ( $tech['setup_repeat'] ?? 0 ) > 0 ) {
 			$facts[] = sprintf( __( 'Bei Wiederholung: %s', 'media-lab-ml-decoration' ), self::money( $tech['setup_repeat'] * $factor ) );
 		}
 		if ( ! empty( $tech['min_job'] ) ) {
-			$facts[] = sprintf( __( 'Mindestauftragswert: %s', 'media-lab-ml-decoration' ), self::money( $tech['min_job'] * $factor ) );
+			$facts[] = sprintf(
+				! empty( $tech['setup_per_colour'] ) ? __( 'Mindestauftragswert je Farbe: %s', 'media-lab-ml-decoration' ) : __( 'Mindestauftragswert: %s', 'media-lab-ml-decoration' ),
+				self::money( $tech['min_job'] * $factor )
+			);
 		}
 		if ( ! empty( $tech['min_qty'] ) ) {
 			$facts[] = sprintf( __( 'Mindestmenge: %s Stk.', 'media-lab-ml-decoration' ), esc_html( number_format_i18n( (int) $tech['min_qty'] ) ) );

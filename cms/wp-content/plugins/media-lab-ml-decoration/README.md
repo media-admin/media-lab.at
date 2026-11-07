@@ -5,6 +5,9 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.6.1: Makito: Klischee/Einrichtung gilt bei Techniken mit Farbpreis je Farbe (Tarif "CLICHÉ X COLOR"), die letzte Staffel ist nach oben offen (Tarif "+5000"). Benötigt MakitoDecorations ab dieser Version im Sync.
+- 1.6.0: Makito-Regeln nach dem Tarif-PDF: Mindestauftragswert gilt je Farbe (jede Farbe kostet mindestens den Mindestwert); Staffelgrenzen "unter N" (250 Stück fallen in die zweite Staffel: 1-249, 250-499, ...). Die Staffelgrenzen kommen aus dem Sync (MakitoDecorations ab dieser Version).
+- 1.5.2: Vorschaubilder im Auswahlbereich füllen alle dieselbe Kachel (object-fit: cover), Querformat wirkt nicht mehr kleiner als Hochformat.
 - 1.5.1: Die Bilder der Druckpositionen stehen nur noch im Auswahlbereich oben, nicht mehr zusätzlich im Überblick darunter (ohne Rechner bleiben sie im Überblick; Filter `ml_deco_overview_images`).
 - 1.5.0: Bilder der Druckpositionen auch im Bereich "Veredelung wählen" (neben den Feldern, mit Vergrößerung). MidOcean liefert ein Beispielbild je Position (benötigt MidOceanDecorations ab dieser Version im Sync und einen neuen Import), Makito hatte die Bilder schon.
 - 1.4.1: Gesamtzeile in Anfrage und Wunschliste heißt jetzt "Veredelung gesamt (ca., netto, zusätzlich zum Produktpreis)", damit sie nicht mit der Produkt-Gesamtsumme verwechselt wird.
@@ -76,6 +79,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 - MidOcean: Handling-Zuschlag (`print_manipulation`) wird pro Stück zum Preis addiert (Filter `ml_deco_include_handling`).
 - Makito: Staffel gilt „bis einschließlich"; Preis bei cm²-Techniken = Grundpreis + cm²-Preis × Fläche, mindestens
   Mindeststückpreis; „Mindestauftragswert" = `minjob`. Gegen `tarifa_general_marcaje_2026_ing.pdf` prüfen.
-- Mindestauftragswert (Makito, `minjob`) wird je Linie einmal angewendet (nicht je Farbe); gegen das Tarif-PDF prüfen.
+- Mindestauftragswert (Makito, `minjob`): je Farbe (Tarif-Hinweis "Mindestarbeitskosten pro Farbe").
+- Klischee: je Farbe (Tarif "CLICHÉ X COLOR") bei Makito-Techniken mit Farbpreis (Flag `setup_per_colour`). Bei MidOcean ist unbekannt, ob die Einrichtung je Farbe gilt; mit einem Rechenbeispiel (2+ Farben) bei MidOcean klären.
 - Makito-Zuschlagstexte (Einzelverpackung usw.) werden bewusst nicht ausgegeben.
 - Flächenstufen bei MidOcean sind in cm² (aus den Größenordnungen abgeleitet, nicht dokumentiert).
