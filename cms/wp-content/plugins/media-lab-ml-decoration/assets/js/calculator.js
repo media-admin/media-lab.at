@@ -218,6 +218,8 @@
 		var saveTimer = null;
 		var lastSaved = '';
 		var suppressSave = false;
+		// Wunschlisten-Button der Produktseite (Zustand je Veredelung, siehe wlSetup)
+		var wl = { btn: null, scope: null, qty: null, itemId: null, key: '', seq: 0, busy: false, qtyTimer: null };
 
 		// Menge aus dem Produktfeld der Seite übernehmen (Seite führt, Feld hier ist änderbar)
 		var qtyInput = null;
@@ -289,6 +291,18 @@
 			} );
 			field( t.technique, selTech, false );
 
+			// Kleiner Knopf: nur diese Position zurücksetzen (nur sichtbar, solange eine Technik gewählt ist)
+			var btnReset = el( 'button', 'mld-calc__reset', t.resetPos || 'Zurücksetzen' );
+			btnReset.type = 'button';
+			btnReset.hidden = true;
+			btnReset.setAttribute( 'aria-label', fill( t.resetPosFor || '%s', [ pos.label ] ) );
+			btnReset.addEventListener( 'click', function () {
+				selTech.value = '';
+				selTech.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				selTech.focus();
+			} );
+			row.appendChild( btnReset );
+
 			var selColours = el( 'select' );
 			var wrapColours = field( t.colours, selColours, true );
 			var selRange = el( 'select' );
@@ -301,6 +315,7 @@
 
 			function refresh() {
 				var tech = ps.techId ? data.techniques[ ps.techId ] : null;
+				btnReset.hidden = ! ps.techId;
 				wrapColours.hidden = wrapRange.hidden = wrapArea.hidden = true;
 				if ( ! tech ) {
 					return;
@@ -377,6 +392,14 @@
 			} );
 
 			controls[ pi ] = {
+				clear: function () {
+					ps.techId = '';
+					selTech.value = '';
+					ps.colours = 1;
+					ps.rangeIdx = null;
+					ps.area = pos.maxArea || 0;
+					refresh();
+				},
 				set: function ( line ) {
 					ps.techId = line.tech;
 					selTech.value = line.tech;
@@ -428,6 +451,25 @@
 				render();
 			} );
 		}
+
+		var resetAll = el( 'button', 'mld-calc__reset mld-calc__reset--all', t.resetAll || 'Auswahl zurücksetzen' );
+		resetAll.type = 'button';
+		resetAll.hidden = true;
+		resetAll.addEventListener( 'click', function () {
+			suppressSave = true;
+			controls.forEach( function ( c ) {
+				if ( c ) {
+					c.clear();
+				}
+			} );
+			state.repeat = false;
+			if ( repeatInput ) {
+				repeatInput.checked = false;
+			}
+			suppressSave = false;
+			render();
+		} );
+		global.appendChild( resetAll );
 
 		qtyInput.addEventListener( 'input', function () {
 			var q = parseInt( qtyInput.value, 10 );
@@ -559,10 +601,215 @@
 			} );
 		}
 
+		/** Auswahl sofort speichern (ohne Verzögerung) und abwarten, z. B. unmittelbar vor "Zur Wunschliste hinzufügen". */
+		function flushSave() {
+			if ( ! cfg || ! data.productId || typeof fetch !== 'function' ) {
+				return Promise.resolve();
+			}
+			clearTimeout( saveTimer );
+			var json = JSON.stringify( serialize() );
+			if ( json === lastSaved ) {
+				return Promise.resolve();
+			}
+			lastSaved = json;
+			return postAjax( 'mld_selection_save', { selection: json } ).catch( function () {
+				lastSaved = '';
+			} );
+		}
+
+		// ── Wunschlisten-Button auf der Produktseite ────────────────────────────
+		// Der Button des geteilten Plugins schaltet je Produkt/Variante um. Mit Veredelung gehört zur Identität eines
+		// Eintrags auch die Auswahl: dasselbe Produkt mit anderer Veredelung ist ein eigener Eintrag. Deshalb übernimmt
+		// dieser Block auf Produktseiten mit Rechner den Button (Klick, Zustand, Menge) und nutzt dabei die vorhandenen
+		// Endpunkte des geteilten Plugins (mlw_wishlist_add, _remove, _update_qty).
+
+		function wlPost( action, extra ) {
+			var body = new URLSearchParams( Object.assign( { action: action, nonce: root.mlwWishlist.nonce }, extra || {} ) );
+			return fetch( root.mlwWishlist.ajaxUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: body,
+			} ).then( function ( r ) {
+				return r.json();
+			} );
+		}
+
+		function wlVariationId() {
+			var form = wl.scope.querySelector( 'form.variations_form' );
+			var input = form ? form.querySelector( 'input.variation_id, input[name="variation_id"]' ) : null;
+			return input ? ( parseInt( input.value, 10 ) || 0 ) : 0;
+		}
+
+		function wlQuantity() {
+			var q = wl.qty ? parseInt( wl.qty.value, 10 ) : 1;
+			return q > 0 ? q : 1;
+		}
+
+		function wlBadges( count ) {
+			if ( typeof count !== 'number' ) {
+				return;
+			}
+			root.mlwWishlist.count = count;
+			document.querySelectorAll( '.mlw-wishlist-count' ).forEach( function ( el ) {
+				el.textContent = count;
+				el.style.display = count > 0 ? '' : 'none';
+			} );
+		}
+
+		function wlSetActive( active ) {
+			var btn = wl.btn;
+			btn.classList.toggle( 'is-active', active );
+			btn.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+			var text = active ? btn.dataset.labelRemove : btn.dataset.labelAdd;
+			var label = btn.querySelector( '.mlw-add-to-wishlist__label' );
+			if ( text && label ) {
+				label.textContent = text;
+			} else if ( text ) {
+				btn.setAttribute( 'aria-label', text );
+			}
+		}
+
+		function wlApply( state ) {
+			wl.itemId = state && state.item_id ? state.item_id : null;
+			wlSetActive( !! wl.itemId );
+			// Steht genau diese Auswahl schon auf der Liste: Mengenfeld zeigt deren Menge (die Summe rechnet mit)
+			if ( wl.itemId && state.quantity && wl.qty && parseInt( wl.qty.value, 10 ) !== state.quantity ) {
+				wl.qty.value = state.quantity;
+				wl.qty.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+			}
+		}
+
+		/** Zustand für die aktuelle Kombination aus Variante und Veredelung vom Server holen. */
+		function wlRefresh( force ) {
+			if ( ! wl.btn ) {
+				return;
+			}
+			var selection = JSON.stringify( serialize() );
+			var variationId = wlVariationId();
+			var key = variationId + '|' + selection;
+			if ( ! force && key === wl.key ) {
+				return;
+			}
+			wl.key = key;
+			var seq = ++wl.seq;
+			postAjax( 'mld_wishlist_state', { variation_id: variationId, selection: selection } ).then( function ( res ) {
+				if ( seq === wl.seq && res && res.success ) {
+					wlApply( res.data );
+				}
+			} ).catch( function () {} );
+		}
+
+		function wlFail( res ) {
+			alert( ( res && res.data && res.data.message ) || ( root.mlwWishlist.i18n && root.mlwWishlist.i18n.genericError ) || 'Es ist ein Fehler aufgetreten.' );
+		}
+
+		function wlClick( e ) {
+			if ( ! e.target.closest || e.target.closest( '.mlw-add-to-wishlist--single' ) !== wl.btn ) {
+				return;
+			}
+			var variationId = wlVariationId();
+			if ( wl.btn.dataset.variable === '1' && ! variationId ) {
+				return; // ohne gewählte Variante zeigt das geteilte Plugin seinen Hinweis
+			}
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			if ( wl.busy ) {
+				return;
+			}
+			wl.busy = true;
+			wl.btn.disabled = true;
+			var finish = function () {
+				wl.busy = false;
+				wl.btn.disabled = false;
+			};
+
+			if ( wl.itemId ) {
+				// Genau diese Auswahl steht auf der Liste: genau diesen Eintrag entfernen
+				wlPost( 'mlw_wishlist_remove', { item_id: wl.itemId } ).then( function ( res ) {
+					if ( res.success ) {
+						wlBadges( res.data.count );
+						wl.itemId = null;
+						wlSetActive( false );
+					} else {
+						wlFail( res );
+					}
+					finish();
+				} ).catch( function () {
+					wlFail( null );
+					finish();
+				} );
+				return;
+			}
+
+			// Auswahl zuerst speichern: Der Eintrag übernimmt sie serverseitig (nicht aus dem Request)
+			flushSave().then( function () {
+				return wlPost( 'mlw_wishlist_add', { product_id: data.productId, variation_id: variationId, quantity: wlQuantity() } );
+			} ).then( function ( res ) {
+				if ( res.success ) {
+					wlBadges( res.data.count );
+					wlRefresh( true );
+				} else {
+					wlFail( res );
+				}
+				finish();
+			} ).catch( function () {
+				wlFail( null );
+				finish();
+			} );
+		}
+
+		/** Menge geändert: Eintrag der aktuellen Auswahl aktualisieren (das geteilte Skript träfe die falsche item_id). */
+		function wlQtyChange( e ) {
+			if ( e.target !== wl.qty ) {
+				return;
+			}
+			e.stopPropagation();
+			var q = wlQuantity();
+			wl.qty.value = q;
+			wl.qty.dispatchEvent( new Event( 'input', { bubbles: true } ) );   // Summenzeile unter dem Preis aktuell halten
+			if ( ! wl.itemId ) {
+				return;
+			}
+			clearTimeout( wl.qtyTimer );
+			var itemId = wl.itemId;
+			wl.qtyTimer = setTimeout( function () {
+				wlPost( 'mlw_wishlist_update_qty', { item_id: itemId, quantity: q } ).catch( function () {} );
+			}, 400 );
+		}
+
+		function wlSetup() {
+			if ( ! cfg || ! data.productId || typeof fetch !== 'function' || typeof URLSearchParams === 'undefined' || ! root.mlwWishlist ) {
+				return;
+			}
+			wl.scope = section.closest( '.product' ) || document;
+			wl.btn = wl.scope.querySelector( '.mlw-add-to-wishlist--single' );
+			if ( ! wl.btn ) {
+				return;
+			}
+			var wrap = wl.btn.closest( '.mlw-wishlist-action' );
+			wl.qty = wrap ? wrap.querySelector( '.mlw-wishlist-qty__input' ) : null;
+
+			// Capture-Phase: vor den Handlern des geteilten Skripts
+			document.addEventListener( 'click', wlClick, true );
+			if ( wl.qty ) {
+				document.addEventListener( 'change', wlQtyChange, true );
+			}
+			var form = wl.scope.querySelector( 'form.variations_form' );
+			if ( form && typeof window.jQuery !== 'undefined' ) {
+				window.jQuery( form ).on( 'found_variation reset_data hide_variation', function () {
+					setTimeout( function () {
+						wlRefresh( false );
+					}, 50 );
+				} );
+			}
+		}
+
 		function render() {
 			scheduleSave();
+			wlRefresh( false );
 			result.innerHTML = '';
 			var lines = selectedLines();
+			resetAll.hidden = ! lines.length;
 			if ( ! lines.length ) {
 				result.appendChild( el( 'p', 'mld-calc__empty', t.pick ) );
 				return;
@@ -669,6 +916,7 @@
 			}
 		}
 
+		wlSetup();
 		render();
 		restoreSelection();
 	}

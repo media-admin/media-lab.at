@@ -385,3 +385,35 @@
 		height: 4rem;
 	}
 }
+
+/* Auswahl zurücksetzen (je Position und für alles) */
+.mld-calc__reset {
+	min-height: 2.5rem;
+	padding: 0 0.25rem;
+	font: inherit;
+	font-size: 0.85rem;
+	color: var(--color-text-muted);
+	text-decoration: underline;
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.mld-calc__reset[hidden] {
+	display: none;
+}
+
+.mld-calc__reset:hover,
+.mld-calc__reset:focus-visible {
+	color: var(--color-primary);
+}
+
+.mld-calc__reset:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 2px;
+	border-radius: 0.25rem;
+}
+
+.mld-calc__reset--all {
+	margin-left: auto;
+}

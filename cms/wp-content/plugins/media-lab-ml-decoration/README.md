@@ -5,6 +5,8 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.8.1: Zurücksetzen: Knopf "Zurücksetzen" je Position (nur sichtbar, solange eine Technik gewählt ist) und "Auswahl zurücksetzen" für alle Positionen samt Wiederholungsauftrag, damit sich eine neue Veredelung ohne Handarbeit beginnen lässt.
+- 1.8.0: Wunschlisten-Button auf Produktseiten mit Rechner (calculator.js): Zustand je Variante und Veredelung. Dasselbe Produkt mit anderer Veredelung lässt sich als eigener Eintrag hinzufügen, das Entfernen trifft genau den Eintrag der gewählten Veredelung, Mengenänderungen aktualisieren ihn. Nutzt die Endpunkte mlw_wishlist_add/_remove/_update_qty des geteilten Plugins, neuer Endpunkt mld_wishlist_state. Das geteilte Skript wird in der Capture-Phase übersteuert.
 - 1.7.1: Anfrage aus der Wunschliste (Mail, Eintrag unter Anfragen) enthält die Veredelung je Eintrag: Die Items der Anfrage werden den Wunschlisten-Einträgen des Absenders zugeordnet (Produkt, Menge, Konfiguration).
 - 1.7.0: Die Veredelung gehört zum Wunschlisten-Eintrag (Filter `mlw_wishlist_item_extras`, media-lab-woocommerce ab 2.32.0): dasselbe Produkt mit anderer Veredelung ist ein eigener Eintrag, die Wunschlisten-Seite, die geteilte Ansicht und die Anfrage zeigen je Eintrag seine eigene Veredelung. Bei Anfragen aus der Wunschliste wird die zuletzt gewählte Auswahl nicht mehr zusätzlich angehängt.
 - 1.6.1: Makito: Klischee/Einrichtung gilt bei Techniken mit Farbpreis je Farbe (Tarif "CLICHÉ X COLOR"), die letzte Staffel ist nach oben offen (Tarif "+5000"). Benötigt MakitoDecorations ab dieser Version im Sync.

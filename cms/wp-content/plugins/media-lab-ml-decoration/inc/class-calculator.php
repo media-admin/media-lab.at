@@ -256,6 +256,9 @@ class ML_Deco_Calculator {
 			'maxArea'     => __( 'Preis bei Motivfläche %s cm².', 'media-lab-ml-decoration' ),
 			'sendNote'    => __( 'Ihre Auswahl wird mit Ihrer Anfrage übermittelt.', 'media-lab-ml-decoration' ),
 			'zoomImage'   => __( 'Druckposition „%s“ vergrößern', 'media-lab-ml-decoration' ),
+			'resetPos'    => __( 'Zurücksetzen', 'media-lab-ml-decoration' ),
+			'resetPosFor' => __( 'Veredelung für „%s“ zurücksetzen', 'media-lab-ml-decoration' ),
+			'resetAll'    => __( 'Auswahl zurücksetzen', 'media-lab-ml-decoration' ),
 		];
 	}
 }

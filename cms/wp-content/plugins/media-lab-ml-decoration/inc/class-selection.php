@@ -19,7 +19,7 @@ class ML_Deco_Selection {
 	const TTL_DAYS      = 90;
 
 	public static function init(): void {
-		foreach ( [ 'mld_selection_save' => 'ajax_save', 'mld_selection_get' => 'ajax_get' ] as $action => $method ) {
+		foreach ( [ 'mld_selection_save' => 'ajax_save', 'mld_selection_get' => 'ajax_get', 'mld_wishlist_state' => 'ajax_wishlist_state' ] as $action => $method ) {
 			add_action( "wp_ajax_{$action}", [ __CLASS__, $method ] );
 			add_action( "wp_ajax_nopriv_{$action}", [ __CLASS__, $method ] );
 		}
@@ -53,6 +53,54 @@ class ML_Deco_Selection {
 			unset( $sel['ts'] );
 		}
 		wp_send_json_success( [ 'selection' => $sel ] );
+	}
+
+	/**
+	 * Zustand des Wunschlisten-Buttons auf der Produktseite: Steht genau dieses Produkt (und diese Variante) mit genau
+	 * dieser Veredelung auf der Wunschliste? Antwort: item_id und Menge des Eintrags, sonst null.
+	 */
+	public static function ajax_wishlist_state(): void {
+		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+		$product_id   = (int) ( $_POST['product_id'] ?? 0 );
+		$variation_id = (int) ( $_POST['variation_id'] ?? 0 );
+		$raw          = json_decode( wp_unslash( (string) ( $_POST['selection'] ?? '' ) ), true );
+		wp_send_json_success( self::wishlist_state( $product_id, $variation_id, $raw ) );
+	}
+
+	/** @return array{item_id:?string, quantity:?int} */
+	public static function wishlist_state( int $product_id, int $variation_id, $raw_selection ): array {
+		$clean = $product_id ? self::sanitize( $product_id, $raw_selection ) : null;
+		$item  = $product_id ? self::find_wishlist_item( $product_id, $variation_id, $clean ) : null;
+		return [
+			'item_id'  => $item ? (string) $item['item_id'] : null,
+			'quantity' => $item ? max( 1, (int) ( $item['quantity'] ?? 1 ) ) : null,
+		];
+	}
+
+	/**
+	 * Sucht den Wunschlisten-Eintrag zu Produkt + Variante + Veredelung. Ohne Veredelung ($clean = null) ist es der Eintrag
+	 * ohne Veredelung. Konfigurierte Einträge (Konfigurator) zählen nicht.
+	 */
+	public static function find_wishlist_item( int $product_id, int $variation_id, ?array $clean ): ?array {
+		if ( ! class_exists( 'MediaLab_Wishlist_Storage' ) ) {
+			return null;
+		}
+		$want = $clean ? self::decoration_key( $clean ) : '';
+		foreach ( (array) MediaLab_Wishlist_Storage::get_items() as $item ) {
+			if ( ! is_array( $item ) || (int) ( $item['product_id'] ?? 0 ) !== $product_id || ! empty( $item['config'] ) || (int) ( $item['variation_id'] ?? 0 ) !== $variation_id ) {
+				continue;
+			}
+			$dec  = $item['extras']['decoration'] ?? null;
+			$have = ( is_array( $dec ) && ! empty( $dec['lines'] ) ) ? self::decoration_key( $dec ) : '';
+			if ( $have === $want ) {
+				return $item;
+			}
+		}
+		return null;
+	}
+
+	private static function decoration_key( array $sel ): string {
+		return (string) wp_json_encode( [ 'lines' => $sel['lines'] ?? [], 'repeat' => ! empty( $sel['repeat'] ) ] );
 	}
 
 	// ── Speichern ─────────────────────────────────────────────────────────────
