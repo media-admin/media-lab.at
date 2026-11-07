@@ -264,13 +264,21 @@
 			fs.appendChild( legend );
 			var row = el( 'div', 'mld-calc__row' );
 
-			function field( labelText, control, hidden ) {
+			function field( labelText, control, hidden, headExtra ) {
 				var id = uid + '-' + pi + '-' + labelText.replace( /\W+/g, '' );
 				var wrap = el( 'div', 'mld-calc__field' );
 				var label = el( 'label', null, labelText );
 				label.setAttribute( 'for', id );
 				control.id = id;
-				wrap.appendChild( label );
+				if ( headExtra ) {
+					// Beschriftung links, Zusatzelement (z. B. "Zurücksetzen") rechts in derselben Zeile
+					var head = el( 'div', 'mld-calc__fieldhead' );
+					head.appendChild( label );
+					head.appendChild( headExtra );
+					wrap.appendChild( head );
+				} else {
+					wrap.appendChild( label );
+				}
 				wrap.appendChild( control );
 				if ( hidden ) {
 					wrap.hidden = true;
@@ -289,9 +297,9 @@
 				o.value = pt.id;
 				selTech.appendChild( o );
 			} );
-			field( t.technique, selTech, false );
 
-			// Kleiner Knopf: nur diese Position zurücksetzen (nur sichtbar, solange eine Technik gewählt ist)
+			// Kleiner Knopf: nur diese Position zurücksetzen (nur sichtbar, solange eine Technik gewählt ist);
+			// steht rechts in der Beschriftungszeile der Technik und bleibt damit auch am Smartphone dort.
 			var btnReset = el( 'button', 'mld-calc__reset', t.resetPos || 'Zurücksetzen' );
 			btnReset.type = 'button';
 			btnReset.hidden = true;
@@ -301,7 +309,7 @@
 				selTech.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				selTech.focus();
 			} );
-			row.appendChild( btnReset );
+			field( t.technique, selTech, false, btnReset );
 
 			var selColours = el( 'select' );
 			var wrapColours = field( t.colours, selColours, true );

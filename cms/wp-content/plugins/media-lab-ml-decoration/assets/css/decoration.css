@@ -3,8 +3,13 @@
 
 .mld {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 1.25rem;
 	color: var(--color-text);
+}
+
+.mld > * {
+	min-width: 0;
 }
 
 .mld__position {
@@ -44,6 +49,7 @@
 
 .mld__techs {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0.5rem;
 }
 
@@ -91,7 +97,9 @@
 }
 
 .mld__tech-name {
+	min-width: 0;
 	font-weight: 600;
+	overflow-wrap: anywhere;
 }
 
 .mld__tech-colours {
@@ -235,6 +243,7 @@
 
 .mld-calc {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0.75rem;
 	padding: 1rem 1.25rem;
 	background: var(--color-card-bg);
@@ -244,6 +253,7 @@
 
 .mld-calc__ui {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 1rem;
 }
 
@@ -257,6 +267,7 @@
 
 .mld-calc__form {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0.75rem;
 }
 
@@ -287,8 +298,22 @@
 
 .mld-calc__field {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0.25rem;
-	min-width: 9rem;
+	min-width: min(9rem, 100%);
+	max-width: 100%;
+}
+
+.mld-calc__fieldhead {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.mld-calc__fieldhead .mld-calc__reset {
+	min-height: 0;
+	padding: 0;
 }
 
 .mld-calc__field[hidden] {
@@ -302,6 +327,8 @@
 
 .mld-calc__field select,
 .mld-calc__field input[type="number"] {
+	min-width: 0;
+	max-width: 100%;
 	min-height: 2.5rem;
 	padding: 0.35rem 0.6rem;
 	font: inherit;
@@ -325,8 +352,10 @@
 }
 
 .mld-calc__check label {
+	min-width: 0;
 	font-size: 0.9rem;
 	color: var(--color-text);
+	overflow-wrap: anywhere;
 }
 
 .mld-calc__h {
@@ -416,4 +445,33 @@
 
 .mld-calc__reset--all {
 	margin-left: auto;
+}
+
+/* Smartphone: engere Abstände, Felder untereinander, Tabelle kompakter */
+@media (max-width: 40rem) {
+	.mld__position,
+	.mld-calc {
+		padding: 0.75rem;
+	}
+
+	.mld-calc__pos {
+		padding: 0.5rem 0.75rem 0.75rem;
+	}
+
+	.mld-calc__row .mld-calc__field {
+		flex: 1 1 100%;
+	}
+
+	.mld-calc__reset--all {
+		margin-left: 0;
+	}
+
+	.mld__table {
+		font-size: 0.8rem;
+	}
+
+	.mld__table th,
+	.mld__table td {
+		padding: 0.35rem 0.4rem;
+	}
 }
