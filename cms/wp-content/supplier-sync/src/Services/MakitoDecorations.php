@@ -29,9 +29,11 @@
  *   pricing 'colours'  : Stückpreis = price + next * (Farben - 1)
  *   pricing 'area'     : Stückpreis = price + cm * Druckfläche_cm2 (+ next * (Farben - 1))
  *   Stückpreis mindestens min_unit_price, Auftrag mindestens min_job.
- *   Gesamt = Klischee (setup, bei Wiederholung setup_repeat) + Menge * Stückpreis
- * Staffeln: Eintrag gilt bis einschließlich "upto" (Annahme, siehe Makito-
- * Produktpreise im MakitoAdapter, "-500" = "bis 500"). "qty" ist die Untergrenze,
+ *   Gesamt = Klischee (setup, bei Wiederholung setup_repeat; bei Techniken mit Farbpreis je Farbe,
+ *            Tarif: "CLICHÉ X COLOR") + Laufkosten (Mindestwert je Farbe, "TRABAJO MÍNIMO X COLOR")
+ * Staffeln: <amountunderN> heißt "unter N Stück" (Tarif-PDF: Spalten "-250 +250 +500 ...",
+ * "+250" = ab 250). Die Staffel 1 gilt also für 1-249, Staffel 2 für 250-499 usw. Gespeichert wird
+ * "qty" = erste Menge der Staffel und "upto" = letzte Menge der Staffel (einschließlich),
  * "upto" = null bedeutet nach oben offen.
  * ============================================================ */
 
@@ -131,8 +133,9 @@ class MakitoDecorations {
                 $hasCm   = $hasCm || $cm > 0;
 
                 $tiers[] = [
-                    'qty'   => $prevTop + 1,
-                    'upto'  => $upto >= self::OPEN_END ? null : (int) $upto,
+                    // "unter N": die nächste Staffel beginnt genau bei N (nicht bei N+1)
+                    'qty'   => $tiers ? $prevTop : 1,
+                    'upto'  => $upto >= self::OPEN_END ? null : max(1, (int) $upto - 1),
                     'price' => $price,
                     'next'  => $next > 0 ? $next : null,
                     'cm'    => $cm > 0 ? $cm : null,
@@ -145,10 +148,9 @@ class MakitoDecorations {
                 continue;
             }
 
-            // Genau eine Staffel (z. B. DIGITALDRUCK mit "bis 1"): gilt für alle Mengen
-            if (count($tiers) === 1) {
-                $tiers[0]['upto'] = null;
-            }
+            // Die letzte Staffel ist nach oben offen (Tarif-PDF: "+5000" bzw. "+10.000" = ab dieser Menge).
+            // Gilt auch für eine einzelne Staffel (z. B. DIGITALDRUCK mit "bis 1"): sie gilt für alle Mengen.
+            $tiers[count($tiers) - 1]['upto'] = null;
 
             $type = $hasCm ? 'area' : ($hasNext ? 'colours' : 'positions');
 
@@ -176,6 +178,9 @@ class MakitoDecorations {
                 'name'           => ['de' => $this->prettyName((string) $pj->name)],
                 'pricing'        => $type,
                 'next_colour'    => $hasNext,
+                // Tarif-PDF: bei Siebdruck/Tampondruck u. a. gelten "Klischee x Farbe", "Wiederholung x Farbe" und
+                // "Trabajo mínimo x Farbe" - also je Farbe (Techniken mit Preis für weitere Farben).
+                'setup_per_colour' => $hasNext,
                 'setup'          => self::num($pj->cliche) ?? 0.0,
                 'setup_repeat'   => self::num($pj->clicherep) ?? 0.0,
                 'min_job'        => (($v = self::num($pj->minjob)) !== null && $v > 0) ? $v : null,
