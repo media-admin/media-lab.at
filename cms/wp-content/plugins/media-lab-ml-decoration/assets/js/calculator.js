@@ -880,9 +880,16 @@
 					tr.appendChild( td );
 				} else {
 					sum += calc.total;
-					tr.appendChild( el( 'td', null, money( calc.unit ) ) );
-					tr.appendChild( el( 'td', null, calc.setup > 0 ? money2( calc.setup ) : '–' ) );
-					tr.appendChild( el( 'td', null, money2( calc.total ) ) );
+					// data-label: Am Smartphone wird die Tabelle zur Liste, die Beschriftung steht dann vor dem Wert
+					var tdUnit = el( 'td', null, money( calc.unit ) );
+					tdUnit.setAttribute( 'data-label', t.colUnit );
+					var tdSetup = el( 'td', null, calc.setup > 0 ? money2( calc.setup ) : '–' );
+					tdSetup.setAttribute( 'data-label', t.colSetup );
+					var tdTotal = el( 'td', 'mld-calc__cell-total', money2( calc.total ) );
+					tdTotal.setAttribute( 'data-label', t.colTotal );
+					tr.appendChild( tdUnit );
+					tr.appendChild( tdSetup );
+					tr.appendChild( tdTotal );
 					if ( calc.minJob && notes.indexOf( t.minJob ) === -1 ) {
 						notes.push( t.minJob );
 					}
