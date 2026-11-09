@@ -19,14 +19,56 @@ class ML_Deco_Frontend {
 		if ( ! is_array( $data ) || ! is_object( $variation ) || ! method_exists( $variation, 'get_id' ) ) {
 			return $data;
 		}
-		$sku = trim( (string) get_post_meta( $variation->get_id(), '_ml_supplier_variant_sku', true ) );
-		if ( $sku !== '' ) {
-			$parts = explode( '-', $sku );
-			if ( count( $parts ) >= 2 && $parts[1] !== '' ) {
-				$data['mld_color'] = $parts[1];
-			}
+		$code = self::color_code( (string) get_post_meta( $variation->get_id(), '_ml_supplier_variant_sku', true ) );
+		if ( $code !== '' ) {
+			$data['mld_color'] = $code;
 		}
 		return $data;
+	}
+
+	/** Farbcode aus der Lieferanten-SKU: zweiter Teil nach dem Bindestrich ("MO6112-03" ergibt "03", "S11500-12-M" ergibt "12"). */
+	public static function color_code( string $sku ): string {
+		$parts = explode( '-', trim( $sku ) );
+		return ( count( $parts ) >= 2 && $parts[1] !== '' ) ? $parts[1] : '';
+	}
+
+	/**
+	 * Zuordnung Farbwert (Slug des Farbattributs) zu Farbcode für ein variables Produkt, zum Beispiel
+	 * { "deep-black": "DB", "white": "WH" }. Damit wechseln die Positionsbilder schon, wenn nur die Farbe gewählt ist
+	 * (WooCommerce meldet eine Variante erst, wenn alle Felder gewählt sind, also auch die Größe).
+	 *
+	 * @return array<string,string>
+	 */
+	public static function color_map( int $product_id ): array {
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return [];
+		}
+		$product = wc_get_product( $product_id );
+		if ( ! $product || ! $product->is_type( 'variable' ) ) {
+			return [];
+		}
+		$ids = array_map( 'intval', (array) $product->get_children() );
+		if ( ! $ids ) {
+			return [];
+		}
+		if ( function_exists( 'update_meta_cache' ) ) {
+			update_meta_cache( 'post', $ids );
+		}
+		$attr = 'attribute_' . self::color_attribute();
+		$map  = [];
+		foreach ( $ids as $vid ) {
+			$slug = (string) get_post_meta( $vid, $attr, true );
+			$code = self::color_code( (string) get_post_meta( $vid, '_ml_supplier_variant_sku', true ) );
+			if ( $slug !== '' && $code !== '' && ! isset( $map[ $slug ] ) ) {
+				$map[ $slug ] = $code;
+			}
+		}
+		return $map;
+	}
+
+	/** Attribut, das die Produktfarbe trägt (Standard pa_color, anpassbar). */
+	public static function color_attribute(): string {
+		return (string) apply_filters( 'ml_deco_color_attribute', 'pa_color' );
 	}
 
 	public static function init(): void {

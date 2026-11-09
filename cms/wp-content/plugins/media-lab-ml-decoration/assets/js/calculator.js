@@ -961,19 +961,39 @@
 			}
 		}
 
-		// Farbwechsel im Variationsformular (WooCommerce): die Positionsbilder folgen der gewählten Farbe
+		// Farbwechsel im Variationsformular (WooCommerce): die Positionsbilder folgen der gewählten Farbe, auch wenn
+		// erst die Farbe gewählt ist (WooCommerce meldet eine Variante erst mit allen Feldern, also auch der Größe).
 		( function () {
 			var scope = section.closest( '.product' ) || document;
 			var form = scope.querySelector( 'form.variations_form' );
-			if ( form && typeof window.jQuery !== 'undefined' && posImages.length ) {
-				window.jQuery( form )
-					.on( 'found_variation', function ( e, variation ) {
-						setColor( variation && variation.mld_color ? String( variation.mld_color ) : null );
-					} )
-					.on( 'reset_data hide_variation', function () {
-						setColor( null );
-					} );
+			if ( ! form || typeof window.jQuery === 'undefined' || ! posImages.length ) {
+				return;
 			}
+			var colorMap = data.colorMap || {};
+			var colorField = data.colorAttr || 'attribute_pa_color';
+
+			/** Farbcode zur aktuell gewählten Farbe im Formular (null: keine Farbe gewählt oder unbekannt). */
+			function codeFromSelect() {
+				var select = form.querySelector( '[name="' + colorField + '"]' );
+				var value = select ? select.value : '';
+				return value && colorMap[ value ] ? String( colorMap[ value ] ) : null;
+			}
+
+			window.jQuery( form )
+				.on( 'found_variation', function ( e, variation ) {
+					setColor( variation && variation.mld_color ? String( variation.mld_color ) : codeFromSelect() );
+				} )
+				.on( 'change', '[name="' + colorField + '"]', function () {
+					setColor( codeFromSelect() );
+				} )
+				.on( 'reset_data hide_variation', function () {
+					// nach WooCommerce: Das Farbfeld kann gewählt bleiben (Variante unvollständig), dann bleibt das Farbbild
+					setTimeout( function () {
+						setColor( codeFromSelect() );
+					}, 0 );
+				} );
+
+			setColor( codeFromSelect() );   // Vorauswahl der Seite (Standardwerte der Variante)
 		}() );
 
 		wlSetup();

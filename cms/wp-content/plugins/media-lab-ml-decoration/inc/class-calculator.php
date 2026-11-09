@@ -21,6 +21,21 @@ class ML_Deco_Calculator {
 			return '';
 		}
 		$payload['productId'] = $product_id;
+		// Farbwert -> Farbcode der Varianten (Positionsbilder je Farbe), nur wenn ein Produkt Farblisten hat
+		$has_colors = false;
+		foreach ( $payload['positions'] as $pos ) {
+			if ( ! empty( $pos['colors'] ) ) {
+				$has_colors = true;
+				break;
+			}
+		}
+		if ( $has_colors && $product_id && class_exists( 'ML_Deco_Frontend' ) ) {
+			$map = ML_Deco_Frontend::color_map( $product_id );
+			if ( $map ) {
+				$payload['colorMap']  = (object) $map;
+				$payload['colorAttr'] = 'attribute_' . ML_Deco_Frontend::color_attribute();
+			}
+		}
 
 		$json = wp_json_encode( $payload, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		$qty  = (string) apply_filters( 'ml_deco_qty_selector', '.mlw-wishlist-qty__input, .configurator-number__input[x-model\\.number*="quantity"], form.cart input.qty, input[name="quantity"]' );
