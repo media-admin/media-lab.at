@@ -124,12 +124,14 @@
 	}
 
 	root.MLDecoCalc = {
-		imageForColor: function ( pos, code ) {
-			if ( ! code || ! pos.colors || pos.colors.indexOf( code ) === -1 ) {
+		imageForColor: function ( pos, code, defaultColor ) {
+			var colors = pos.colors || [];
+			var use = code && colors.indexOf( code ) !== -1 ? code : ( defaultColor && colors.indexOf( defaultColor ) !== -1 ? defaultColor : null );
+			if ( ! use ) {
 				return pos.image;
 			}
 			var m = /^(.*)-([A-Za-z0-9]{2})(_POS\d+\.(?:jpg|png))$/.exec( pos.image );
-			return m ? m[ 1 ] + '-' + code + m[ 3 ] : pos.image;
+			return m ? m[ 1 ] + '-' + use + m[ 3 ] : pos.image;
 		},
 		unitPrice: unitPrice,
 		reachableRanges: reachableRanges,
@@ -244,13 +246,12 @@
 
 		var posImages = [];   // je Position mit Bild: {pos, btn, img}, für den Farbwechsel
 
-		/** Bildadresse einer Position für einen Farbcode; ohne eigenes Bild für diese Farbe das Standardbild. */
+		/**
+		 * Bildadresse einer Position für einen Farbcode. Ohne Farbe oder ohne eigenes Bild für diese Farbe gilt die
+		 * einheitliche Grundfarbe des Produkts (data.defaultColor), sonst das erste Bild der Position.
+		 */
 		function imageFor( pos, code ) {
-			if ( ! code || ! pos.colors || pos.colors.indexOf( code ) === -1 ) {
-				return pos.image;
-			}
-			var m = /^(.*)-([A-Za-z0-9]{2})(_POS\d+\.(?:jpg|png))$/.exec( pos.image );
-			return m ? m[ 1 ] + '-' + code + m[ 3 ] : pos.image;
+			return root.MLDecoCalc.imageForColor( pos, code, data.defaultColor );
 		}
 
 		/** Farbe der gewählten Variante: Positionsbilder tauschen (null = keine Variante gewählt). */
@@ -267,13 +268,13 @@
 		function imageButton( pos ) {
 			var btn = el( 'button', 'mld__img-btn' );
 			btn.type = 'button';
-			btn.setAttribute( 'data-mld-full', pos.image );
+			btn.setAttribute( 'data-mld-full', imageFor( pos, null ) );
 			btn.setAttribute( 'data-mld-title', pos.label );
 			btn.setAttribute( 'aria-label', fill( t.zoomImage || '%s', [ pos.label ] ) );
 			var img = el( 'img', 'mld__img' );
 			img.loading = 'lazy';
 			img.alt = '';
-			img.src = pos.image;
+			img.src = imageFor( pos, null );
 			btn.appendChild( img );
 			posImages.push( { pos: pos, btn: btn, img: img } );
 			return btn;

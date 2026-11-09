@@ -80,12 +80,23 @@ class ML_Deco_Calculator {
 			];
 		}
 
+		// Einheitliche Grundfarbe der Positionsbilder: Die Lieferantendaten listen die Farben je Position in anderer
+		// Reihenfolge, das erste Bild jeder Position hätte sonst je Position eine andere Produktfarbe (mal schwarz, mal weiß).
+		// Gewählt wird die erste Farbe (nach der Reihenfolge der ersten Position), zu der JEDE Position mit Farbliste ein Bild hat.
+		$common = null;
+		foreach ( $positions as $p ) {
+			if ( count( $p['colors'] ) > 1 ) {
+				$common = $common === null ? $p['colors'] : array_values( array_intersect( $common, $p['colors'] ) );
+			}
+		}
+
 		return [
 			'showPrices'   => $show,
 			'format'       => self::price_format(),
 			'handling'     => $show ? round( $handling * $factor, 4 ) : 0,
 			'techniques'   => (object) $techs,
 			'positions'    => $positions,
+			'defaultColor' => $common ? (string) $common[0] : '',
 			'i18n'         => self::strings( $show ),
 		];
 	}
