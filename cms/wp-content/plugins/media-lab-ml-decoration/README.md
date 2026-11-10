@@ -5,6 +5,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.9.3: Farbcode aus der Lieferanten-SKU auch bei Produktcodes mit Bindestrich (MidOcean "MO1001 -16GB-07"): Es gilt der erste Teil nach dem Produktcode, der unter den Farbcodes der Veredelung des Produkts vorkommt, sonst der zweite Teil.
 - 1.9.2: Einheitliche Grundfarbe der Positionsbilder (defaultColor): Ohne Farbwahl zeigen alle Positionen dieselbe Produktfarbe statt je Position der ersten Farbe der Lieferantenliste (mal schwarz, mal weiß). Gewählt wird die erste Farbe, zu der jede Position mit Farbliste ein Bild hat; gibt es keine gemeinsame Farbe, bleibt das erste Bild der Position.
 - 1.9.1: Die Positionsbilder wechseln schon, wenn nur die Farbe gewählt ist (vorher erst mit allen Feldern der Variante). Dafür liefert die Seite die Zuordnung Farbwert -> Farbcode (colorMap, aus _ml_supplier_variant_sku und dem Farbattribut, Filter ml_deco_color_attribute, Standard pa_color).
 - 1.9.0: MidOcean: Die Positionsbilder folgen der gewählten Produktfarbe. Benötigt (1) MidOceanDecorations mit Farblisten je Position (Sync + Import 1), (2) das Variationsfeld _ml_supplier_variant_sku (Import der Varianten: Feld supplier_variant_sku), (3) den Filter woocommerce_available_variation (liefert mld_color). Ohne diese Daten bleibt das Standardbild.

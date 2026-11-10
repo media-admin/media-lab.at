@@ -19,17 +19,54 @@ class ML_Deco_Frontend {
 		if ( ! is_array( $data ) || ! is_object( $variation ) || ! method_exists( $variation, 'get_id' ) ) {
 			return $data;
 		}
-		$code = self::color_code( (string) get_post_meta( $variation->get_id(), '_ml_supplier_variant_sku', true ) );
+		$known = ( is_object( $product ) && method_exists( $product, 'get_id' ) ) ? self::known_codes( (int) $product->get_id() ) : [];
+		$code  = self::color_code( (string) get_post_meta( $variation->get_id(), '_ml_supplier_variant_sku', true ), $known );
 		if ( $code !== '' ) {
 			$data['mld_color'] = $code;
 		}
 		return $data;
 	}
 
-	/** Farbcode aus der Lieferanten-SKU: zweiter Teil nach dem Bindestrich ("MO6112-03" ergibt "03", "S11500-12-M" ergibt "12"). */
-	public static function color_code( string $sku ): string {
+	/**
+	 * Farbcode aus der Lieferanten-SKU. Normalfall: der Teil direkt nach dem Produktcode ("MO6112-03" ergibt "03",
+	 * "S11500-12-M" ergibt "12"). Enthält der Produktcode selbst einen Bindestrich ("MO1001 -16GB-07"), gilt der erste
+	 * Teil nach dem Produktcode, der in den Farbcodes der Veredelung des Produkts vorkommt ($known); sonst der zweite Teil.
+	 *
+	 * @param string[] $known Farbcodes aus den Positionsbildern des Produkts (leer = unbekannt).
+	 */
+	public static function color_code( string $sku, array $known = [] ): string {
 		$parts = explode( '-', trim( $sku ) );
-		return ( count( $parts ) >= 2 && $parts[1] !== '' ) ? $parts[1] : '';
+		if ( count( $parts ) < 2 || $parts[1] === '' ) {
+			return '';
+		}
+		if ( $known ) {
+			foreach ( array_slice( $parts, 1 ) as $part ) {
+				if ( in_array( $part, $known, true ) ) {
+					return $part;
+				}
+			}
+		}
+		return $parts[1];
+	}
+
+	/**
+	 * Alle Farbcodes, zu denen die Veredelung des Produkts Positionsbilder hat (MidOcean).
+	 *
+	 * @return string[]
+	 */
+	public static function known_codes( int $product_id ): array {
+		static $cache = [];
+		if ( isset( $cache[ $product_id ] ) ) {
+			return $cache[ $product_id ];
+		}
+		$codes = [];
+		$data  = class_exists( 'ML_Deco_Store' ) ? ML_Deco_Store::product_data( $product_id ) : null;
+		foreach ( (array) ( $data['positions'] ?? [] ) as $pos ) {
+			foreach ( (array) ( $pos['colors'] ?? [] ) as $c ) {
+				$codes[ (string) $c ] = true;
+			}
+		}
+		return $cache[ $product_id ] = array_map( 'strval', array_keys( $codes ) );
 	}
 
 	/**
@@ -54,11 +91,12 @@ class ML_Deco_Frontend {
 		if ( function_exists( 'update_meta_cache' ) ) {
 			update_meta_cache( 'post', $ids );
 		}
-		$attr = 'attribute_' . self::color_attribute();
-		$map  = [];
+		$attr  = 'attribute_' . self::color_attribute();
+		$known = self::known_codes( $product_id );
+		$map   = [];
 		foreach ( $ids as $vid ) {
 			$slug = (string) get_post_meta( $vid, $attr, true );
-			$code = self::color_code( (string) get_post_meta( $vid, '_ml_supplier_variant_sku', true ) );
+			$code = self::color_code( (string) get_post_meta( $vid, '_ml_supplier_variant_sku', true ), $known );
 			if ( $slug !== '' && $code !== '' && ! isset( $map[ $slug ] ) ) {
 				$map[ $slug ] = $code;
 			}

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Media Lab ML Decoration
  * Description: Veredelungsmöglichkeiten und Veredelungspreise (MidOcean, Makito) auf der Produktseite. Eigener Preisfaktor und Preis-Schalter je Lieferant. Projekt-Plugin für at.media-lab.
- * Version: 1.9.2
+ * Version: 1.9.3
  * Author: Media Lab
  * Text Domain: media-lab-ml-decoration
  * Requires PHP: 8.0
@@ -16,7 +16,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'ML_DECO_VERSION', '1.9.2' );
+define( 'ML_DECO_VERSION', '1.9.3' );
 define( 'ML_DECO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ML_DECO_URL', plugin_dir_url( __FILE__ ) );
 
