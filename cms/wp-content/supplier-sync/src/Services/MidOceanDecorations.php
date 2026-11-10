@@ -284,6 +284,12 @@ class MidOceanDecorations {
                 $image = $this->positionImage($pos);
                 if ($image !== '') {
                     $entry['image'] = $image;
+                    // Farbcodes, zu denen es ein eigenes Bild gibt (nur bei mehr als einer Farbe). Das Bild der Farbe X
+                    // ergibt sich aus dem Standardbild, indem der Farbcode in der Adresse getauscht wird.
+                    $colors = $this->positionColors($pos, $image);
+                    if ($colors) {
+                        $entry['colors'] = $colors;
+                    }
                 }
                 $positions[] = $entry;
             }
@@ -320,6 +326,36 @@ class MidOceanDecorations {
             }
         }
         return '';
+    }
+
+    /**
+     * Farbcodes mit eigenem Positionsbild. Nur wenn sich ALLE Bilder der Position aus dem Standardbild ableiten lassen
+     * (Adresse endet auf "-<Farbcode>_POS<n>.jpg|png"), sonst leer: dann zeigt die Seite für jede Farbe das Standardbild.
+     *
+     * @return string[]
+     */
+    private function positionColors(array $pos, string $default): array {
+        if (!preg_match('~^(.*)-([A-Za-z0-9]{2})(_POS\d+\.(?:jpg|png))$~', $default, $m)) {
+            return [];
+        }
+        $codes = [];
+        foreach ((array) ($pos['images'] ?? []) as $img) {
+            $code = trim((string) ($img['variant_color'] ?? ''));
+            if ($code === '') {
+                continue;
+            }
+            $url = trim((string) ($img['print_position_image_with_area'] ?? ''));
+            if ($url === '') {
+                $url = trim((string) ($img['print_position_image_blank'] ?? ''));
+            }
+            if ($url !== $m[1] . '-' . $code . $m[3]) {
+                return [];
+            }
+            if (!in_array($code, $codes, true)) {
+                $codes[] = $code;
+            }
+        }
+        return count($codes) > 1 ? $codes : [];
     }
 
     /**
