@@ -132,8 +132,7 @@
     &__img {
         display:    none;
         height:     auto;
-        max-height: 60px;
-        max-width:  200px;   // verhindert zu breite Logos
+        max-width:  100%;   // verhindert zu breite Logos
         object-fit: contain; // keine Verzerrung egal welche Proportionen
 
         &.is-ld { display: block; }
@@ -144,15 +143,6 @@
         &__img.is-ld { display: none; }
 
         &__img.is-lm { display: block; }
-
-        &__img.is-lm,
-        &__img.is-dm {
-            width:      auto;
-            height:     auto;
-            max-height: 44px;  // etwas kompakter auf Mobile
-            max-width:  160px;
-            object-fit: contain;
-        }
     }
 
     &__text {
