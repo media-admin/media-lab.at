@@ -4,7 +4,7 @@
  * Description: Generates Media Lab SKUs (ML-CODE-NNNNNN(-VVV)) for WooCommerce products/variations.
  *              Fires after WP All Import finishes writing custom fields (pmxi_saved_post),
  *              with a manual-save fallback and an atomic counter to avoid race conditions.
- * Version: 0.5.0
+ * Version: 0.5.1
  */
 
 defined('ABSPATH') || exit;

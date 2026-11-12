@@ -9,7 +9,9 @@
  * Gruppen (Reihenfolge im Filter): Kleidergroessen, Zahlengroessen (Konfektion, Schuhe), Kinder Koerpergroesse in cm, Kinder Alter in
  * Jahren, Baby Alter in Monaten, Schuh- und Sockengroessen, Weitere Groessen. Jeder Wert ist ein Begriff von pa_groesse mit den
  * Term-Metafeldern mlwf_group (Gruppenname), mlwf_group_order (Nummer der Gruppe) und mlwf_order (Reihenfolge in der Gruppe, natuerlich:
- * XS, S, M ... 8XL, Zahlen aufsteigend). Die Filterleiste (media-lab-woocommerce) zeigt die Gruppen mit Ueberschrift.
+ * XS, S, M ... 8XL, Zahlen aufsteigend). Die Gruppen mit Ueberschrift bildet das Theme (assets/src/js/components/mlwf-term-groups.js) aus
+ * einem JSON in der Seite (ml_gr_print_term_groups); das Plugin media-lab-woocommerce bleibt unveraendert. Die Reihenfolge der Werte
+ * setzen zwei Filter (get_terms, mlwf_search_facets) auch ohne JavaScript.
  *
  * Zuordnungstabelle: data/groessen.csv (Semikolon, UTF-8, Spalten slug, name, produkte, gruppe, werte, hinweis). "slug" ist der Slug
  * des pa_size-Begriffs, "gruppe" der Name der Gruppe, "werte" ein oder mehrere Werte, getrennt durch "|" (eine Doppelgroesse wie
@@ -578,6 +580,94 @@ function ml_gr_filter_attributes($slugs) {
 }
 add_filter('mlwf_auto_filter_attributes', 'ml_gr_filter_attributes');    // Shop, Kategorien, Marken
 add_filter('mlwf_search_facet_taxonomies', 'ml_gr_filter_attributes');   // Suchergebnisseite
+
+/**
+ * Reihenfolge und Gruppe je Wert, ohne Datenbank (aus der Tabelle): [termslug => ['group' => name, 'group_order' => n, 'order' => rang]].
+ */
+function ml_gr_term_order() {
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+    $cache  = array();
+    $groups = ml_gr_groups();
+    $m      = ml_gr_map();
+    foreach (ml_gr_values($m['map']) as $v) {
+        $cache[ml_gr_term_slug($v['group'], $v['value'])] = array(
+            'group'       => $groups[$v['group']],
+            'group_order' => $v['group_order'],
+            'order'       => $v['order'],
+        );
+    }
+    return $cache;
+}
+
+/** Gesamtreihenfolge eines Werts (Gruppe vor Platz in der Gruppe); unbekannte ans Ende. */
+function ml_gr_total_order($slug) {
+    $o = ml_gr_term_order();
+    return isset($o[$slug]) ? $o[$slug]['group_order'] * 1000 + $o[$slug]['order'] : 1000000000;
+}
+
+/**
+ * Die Filterleiste (media-lab-woocommerce, filter-bar.php) laedt die Werte nach Name. Hier werden die Werte von pa_groesse in die
+ * natuerliche Reihenfolge gebracht (Gruppe, dann Platz in der Gruppe), ohne das Plugin zu aendern. Nur im Frontend.
+ */
+function ml_gr_sort_terms($terms, $taxonomies = array()) {
+    if (is_admin() || !is_array($terms) || !$terms || (array) $taxonomies !== array('pa_groesse')) {
+        return $terms;
+    }
+    if (!is_object(reset($terms))) {
+        return $terms;   // fields != all
+    }
+    usort($terms, function ($a, $b) {
+        $oa = ml_gr_total_order($a->slug);
+        $ob = ml_gr_total_order($b->slug);
+        return $oa !== $ob ? ($oa < $ob ? -1 : 1) : strnatcasecmp((string) $a->name, (string) $b->name);
+    });
+    return $terms;
+}
+add_filter('get_terms', 'ml_gr_sort_terms', 10, 2);
+
+/** Suchergebnisseite: dieselbe Reihenfolge fuer die Facette pa_groesse (Hook mlwf_search_facets). */
+function ml_gr_sort_facets($facets) {
+    if (!is_array($facets) || empty($facets['pa_groesse']['terms']) || !is_array($facets['pa_groesse']['terms'])) {
+        return $facets;
+    }
+    usort($facets['pa_groesse']['terms'], function ($a, $b) {
+        $oa = ml_gr_total_order(isset($a['slug']) ? $a['slug'] : '');
+        $ob = ml_gr_total_order(isset($b['slug']) ? $b['slug'] : '');
+        return $oa !== $ob ? ($oa < $ob ? -1 : 1) : strnatcasecmp((string) (isset($a['name']) ? $a['name'] : ''), (string) (isset($b['name']) ? $b['name'] : ''));
+    });
+    return $facets;
+}
+add_filter('mlwf_search_facets', 'ml_gr_sort_facets', 10, 1);
+
+/**
+ * Gruppen fuer die Filterleiste: Das Theme (assets/src/js/components/mlwf-term-groups.js) liest dieses JSON und haengt die Werte der
+ * Liste in Gruppen mit Ueberschrift um (Kleidergroessen immer offen, die uebrigen eingeklappt). Format:
+ * {"pa_groesse": {"<termslug>": ["<Gruppenname>", <Gruppennummer>, <Platz in der Gruppe>], ...}}
+ * Nur auf Seiten mit Filterleiste (Shop, Kategorie, Schlagwort, Marke, Suche).
+ */
+function ml_gr_print_term_groups() {
+    if (!function_exists('is_shop') || !taxonomy_exists('pa_groesse')) {
+        return;
+    }
+    $page = is_shop() || is_product_category() || is_product_tag() || is_tax('product_brand') || is_search();
+    if (!$page) {
+        return;
+    }
+    $map = array();
+    foreach (ml_gr_term_order() as $slug => $o) {
+        $map[$slug] = array($o['group'], $o['group_order'], $o['order']);
+    }
+    if (!$map) {
+        return;
+    }
+    echo '<script type="application/json" id="mlwf-term-groups">'
+        . wp_json_encode(array('pa_groesse' => $map), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
+        . "</script>\n";
+}
+add_action('wp_footer', 'ml_gr_print_term_groups', 5);
 
 if (defined('WP_CLI') && WP_CLI && class_exists('WP_CLI')) {
 

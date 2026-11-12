@@ -1,4 +1,5 @@
 import noUiSlider from 'nouislider';
+import './mlwf-term-groups';
 
 /**
  * WooCommerce Produktfilter
