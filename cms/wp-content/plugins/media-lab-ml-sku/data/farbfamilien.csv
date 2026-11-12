@@ -141,7 +141,7 @@ dark-royal;dark royal;33;Blau;automatisch
 magenta;magenta;33;Pink / Rosa;automatisch
 mintgruen;mintgrün;33;Grün;automatisch
 black-classic-red;black/classic red;32;Schwarz | Rot;automatisch, mehrere Familien
-blaze;blaze;32;;offen
+blaze;blaze;32;Blau | Navy / Marine;manuell vorgeschlagen
 cobalt-blue;cobalt blue;32;Blau;automatisch
 fluorescent-orange;fluorescent orange;32;Orange;automatisch
 tropical-blue;tropical blue;32;Blau;automatisch
@@ -361,7 +361,7 @@ bright-royal-white;bright royal/white;11;Weiß | Blau;automatisch, mehrere Famil
 dark-brown;dark brown;11;Braun;automatisch
 dusty-mint;dusty mint;11;Grün;automatisch
 faded-denim;faded denim;11;Blau;automatisch
-flumino;flumino;11;;offen
+flumino;flumino;11;Gelb;manuell vorgeschlagen
 fresh-pink;fresh pink;11;Pink / Rosa;automatisch
 green-olive;green olive;11;Grün;automatisch
 indigo-denim;indigo denim;11;Blau;automatisch
@@ -377,7 +377,7 @@ rechteck;rechteck;11;;offen
 soft-white;soft white;11;Weiß;automatisch
 solid-navy;solid navy;11;Navy / Marine;automatisch
 tan;tan;11;Beige / Natur;automatisch
-tibet;tibet;11;;offen
+tibet;tibet;11;Beige / Natur;manuell vorgeschlagen
 union-beige;union beige;11;Beige / Natur;automatisch
 neon-gelb;neon gelb;11;Gelb;automatisch
 weiss-marine;weiß/marine;11;Navy / Marine | Weiß;automatisch, mehrere Familien
@@ -408,7 +408,7 @@ oasis-green;oasis green;10;Grün;automatisch
 oxford-blue;oxford blue;10;Blau;automatisch
 plum-purple;plum purple;10;Lila / Violett;automatisch
 powder-grey;powder grey;10;Grau;automatisch
-real;real;10;;offen
+real;real;10;Blau;manuell vorgeschlagen
 red-red;red/red;10;Rot;automatisch
 shadow;shadow;10;Grau;automatisch
 snow-grey;snow grey;10;Weiß | Grau;automatisch, mehrere Familien
@@ -432,20 +432,20 @@ bright-green;bright green;9;Grün;automatisch
 caramel;caramel;9;Braun;automatisch
 city-red;city red;9;Rot;automatisch
 denim-blue;denim blue;9;Blau;automatisch
-flame;flame;9;;offen
+flame;flame;9;Grau;manuell vorgeschlagen
 green-marble-heather;green marble heather;9;Grün;automatisch
 heather-navy;heather navy;9;Navy / Marine;automatisch
 hellgrau;hellgrau;9;Grau;automatisch
 ink;ink;9;Navy / Marine;automatisch
 iron-grey;iron grey;9;Grau;automatisch
-lollipop;lollipop;9;;offen
+lollipop;lollipop;9;Lila / Violett;manuell vorgeschlagen
 marl-grey;marl grey;9;Grau;automatisch
 mff-blue;mff blue;9;Blau;automatisch
 mineral-blue;mineral blue;9;Blau;automatisch
 navy-light-royal-blue;navy/light royal blue;9;Navy / Marine | Blau;automatisch, mehrere Familien
 pink-white;pink/white;9;Weiß | Pink / Rosa;automatisch, mehrere Familien
 purple-white;purple/white;9;Weiß | Lila / Violett;automatisch, mehrere Familien
-raw;raw;9;;offen
+raw;raw;9;Beige / Natur;manuell vorgeschlagen
 red-melange-black;red melange/black;9;Schwarz | Rot;automatisch, mehrere Familien
 spring-green;spring green;9;Grün;automatisch
 surf-blue;surf blue;9;Blau;automatisch
@@ -526,18 +526,18 @@ heather-burgundy;heather burgundy;7;Rot;automatisch
 ice-grey;ice grey;7;Grau;automatisch
 indigo-blue;indigo blue;7;Blau;automatisch
 kelly-green-white;kelly green/white;7;Weiß | Grün;automatisch, mehrere Familien
-lava;lava;7;;offen
+lava;lava;7;Rot | Orange;manuell vorgeschlagen
 marl-dark-grey;marl dark grey;7;Grau;automatisch
 melange-grey;melange grey;7;Grau;automatisch
-metro;metro;7;;offen
+metro;metro;7;Pink / Rosa;manuell vorgeschlagen
 moss;moss;7;Grün;automatisch
-mushroom;mushroom;7;;offen
+mushroom;mushroom;7;Grün;manuell vorgeschlagen
 navy-yellow;navy/yellow;7;Navy / Marine | Gelb;automatisch, mehrere Familien
 nude-pink;nude pink;7;Pink / Rosa | Beige / Natur;automatisch, mehrere Familien
 olive-green-black;olive green/black;7;Schwarz | Grün;automatisch, mehrere Familien
 orange-fluo;orange fluo;7;Orange;automatisch
 orange-rust;orange rust;7;Orange;automatisch
-pop;pop;7;;offen
+pop;pop;7;Pink / Rosa;manuell vorgeschlagen
 prune;prune;7;Lila / Violett;manuell vorgeschlagen
 reflex-blue;reflex blue;7;Blau;automatisch
 retro-heather-green;retro heather green;7;Grün;automatisch
@@ -545,7 +545,7 @@ royal-blue-white;royal blue/white;7;Weiß | Blau;automatisch, mehrere Familien
 seal-grey-black;seal grey/black;7;Schwarz | Grau;automatisch, mehrere Familien
 sporty-red;sporty red;7;Rot;automatisch
 terracotta-red;terracotta red;7;Rot | Orange;automatisch, mehrere Familien
-tofu;tofu;7;;offen
+tofu;tofu;7;Beige / Natur;manuell vorgeschlagen
 vintage-heather-red;vintage heather red;7;Rot;automatisch
 vital-white;vital white;7;Weiß;automatisch
 vivid-green-black;vivid green/black;7;Schwarz | Grün;automatisch, mehrere Familien
@@ -567,12 +567,12 @@ black-bright-royal;black/bright royal;6;Schwarz | Blau;automatisch, mehrere Fami
 black-fuchsia;black/fuchsia;6;Schwarz | Pink / Rosa;automatisch, mehrere Familien
 black-metal-grey;black/metal grey;6;Schwarz | Grau | Silber / Metall;automatisch, mehrere Familien
 black-neon-yellow;black/neon yellow;6;Schwarz | Gelb;automatisch, mehrere Familien
-blaze-melange;blaze melange;6;;offen
+blaze-melange;blaze melange;6;Blau | Navy / Marine;manuell vorgeschlagen
 blood-orange;blood orange;6;Rot | Orange;automatisch, mehrere Familien
 blue-fog;blue fog;6;Blau;automatisch
 blue-melange-navy;blue melange/navy;6;Navy / Marine | Blau;automatisch, mehrere Familien
 blue-navy;blue/navy;6;Navy / Marine | Blau;automatisch, mehrere Familien
-bone;bone;6;;offen
+bone;bone;6;Weiß | Beige / Natur;manuell vorgeschlagen
 bright-blue;bright blue;6;Blau;automatisch
 bright-blue-bright-yellow;bright blue/bright yellow;6;Blau | Gelb;automatisch, mehrere Familien
 bright-green-black;bright green/black;6;Schwarz | Grün;automatisch, mehrere Familien
@@ -601,7 +601,7 @@ fresh-green;fresh green;6;Grün;automatisch
 glacier-blue;glacier blue;6;Blau;automatisch
 grey-denim;grey denim;6;Grau | Blau;automatisch, mehrere Familien
 grey-marl;grey marl;6;Grau;automatisch
-hay;hay;6;;offen
+hay;hay;6;Beige / Natur;manuell vorgeschlagen
 hazel;hazel;6;Braun;manuell vorgeschlagen
 heather-red;heather red;6;Rot;automatisch
 latte;latte;6;Beige / Natur;automatisch
@@ -638,7 +638,7 @@ storm-grey;storm grey;6;Grau;automatisch
 strong-blue-navy;strong blue/navy;6;Navy / Marine | Blau;automatisch, mehrere Familien
 sun-yellow;sun yellow;6;Gelb;automatisch
 sunflower-yellow;sunflower yellow;6;Gelb;automatisch
-terra-spice;terra spice;6;;offen
+terra-spice;terra spice;6;Orange;manuell vorgeschlagen
 titan-black;titan/black;6;Schwarz | Grau;automatisch, mehrere Familien
 toffee;toffee;6;Braun;automatisch
 true-pink;true pink;6;Pink / Rosa;automatisch
@@ -723,7 +723,7 @@ red-melange;red melange;5;Rot;automatisch
 reno;reno;5;;offen
 rich-violet;rich violet;5;Lila / Violett;automatisch
 rose-quartz;rose quartz;5;Pink / Rosa;automatisch
-rusty;rusty;5;;offen
+rusty;rusty;5;Braun | Orange;manuell vorgeschlagen
 saddle-black;saddle/black;5;Schwarz;automatisch
 sporty-navy;sporty navy;5;Navy / Marine;automatisch
 stern;stern;5;;offen
@@ -743,7 +743,7 @@ workguard-grey;workguard grey;5;Grau;automatisch
 yellow-white;yellow/white;5;Weiß | Gelb;automatisch, mehrere Familien
 folk-red-twin;folk red twin;5;Rot;automatisch
 neon-lime;neon lime;5;Grün;automatisch
-rosegold;roségold;5;;offen
+rosegold;roségold;5;Pink / Rosa | Silber / Metall;manuell vorgeschlagen
 tango-red;tango red;5;Rot;automatisch
 transparent-violett;transparent violett;5;Lila / Violett | Transparent;automatisch, mehrere Familien
 white-aqua;white/aqua;5;Weiß | Türkis;automatisch, mehrere Familien
@@ -764,7 +764,7 @@ black-sporty-grey;black/sporty grey;4;Schwarz | Grau;automatisch, mehrere Famili
 black-surf-blue;black/surf blue;4;Schwarz | Blau;automatisch, mehrere Familien
 blackberry;blackberry;4;Lila / Violett;manuell vorgeschlagen
 blue-melange;blue melange;4;Blau;automatisch
-blueberry-swirl;blueberry swirl;4;;offen
+blueberry-swirl;blueberry swirl;4;Lila / Violett;manuell vorgeschlagen
 blush-mint;blush mint;4;Grün | Pink / Rosa;automatisch, mehrere Familien
 bola;bola;4;;offen
 bright-cerise;bright cerise;4;Pink / Rosa;automatisch
@@ -780,7 +780,7 @@ carbon-carbon;carbon/carbon;4;Grau;automatisch
 cardinal-red;cardinal red;4;Rot;automatisch
 chocolate-beige;chocolate/beige;4;Braun | Beige / Natur;automatisch, mehrere Familien
 classic-red-black-white;classic red/black/white;4;Schwarz | Weiß | Rot;automatisch, mehrere Familien
-clover;clover;4;;offen
+clover;clover;4;Grün;manuell vorgeschlagen
 college-green;college green;4;Grün;automatisch
 cookies-and-cream;cookies and cream;4;Weiß;automatisch
 creamy-dark-blue;creamy dark blue;4;Navy / Marine;automatisch
@@ -790,7 +790,7 @@ dark-mustard;dark mustard;4;Gelb;automatisch
 dark-royal-blue-navy;dark royal blue/navy;4;Navy / Marine | Blau;automatisch, mehrere Familien
 dark-violet;dark violet;4;Lila / Violett;automatisch
 deep-grey-heather;deep grey heather;4;Grau;automatisch
-desert;desert;4;;offen
+desert;desert;4;Beige / Natur;manuell vorgeschlagen
 diva-blue;diva blue;4;Blau;automatisch
 dunkelgrau-hellgrau;dunkelgrau/hellgrau;4;Grau;automatisch
 ebony;ebony;4;Schwarz;automatisch
@@ -837,7 +837,7 @@ lime-green-lime-green-white;lime green/lime green white;4;Weiß | Grün;automati
 lime-white;lime/white;4;Weiß | Grün;automatisch, mehrere Familien
 lion;lion;4;;offen
 lotus-pink;lotus pink;4;Pink / Rosa;automatisch
-mango-sorbet;mango sorbet;4;;offen
+mango-sorbet;mango sorbet;4;Orange;manuell vorgeschlagen
 medium-burgundy;medium burgundy;4;Rot;automatisch
 meta-orange;meta orange;4;Orange;automatisch
 midnight-camo;midnight camo;4;Navy / Marine | Mehrfarbig / Muster;automatisch, mehrere Familien
@@ -856,7 +856,7 @@ navy-pure;navy pure;4;Navy / Marine;automatisch
 navy-stripe;navy stripe;4;Navy / Marine | Mehrfarbig / Muster;automatisch, mehrere Familien
 navy-navy-white;navy/navy/white;4;Navy / Marine | Weiß;automatisch, mehrere Familien
 nougat;nougat;4;Braun;automatisch
-oceanic;oceanic;4;;offen
+oceanic;oceanic;4;Türkis;manuell vorgeschlagen
 olive-khaki;olive/khaki;4;Grün | Beige / Natur;automatisch, mehrere Familien
 pacific-pearl;pacific pearl;4;Navy / Marine;automatisch
 pale-violet;pale violet;4;Lila / Violett;automatisch
@@ -892,14 +892,14 @@ shear-beige-beige;shear beige/beige;4;Beige / Natur;automatisch
 signal-red;signal red;4;Rot;automatisch
 silver-melange-graphite;silver melange/graphite;4;Grau | Silber / Metall;automatisch, mehrere Familien
 slate-blue;slate blue;4;Grau | Blau;automatisch, mehrere Familien
-smoked-pearl;smoked pearl;4;;offen
+smoked-pearl;smoked pearl;4;Grau;manuell vorgeschlagen
 smoky-green-sandstone;smoky green/sandstone;4;Grün | Beige / Natur;automatisch, mehrere Familien
 soft-lavender;soft lavender;4;Lila / Violett;automatisch
 soft-salvia;soft salvia;4;Grün;manuell vorgeschlagen
 space-grey;space grey;4;Grau;automatisch
 sporty-red-black;sporty red/black;4;Schwarz | Rot;automatisch, mehrere Familien
 stonewash-denim;stonewash denim;4;Blau;automatisch
-sunset;sunset;4;;offen
+sunset;sunset;4;Orange;manuell vorgeschlagen
 true-coral;true coral;4;Orange;automatisch
 type-b;type b;4;;offen
 used-black;used black;4;Schwarz;automatisch
@@ -913,7 +913,7 @@ waterfall;waterfall;4;;offen
 white-navy-white;white/navy/white;4;Navy / Marine | Weiß;automatisch, mehrere Familien
 white-royal-blue;white/royal blue;4;Weiß | Blau;automatisch, mehrere Familien
 wine-red;wine red;4;Rot;automatisch
-woods;woods;4;;offen
+woods;woods;4;Grün;manuell vorgeschlagen
 ancient-pink;ancient pink;4;Pink / Rosa;automatisch
 black-charcoal-grey;black/charcoal grey;4;Schwarz | Grau;automatisch, mehrere Familien
 carbon-grau;carbon-grau;4;Grau;automatisch
@@ -921,7 +921,7 @@ creamy-green;creamy green;4;Grün;automatisch
 french-navy-royal-blue;french navy/royal blue;4;Navy / Marine | Blau;automatisch, mehrere Familien
 heather-khaki;heather khaki;4;Grün | Beige / Natur;automatisch, mehrere Familien
 hellgrau-melange;hellgrau melange;4;Grau;automatisch
-iris;iris;4;;offen
+iris;iris;4;Lila / Violett;manuell vorgeschlagen
 kupfer;kupfer;4;Braun;automatisch
 light-purple;light purple;4;Lila / Violett;automatisch
 ribbon-pink;ribbon pink;4;Pink / Rosa;automatisch
@@ -930,7 +930,7 @@ all-navy;all navy;3;Navy / Marine;automatisch
 amalfi-blue;amalfi blue;3;Blau;automatisch
 ananas;ananas;3;;offen
 antique-grey;antique grey;3;Grau;automatisch
-atlantic;atlantic;3;;offen
+atlantic;atlantic;3;Blau;manuell vorgeschlagen
 baby-blue;baby blue;3;Blau;automatisch
 baltic-blue;baltic blue;3;Blau;automatisch
 bandera-red;bandera red;3;Rot;automatisch
@@ -979,7 +979,7 @@ dusty-blue-sandstone;dusty blue/sandstone;3;Blau | Beige / Natur;automatisch, me
 dusty-khaki;dusty khaki;3;Grün | Beige / Natur;automatisch, mehrere Familien
 dusty-pink;dusty pink;3;Pink / Rosa;automatisch
 elephant-grey;elephant grey;3;Grau;automatisch
-eucalyptus;eucalyptus;3;;offen
+eucalyptus;eucalyptus;3;Grün;manuell vorgeschlagen
 flo-orange;flo orange;3;Orange;automatisch
 flo-yellow;flo yellow;3;Gelb;automatisch
 fluor-fuchsie;fluor fuchsie;3;Pink / Rosa;automatisch
@@ -994,7 +994,7 @@ grey-melange-black;grey melange/black;3;Schwarz | Grau;automatisch, mehrere Fami
 grey-navy;grey/navy;3;Navy / Marine | Grau;automatisch, mehrere Familien
 gunmetal-grey-black;gunmetal grey/black;3;Schwarz | Grau;automatisch, mehrere Familien
 hazelnut;hazelnut;3;Braun;automatisch
-heather;heather;3;;offen
+heather;heather;3;Grau;manuell vorgeschlagen
 heather-asphalt;heather asphalt;3;Grau;automatisch
 heather-dark-green;heather dark green;3;Grün;automatisch
 heather-green;heather green;3;Grün;automatisch
@@ -1012,18 +1012,18 @@ light-kelly-green-white;light kelly green/white;3;Weiß | Grün;automatisch, meh
 light-royal-blue-white;light royal blue/white;3;Weiß | Blau;automatisch, mehrere Familien
 light-royal-blue-yellow;light royal blue/yellow;3;Blau | Gelb;automatisch, mehrere Familien
 light-violet;light violet;3;Lila / Violett;automatisch
-marsala;marsala;3;;offen
+marsala;marsala;3;Rot;manuell vorgeschlagen
 mauve;mauve;3;Lila / Violett;automatisch
 medium-grey;medium grey;3;Grau;automatisch
 mid-grey;mid grey;3;Grau;automatisch
 military-green-black;military green/black;3;Schwarz | Grün;automatisch, mehrere Familien
 mossy-green;mossy green;3;Grün;automatisch
-mostaza;mostaza;3;;offen
+mostaza;mostaza;3;Gelb;manuell vorgeschlagen
 mountain-blue;mountain blue;3;Blau;automatisch
 muddy-brown-sandstone;muddy brown/sandstone;3;Braun | Beige / Natur;automatisch, mehrere Familien
-multicam;multicam;3;;offen
+multicam;multicam;3;Mehrfarbig / Muster;manuell vorgeschlagen
 multicam-black;multicam black;3;Schwarz;automatisch
-multicam-tropic;multicam tropic;3;;offen
+multicam-tropic;multicam tropic;3;Mehrfarbig / Muster;manuell vorgeschlagen
 natural-forest-green;natural/forest green;3;Grün | Beige / Natur;automatisch, mehrere Familien
 natural-fuchsia;natural/fuchsia;3;Pink / Rosa | Beige / Natur;automatisch, mehrere Familien
 natural-sage-green;natural/sage green;3;Grün | Beige / Natur;automatisch, mehrere Familien
@@ -1034,7 +1034,7 @@ navy-light-grey-white;navy/light grey/white;3;Navy / Marine | Weiß | Grau;autom
 navy-red-white;navy/red white;3;Navy / Marine | Weiß | Rot;automatisch, mehrere Familien
 navy-sky;navy/sky;3;Navy / Marine | Blau;automatisch, mehrere Familien
 navy-white-navy;navy/white/navy;3;Navy / Marine | Weiß;automatisch, mehrere Familien
-neomint;neomint;3;;offen
+neomint;neomint;3;Grün;manuell vorgeschlagen
 neon-pink-unicorn;neon pink/unicorn;3;Pink / Rosa;automatisch
 ocean-teal;ocean teal;3;Blau | Türkis;automatisch, mehrere Familien
 off-red;off red;3;Rot;automatisch
@@ -1049,25 +1049,25 @@ oxford-grey-navy-white;oxford grey/navy/white;3;Navy / Marine | Weiß | Grau;aut
 paramedic-green;paramedic green;3;Grün;automatisch
 pastel-mint;pastel mint;3;Grün;automatisch
 pearl-skin;pearl skin;3;;offen
-pebble;pebble;3;;offen
+pebble;pebble;3;Beige / Natur;manuell vorgeschlagen
 petroleum-blue;petroleum blue;3;Blau;automatisch
 pistachio-green;pistachio green;3;Grün;automatisch
-port;port;3;;offen
+port;port;3;Rot;manuell vorgeschlagen
 purple-oxford-grey;purple/oxford grey;3;Grau | Lila / Violett;automatisch, mehrere Familien
-putty;putty;3;;offen
+putty;putty;3;Beige / Natur;manuell vorgeschlagen
 raspberry-pink;raspberry pink;3;Pink / Rosa;automatisch
-raw-sugar;raw sugar;3;;offen
+raw-sugar;raw sugar;3;Braun;manuell vorgeschlagen
 real-grey;real grey;3;Grau;automatisch
 red-hi-vis-yellow;red/hi vis yellow;3;Rot | Gelb;automatisch, mehrere Familien
 red-light-grey;red/light grey;3;Grau | Rot;automatisch, mehrere Familien
 red-white-black;red/white/black;3;Schwarz | Weiß | Rot;automatisch, mehrere Familien
-redwood;redwood;3;;offen
+redwood;redwood;3;Braun;manuell vorgeschlagen
 retro-green;retro green;3;Grün;automatisch
 retro-heather-royal;retro heather royal;3;Blau;automatisch
 riviera;riviera;3;;offen
 royal-melange-navy;royal melange/navy;3;Navy / Marine | Blau;automatisch, mehrere Familien
 royal-neon-corail;royal/neon corail;3;Blau;automatisch
-sahara;sahara;3;;offen
+sahara;sahara;3;Beige / Natur;manuell vorgeschlagen
 sea-green;sea green;3;Grün;automatisch
 shitake;shitake;3;;offen
 sky-blue-stripe;sky blue stripe;3;Blau | Mehrfarbig / Muster;automatisch, mehrere Familien
@@ -1075,13 +1075,13 @@ soft-gray;soft gray;3;Grau;automatisch
 soft-olive;soft olive;3;Grün;automatisch
 soft-white-french-navy;soft white/french navy;3;Navy / Marine | Weiß;automatisch, mehrere Familien
 spanien;spanien;3;;offen
-sport-heather;sport heather;3;;offen
+sport-heather;sport heather;3;Grau;manuell vorgeschlagen
 stay-black;stay black;3;Schwarz;automatisch
 stay-navy;stay navy;3;Navy / Marine;automatisch
 stone-wash;stone wash;3;Grau;automatisch
 sweden-yellow-golden;sweden yellow/golden;3;Gelb;automatisch
 sweet-grey;sweet grey;3;Grau;automatisch
-swimming-pool;swimming pool;3;;offen
+swimming-pool;swimming pool;3;Blau;manuell vorgeschlagen
 taxi-yellow;taxi yellow;3;Gelb;automatisch
 team-green-ivy;team green/ivy;3;Grün;automatisch
 traube;traube;3;Lila / Violett;automatisch
@@ -1121,10 +1121,10 @@ zwinkern;zwinkern;3;;offen
 blau-weiss;blau/weiß;3;Weiß | Blau;automatisch, mehrere Familien
 dunkles-khaki;dunkles khaki;3;Grün | Beige / Natur;automatisch, mehrere Familien
 entenblau;entenblau;3;Blau;automatisch
-gruenes-reich;grünes reich;3;;offen
+gruenes-reich;grünes reich;3;Grün;manuell vorgeschlagen
 heather-beige;heather beige;3;Beige / Natur;automatisch
 heather-light-green;heather light green;3;Grün;automatisch
-hibiscus;hibiscus;3;;offen
+hibiscus;hibiscus;3;Rot;manuell vorgeschlagen
 karibik-blau;karibik blau;3;Blau;automatisch
 marineblau-neonorange;marineblau/neonorange;3;Navy / Marine | Blau | Orange;automatisch, mehrere Familien
 matt-golden;matt golden;3;Gelb;automatisch
@@ -1147,7 +1147,7 @@ anthracite-melanged;anthracite melanged;2;Grau;automatisch
 aqua-acid-yellow;aqua/acid yellow;2;Gelb | Türkis;automatisch, mehrere Familien
 aqua-navy;aqua/navy;2;Navy / Marine | Türkis;automatisch, mehrere Familien
 aqua-white;aqua/white;2;Weiß | Türkis;automatisch, mehrere Familien
-aquamarine;aquamarine;2;;offen
+aquamarine;aquamarine;2;Türkis;manuell vorgeschlagen
 arctic-camo;arctic camo;2;Mehrfarbig / Muster;automatisch
 army-shear-beige;army/shear beige;2;Grün | Beige / Natur;automatisch, mehrere Familien
 ash-white;ash/white;2;Weiß | Grau;automatisch, mehrere Familien
@@ -1219,10 +1219,10 @@ bugatti-blue;bugatti blue;2;Blau;automatisch
 burgundy-burgundy;burgundy/burgundy;2;Rot;automatisch
 burgundy-stone;burgundy/stone;2;Grau | Rot;automatisch, mehrere Familien
 cacao;cacao;2;Braun;automatisch
-cactus;cactus;2;;offen
+cactus;cactus;2;Grün;manuell vorgeschlagen
 camel-navy;camel/navy;2;Navy / Marine | Braun;automatisch, mehrere Familien
 camouflage-green;camouflage green;2;Grün | Mehrfarbig / Muster;automatisch, mehrere Familien
-candyfloss;candyfloss;2;;offen
+candyfloss;candyfloss;2;Pink / Rosa;manuell vorgeschlagen
 caper-green;caper green;2;Grün;automatisch
 carbon-grey-shear-beige;carbon grey/shear beige;2;Grau | Beige / Natur;automatisch, mehrere Familien
 carbon-melange-black-red;carbon melange/black/red;2;Schwarz | Grau | Rot;automatisch, mehrere Familien
@@ -1234,7 +1234,7 @@ cement-dark-green;cement/dark green;2;Grau | Grün;automatisch, mehrere Familien
 charcoal-herringbone;charcoal herringbone;2;Grau;automatisch
 charcoal-white;charcoal/white;2;Weiß | Grau;automatisch, mehrere Familien
 chili-gold;chili gold;2;Rot | Gelb;automatisch, mehrere Familien
-citrus;citrus;2;;offen
+citrus;citrus;2;Gelb;manuell vorgeschlagen
 classic-blue-white;classic blue/white;2;Weiß | Blau;automatisch, mehrere Familien
 classic-pink-white;classic pink/white;2;Weiß | Pink / Rosa;automatisch, mehrere Familien
 classic-red-classic-red;classic red/classic red;2;Rot;automatisch
@@ -1242,8 +1242,8 @@ classic-red-off-white;classic red/off white;2;Weiß | Rot;automatisch, mehrere F
 classic-red-true-pink;classic red/true pink;2;Rot | Pink / Rosa;automatisch, mehrere Familien
 clay-black;clay/black;2;Schwarz | Beige / Natur;automatisch, mehrere Familien
 cobalt-grey-heather;cobalt/grey heather;2;Grau | Blau;automatisch, mehrere Familien
-cobolt-melange;cobolt melange;2;;offen
-coconut-milk;coconut milk;2;;offen
+cobolt-melange;cobolt melange;2;Blau;manuell vorgeschlagen
+coconut-milk;coconut milk;2;Weiß;manuell vorgeschlagen
 cool-grey;cool grey;2;Grau;automatisch
 covert-green;covert green;2;Grün;automatisch
 croissant;croissant;2;;offen
@@ -1270,14 +1270,14 @@ denim-linen;denim/linen;2;Blau | Beige / Natur;automatisch, mehrere Familien
 desert-peaks;desert peaks;2;;offen
 desert-sand-black;desert sand/black;2;Schwarz | Beige / Natur;automatisch, mehrere Familien
 duck-blue;duck blue;2;Blau;automatisch
-dune;dune;2;;offen
+dune;dune;2;Beige / Natur | Grau;manuell vorgeschlagen
 dusky-pink-off-white;dusky pink/off white;2;Weiß | Pink / Rosa;automatisch, mehrere Familien
 dusty-rose;dusty rose;2;Pink / Rosa;automatisch
 elefant;elefant;2;;offen
 ensign-blue;ensign blue;2;Blau;automatisch
 eucalyptus-green;eucalyptus green;2;Grün;automatisch
 extreme-green-black;extreme green/black;2;Schwarz | Grün;automatisch, mehrere Familien
-fennel;fennel;2;;offen
+fennel;fennel;2;Braun;manuell vorgeschlagen
 fennel-pink;fennel/pink;2;Pink / Rosa;automatisch
 fern-green-carbon;fern green/carbon;2;Grau | Grün;automatisch, mehrere Familien
 fern-green-graphite;fern green/graphite;2;Grau | Grün;automatisch, mehrere Familien
@@ -1336,7 +1336,7 @@ heather-graphite;heather graphite;2;Grau;automatisch
 heather-grey-solid;heather grey solid;2;Grau;automatisch
 heather-grey-navy;heather grey/navy;2;Navy / Marine | Grau;automatisch, mehrere Familien
 heather-grey-white;heather grey/white;2;Weiß | Grau;automatisch, mehrere Familien
-heather-tarmac;heather tarmac;2;;offen
+heather-tarmac;heather tarmac;2;Grau;manuell vorgeschlagen
 hi-vis-orange-grey;hi vis orange/grey;2;Grau | Orange;automatisch, mehrere Familien
 hi-vis-yellow-royal-blue;hi vis yellow/royal blue;2;Blau | Gelb;automatisch, mehrere Familien
 highlander;highlander;2;;offen
@@ -1353,8 +1353,8 @@ khaki-brown;khaki/brown;2;Grün | Braun | Beige / Natur;automatisch, mehrere Fam
 khaki-khaki;khaki/khaki;2;Grün | Beige / Natur;automatisch, mehrere Familien
 khaki-stone;khaki/stone;2;Grau | Grün | Beige / Natur;automatisch, mehrere Familien
 khaki-white;khaki/white;2;Weiß | Grün | Beige / Natur;automatisch, mehrere Familien
-lemonade;lemonade;2;;offen
-light-avio;light avio;2;;offen
+lemonade;lemonade;2;Gelb;manuell vorgeschlagen
+light-avio;light avio;2;Blau;manuell vorgeschlagen
 light-grey-melange-black;light grey melange/black;2;Schwarz | Grau;automatisch, mehrere Familien
 light-grey-dark-grey;light grey/dark grey;2;Grau;automatisch
 light-grey-light-grey;light grey/light grey;2;Grau;automatisch
@@ -1371,7 +1371,7 @@ marl-green;marl green;2;Grau | Grün;automatisch, mehrere Familien
 melange-blue;melange blue;2;Blau;automatisch
 melange-grey-orange;melange grey/orange;2;Grau | Orange;automatisch, mehrere Familien
 mellow-yellow;mellow yellow;2;Gelb;automatisch
-menthol;menthol;2;;offen
+menthol;menthol;2;Blau;manuell vorgeschlagen
 meta-fuchsia;meta fuchsia;2;Pink / Rosa;automatisch
 meta-gold;meta gold;2;Gelb;automatisch
 meta-lilac;meta lilac;2;Lila / Violett;automatisch
@@ -1450,7 +1450,7 @@ powder-yellow;powder yellow;2;Gelb;automatisch
 purple-night;purple night;2;Lila / Violett | Navy / Marine;automatisch, mehrere Familien
 radiant-orchid;radiant orchid;2;Lila / Violett;automatisch
 raspberry-lime;raspberry/lime;2;Grün | Pink / Rosa;automatisch, mehrere Familien
-ready-for-dye;ready for dye;2;;offen
+ready-for-dye;ready for dye;2;Weiß;manuell vorgeschlagen
 real-turquoise;real turquoise;2;Türkis;automatisch
 red-anthracite-melange;red/anthracite melange;2;Grau | Rot;automatisch, mehrere Familien
 red-grey-heather;red/grey heather;2;Grau | Rot;automatisch, mehrere Familien
@@ -1461,7 +1461,7 @@ red-yellow;red/yellow;2;Rot | Gelb;automatisch, mehrere Familien
 rift;rift;2;;offen
 rock;rock;2;;offen
 rocky-peaks;rocky peaks;2;;offen
-rosewood;rosewood;2;;offen
+rosewood;rosewood;2;Pink / Rosa;manuell vorgeschlagen
 rot-gelb;rot / gelb;2;Rot | Gelb;automatisch, mehrere Familien
 royal-blue-shirt;royal blue shirt;2;Blau;automatisch
 royal-charcoal;royal/charcoal;2;Grau | Blau;automatisch, mehrere Familien
@@ -1471,9 +1471,9 @@ royal-white-royal;royal/white/royal;2;Weiß | Blau;automatisch, mehrere Familien
 ruby-red;ruby red;2;Rot;automatisch
 scarlet-red-heather;scarlet red heather;2;Rot;automatisch
 scheemann;scheemann;2;;offen
-schnee;schnee;2;;offen
+schnee;schnee;2;Weiß;manuell vorgeschlagen
 sea-blue;sea blue;2;Blau;automatisch
-sea-salt;sea salt;2;;offen
+sea-salt;sea salt;2;Weiß | Beige / Natur;manuell vorgeschlagen
 shell-white;shell white;2;Weiß;automatisch
 smoke-grey;smoke grey;2;Grau;automatisch
 soft-white-bottle-green;soft white/bottle green;2;Weiß | Grün;automatisch, mehrere Familien
@@ -1495,11 +1495,11 @@ straw-yellow;straw yellow;2;Gelb;automatisch
 sun-yellow-navy-white;sun yellow/navy/white;2;Navy / Marine | Weiß | Gelb;automatisch, mehrere Familien
 sun-yellow-white;sun yellow/white;2;Weiß | Gelb;automatisch, mehrere Familien
 sunset-orange;sunset orange;2;Orange;automatisch
-sunshine;sunshine;2;;offen
+sunshine;sunshine;2;Gelb;manuell vorgeschlagen
 tahiti-coral;tahiti coral;2;Orange;automatisch
 tiger;tiger;2;;offen
 titanium-grey;titanium grey;2;Grau;automatisch
-tomate;tomate;2;;offen
+tomate;tomate;2;Rot;manuell vorgeschlagen
 tomato-white;tomato/white;2;Weiß | Rot;automatisch, mehrere Familien
 tropical-blue-white;tropical blue/white;2;Weiß | Blau;automatisch, mehrere Familien
 turquoise-iron-grey;turquoise/iron grey;2;Grau | Türkis;automatisch, mehrere Familien
@@ -1532,8 +1532,8 @@ washed-nude-peach;washed nude peach;2;Orange | Beige / Natur;automatisch, mehrer
 washed-olive-gray;washed olive gray;2;Grau | Grün;automatisch, mehrere Familien
 washed-parma-pink;washed parma pink;2;Pink / Rosa;automatisch
 washed-pink-ochre;washed pink ochre;2;Pink / Rosa | Gelb;automatisch, mehrere Familien
-washed-russet;washed russet;2;;offen
-washed-sierra;washed sierra;2;;offen
+washed-russet;washed russet;2;Braun;manuell vorgeschlagen
+washed-sierra;washed sierra;2;Braun;manuell vorgeschlagen
 washed-tawny-orange;washed tawny orange;2;Orange;automatisch
 weiss-gelb;weiß / gelb;2;Weiß | Gelb;automatisch, mehrere Familien
 weiss-gruen;weiss / grün;2;Weiß | Grün;automatisch, mehrere Familien
@@ -1562,7 +1562,7 @@ white-royal-blue-red;white/royal blue/red;2;Weiß | Blau | Rot;automatisch, mehr
 white-sky-blue;white/sky blue;2;Weiß | Blau;automatisch, mehrere Familien
 white-white-navy;white/white/navy;2;Navy / Marine | Weiß;automatisch, mehrere Familien
 wine-melange-wine;wine melange/wine;2;Rot;automatisch
-woods-melange;woods melange;2;;offen
+woods-melange;woods melange;2;Grün;manuell vorgeschlagen
 yellow-orange;yellow/orange;2;Gelb | Orange;automatisch, mehrere Familien
 zenith;zenith;2;;offen
 deep-charcoal-grey;deep charcoal grey;2;Grau;automatisch
@@ -1575,7 +1575,7 @@ royal-neon-yellow;royal/neon yellow;2;Blau | Gelb;automatisch, mehrere Familien
 schwarz-recycelt;schwarz recycelt;2;Schwarz;automatisch
 umber;umber;2;Braun;automatisch
 acid-grey;acid grey;1;Grau;automatisch
-aguacate;aguacate;1;;offen
+aguacate;aguacate;1;Grün;manuell vorgeschlagen
 air-blue;air blue;1;Blau;automatisch
 airforce-blue-black;airforce blue/black;1;Schwarz | Blau;automatisch, mehrere Familien
 airforce-blue-graphite-grey;airforce blue/graphite grey;1;Grau | Blau;automatisch, mehrere Familien
@@ -1586,7 +1586,7 @@ alpine-lodge;alpine lodge;1;;offen
 alpine-racer;alpine racer;1;;offen
 amazon-green;amazon green;1;Grün;automatisch
 angora-melange;angora melange;1;;offen
-anthra-heather;anthra heather;1;;offen
+anthra-heather;anthra heather;1;Grau;manuell vorgeschlagen
 anthracite-light-blue;anthracite/light blue;1;Grau | Blau;automatisch, mehrere Familien
 anthracite-light-grey;anthracite/light grey;1;Grau;automatisch
 anthracite-natural;anthracite/natural;1;Grau | Beige / Natur;automatisch, mehrere Familien
@@ -1607,8 +1607,8 @@ aspen-green;aspen green;1;Grün;automatisch
 asphalt-black;asphalt/black;1;Schwarz | Grau;automatisch, mehrere Familien
 autumn-moss;autumn moss;1;Grün;automatisch
 autumn-stone;autumn stone;1;Grau;automatisch
-avio;avio;1;;offen
-avio-melange;avio melange;1;;offen
+avio;avio;1;Blau;manuell vorgeschlagen
+avio-melange;avio melange;1;Blau;manuell vorgeschlagen
 avio-brown;avio/brown;1;Braun;automatisch
 azure-blue-oxford-navy;azure blue/oxford navy;1;Navy / Marine | Blau;automatisch, mehrere Familien
 b-wellen;b/wellen;1;;offen
@@ -1694,7 +1694,7 @@ black-yellow-red;black/yellow-red;1;Schwarz | Rot | Gelb;automatisch, mehrere Fa
 blanc-white;blanc white;1;Weiß;automatisch
 blau-lichtdurchlaessig;blau lichtdurchlässig;1;Blau;automatisch
 blazing-blue;blazing blue;1;Blau;automatisch
-blossom;blossom;1;;offen
+blossom;blossom;1;Pink / Rosa;manuell vorgeschlagen
 blue-linen;blue linen;1;Blau | Beige / Natur;automatisch, mehrere Familien
 blue-marl;blue marl;1;Grau | Blau;automatisch, mehrere Familien
 blue-melange-charcoal-melange;blue melange/charcoal melange;1;Grau | Blau;automatisch, mehrere Familien
@@ -1780,7 +1780,7 @@ classic-orange;classic orange;1;Orange;automatisch
 classic-pink-graphite-grey;classic pink/graphite grey;1;Grau | Pink / Rosa;automatisch, mehrere Familien
 classic-pink-graphite-grey-white;classic pink/graphite grey/white;1;Weiß | Grau | Pink / Rosa;automatisch, mehrere Familien
 cliff-grey;cliff grey;1;Grau;automatisch
-cloudy-haze;cloudy haze;1;;offen
+cloudy-haze;cloudy haze;1;Grau;manuell vorgeschlagen
 columbia-blue-navy;columbia blue/navy;1;Navy / Marine | Blau;automatisch, mehrere Familien
 combat;combat;1;;offen
 combat-camo;combat camo;1;Mehrfarbig / Muster;automatisch
@@ -1827,13 +1827,13 @@ dark-shadow-dark-shadow;dark shadow/dark shadow;1;Grau;automatisch
 dark-spruce-black;dark spruce/black;1;Schwarz | Grün;automatisch, mehrere Familien
 deep-blue-denim;deep blue denim;1;Blau;automatisch
 deep-blue-foggy-grey;deep blue/foggy grey;1;Grau | Blau;automatisch, mehrere Familien
-deep-water;deep water;1;;offen
+deep-water;deep water;1;Blau;manuell vorgeschlagen
 deep-wine;deep wine;1;Rot;automatisch
 delft;delft;1;Blau;manuell vorgeschlagen
 dijon-blue;dijon blue;1;Blau;automatisch
 dove-grey-melange;dove grey melange;1;Grau;automatisch
 duck-blue-heather;duck blue heather;1;Blau;automatisch
-duck-egg;duck egg;1;;offen
+duck-egg;duck egg;1;Blau | Türkis;manuell vorgeschlagen
 duck-egg-blue;duck egg blue;1;Blau;automatisch
 dunkelsand;dunkelsand;1;Beige / Natur;manuell vorgeschlagen
 dunkelsilber;dunkelsilber;1;Silber / Metall;automatisch
@@ -1919,7 +1919,7 @@ grey-dark-grey-black;grey/dark grey/black;1;Schwarz | Grau;automatisch, mehrere 
 grey-khaki;grey/khaki;1;Grau | Grün | Beige / Natur;automatisch, mehrere Familien
 grey-light-grey;grey/light grey;1;Grau;automatisch
 greyish-navy;greyish navy;1;Navy / Marine;automatisch
-griffin-wolfgrey;griffin/wolfgrey;1;;offen
+griffin-wolfgrey;griffin/wolfgrey;1;Grau;manuell vorgeschlagen
 gruen-lichtdurchlaessig;grün lichtdurchlässig;1;Grün;automatisch
 hawaiian-ocean;hawaiian ocean;1;Blau;automatisch
 heather-forest;heather forest;1;Grün;automatisch
@@ -1933,7 +1933,7 @@ heather-white;heather white;1;Weiß;automatisch
 heather-black;heather/black;1;Schwarz;automatisch
 heather-ink;heather/ink;1;Navy / Marine;automatisch
 heavy-metal;heavy metal;1;Silber / Metall;automatisch
-hellnaturfarbe;hellnaturfarbe;1;;offen
+hellnaturfarbe;hellnaturfarbe;1;Beige / Natur;manuell vorgeschlagen
 hi-vis-orange-royal-blue;hi vis orange/royal blue;1;Blau | Orange;automatisch, mehrere Familien
 hi-vis-yellow-dog;hi vis yellow/dog;1;Gelb;automatisch
 hi-vis-yellow-elephant;hi vis yellow/elephant;1;Gelb;automatisch
@@ -1968,7 +1968,7 @@ lavender-fizz;lavender fizz;1;Lila / Violett;automatisch
 lavender-white;lavender/white;1;Weiß | Lila / Violett;automatisch, mehrere Familien
 lemonade-black;lemonade/black;1;Schwarz;automatisch
 leuchtend-rot-weiss;leuchtend rot / weiß;1;Weiß | Rot;automatisch, mehrere Familien
-light-avio-melange;light avio melange;1;;offen
+light-avio-melange;light avio melange;1;Blau;manuell vorgeschlagen
 light-blue-denim;light blue denim;1;Blau;automatisch
 light-blue-mid-blue-bright-navy;light blue/mid blue/bright navy;1;Navy / Marine | Blau;automatisch, mehrere Familien
 light-brown-marl;light brown marl;1;Grau | Braun;automatisch, mehrere Familien
@@ -1985,7 +1985,7 @@ light-grey-navy;light grey/navy;1;Navy / Marine | Grau;automatisch, mehrere Fami
 light-grey-red;light grey/red;1;Grau | Rot;automatisch, mehrere Familien
 light-grey-white-black;light grey/white/black;1;Schwarz | Weiß | Grau;automatisch, mehrere Familien
 light-khaki-navy;light khaki/navy;1;Navy / Marine | Grün | Beige / Natur;automatisch, mehrere Familien
-light-marsala;light marsala;1;;offen
+light-marsala;light marsala;1;Rot;manuell vorgeschlagen
 light-mint;light mint;1;Grün;automatisch
 light-red-white;light red/white;1;Weiß | Rot;automatisch, mehrere Familien
 light-royal-blue-jhoot;light royal blue jhoot;1;Blau;automatisch
@@ -1999,14 +1999,14 @@ lime-green-graphite-grey;lime green/graphite grey;1;Grau | Grün;automatisch, me
 lime-green-royal;lime green/royal;1;Blau | Grün;automatisch, mehrere Familien
 lime-grey;lime/grey;1;Grau | Grün;automatisch, mehrere Familien
 lime-hi-vis-yellow;lime/hi vis yellow;1;Grün | Gelb;automatisch, mehrere Familien
-limestone;limestone;1;;offen
+limestone;limestone;1;Grau;manuell vorgeschlagen
 linen-off-white;linen/off white;1;Weiß | Beige / Natur;automatisch, mehrere Familien
 liquorice-zing;liquorice zing;1;;offen
-loden;loden;1;;offen
+loden;loden;1;Grün;manuell vorgeschlagen
 lunar-grey;lunar grey;1;Grau;automatisch
 magenta-magenta;magenta/magenta;1;Pink / Rosa;automatisch
-magic-mango;magic mango;1;;offen
-mandarine;mandarine;1;;offen
+magic-mango;magic mango;1;Gelb;manuell vorgeschlagen
+mandarine;mandarine;1;Orange;manuell vorgeschlagen
 marine-navy;marine navy;1;Navy / Marine;automatisch
 marine-splash;marine splash;1;Navy / Marine;automatisch
 marl-grey-sporty-navy;marl grey/sporty navy;1;Navy / Marine | Grau;automatisch, mehrere Familien
@@ -2120,7 +2120,7 @@ night-melange;night melange;1;Navy / Marine;automatisch
 night-navy;night navy;1;Navy / Marine;automatisch
 night-navy-melange;night navy melange;1;Navy / Marine;automatisch
 nougat-melange;nougat melange;1;Braun;automatisch
-oak;oak;1;;offen
+oak;oak;1;Beige / Natur;manuell vorgeschlagen
 oatmeal-fleck;oatmeal fleck;1;Beige / Natur;automatisch
 oatmeal-speck;oatmeal speck;1;Beige / Natur;automatisch
 oatmeal-black;oatmeal/black;1;Schwarz | Beige / Natur;automatisch, mehrere Familien
@@ -2191,7 +2191,7 @@ pitaya;pitaya;1;;offen
 pomegranate-rose;pomegranate rose;1;Pink / Rosa;automatisch
 poseidon-black;poseidon black;1;Schwarz;automatisch
 praline-rose;praline rose;1;Pink / Rosa;automatisch
-premium-heather;premium heather;1;;offen
+premium-heather;premium heather;1;Grau;manuell vorgeschlagen
 pro-green;pro green;1;Grün;automatisch
 promotion;Promotion;1;;offen
 puderrosa;puderrosa;1;Pink / Rosa;automatisch
@@ -2204,7 +2204,7 @@ purple-grey;purple/grey;1;Grau | Lila / Violett;automatisch, mehrere Familien
 purple-hi-vis-yellow;purple/hi vis yellow;1;Gelb | Lila / Violett;automatisch, mehrere Familien
 purple-yellow;purple/yellow;1;Gelb | Lila / Violett;automatisch, mehrere Familien
 putty-french-navy;putty/french navy;1;Navy / Marine;automatisch
-raffia;raffia;1;;offen
+raffia;raffia;1;Beige / Natur;manuell vorgeschlagen
 raspberry-hi-vis-yellow;raspberry/hi vis yellow;1;Gelb | Pink / Rosa;automatisch, mehrere Familien
 recycled-black;recycled black;1;Schwarz;automatisch
 recycled-navy;recycled navy;1;Navy / Marine;automatisch
@@ -2266,7 +2266,7 @@ silver-white-silver;silver/white/silver;1;Weiß | Silber / Metall;automatisch, m
 sky-blue-french-navy;sky blue/french navy;1;Navy / Marine | Blau;automatisch, mehrere Familien
 sky-blue-french-navy-white;sky blue/french navy/white;1;Navy / Marine | Weiß | Blau;automatisch, mehrere Familien
 sky-white;sky/white;1;Weiß | Blau;automatisch, mehrere Familien
-skydiver;skydiver;1;;offen
+skydiver;skydiver;1;Blau;manuell vorgeschlagen
 slate-blue-black;slate blue/black;1;Schwarz | Grau | Blau;automatisch, mehrere Familien
 slate-blue-light-grey;slate blue/light grey;1;Grau | Blau;automatisch, mehrere Familien
 slate-grey-black;slate grey/black;1;Schwarz | Grau;automatisch, mehrere Familien
@@ -2304,7 +2304,7 @@ stone-olive;stone/olive;1;Grau | Grün;automatisch, mehrere Familien
 stone-shadow-grey;stone/shadow grey;1;Grau;automatisch
 storm-grey-navy-black;storm grey/navy/black;1;Navy / Marine | Schwarz | Grau;automatisch, mehrere Familien
 storm-greys;storm greys;1;Grau;manuell vorgeschlagen
-strawberry-haze;strawberry haze;1;;offen
+strawberry-haze;strawberry haze;1;Pink / Rosa;manuell vorgeschlagen
 summer-caramel;summer caramel;1;Braun;automatisch
 sun-orange;sun orange;1;Gelb | Orange;automatisch, mehrere Familien
 sun-yellow-black;sun yellow/black;1;Schwarz | Gelb;automatisch, mehrere Familien
@@ -2336,20 +2336,20 @@ underwear-navy-underwear-navy;underwear navy/underwear navy;1;Navy / Marine;auto
 union-beige-black;union beige/black;1;Schwarz | Beige / Natur;automatisch, mehrere Familien
 urban-camo;urban camo;1;Mehrfarbig / Muster;automatisch
 vanilla-biscuit;vanilla/biscuit;1;Gelb | Beige / Natur;automatisch, mehrere Familien
-verde-aguamarina;verde aguamarina;1;;offen
+verde-aguamarina;verde aguamarina;1;Grün | Türkis;manuell vorgeschlagen
 very-yellow;very yellow;1;Gelb;automatisch
 vibrant-green;vibrant green;1;Grün;automatisch
 vintage-black-stone;vintage black/stone;1;Schwarz | Grau;automatisch, mehrere Familien
 vintage-bottle;vintage bottle;1;Grün;automatisch
 vintage-brown-stone;vintage brown/stone;1;Grau | Braun;automatisch, mehrere Familien
 vintage-charcoal;vintage charcoal;1;Grau;automatisch
-vintage-cornflower;vintage cornflower;1;;offen
+vintage-cornflower;vintage cornflower;1;Blau;manuell vorgeschlagen
 vintage-denim-stone;vintage denim/stone;1;Grau | Blau;automatisch, mehrere Familien
 vintage-jungle-camo;vintage jungle camo;1;Mehrfarbig / Muster;automatisch
 vintage-light-grey;vintage light grey;1;Grau;automatisch
 vintage-olive-stone;vintage olive/stone;1;Grau | Grün;automatisch, mehrere Familien
 vintage-orange-rust;vintage orange rust;1;Orange;automatisch
-vintage-oxblood;vintage oxblood;1;;offen
+vintage-oxblood;vintage oxblood;1;Rot;manuell vorgeschlagen
 vintage-peach;vintage peach;1;Orange;automatisch
 vintage-pink;vintage pink;1;Pink / Rosa;automatisch
 vintage-true-pink;vintage true pink;1;Pink / Rosa;automatisch
@@ -2358,7 +2358,7 @@ walnut-black;walnut/black;1;Schwarz | Braun;automatisch, mehrere Familien
 warm-caramel;warm caramel;1;Braun;automatisch
 warm-grey-sprinkle;warm grey sprinkle;1;Grau;automatisch
 washed-blue;washed blue;1;Blau;automatisch
-washed-brandy;washed brandy;1;;offen
+washed-brandy;washed brandy;1;Braun;manuell vorgeschlagen
 washed-caramel-coffee;washed caramel coffee;1;Braun;automatisch
 washed-coral-pink;washed coral pink;1;Orange | Pink / Rosa;automatisch, mehrere Familien
 washed-dark-navy;washed dark navy;1;Navy / Marine;automatisch
@@ -2446,12 +2446,12 @@ meadow;meadow;1;Grün;manuell vorgeschlagen
 medium-orange;medium orange;1;Orange;automatisch
 orange-2;orange 2;1;Orange;automatisch
 praeriegruen-weiss;präriegrün/weiß;1;Weiß | Grün;automatisch, mehrere Familien
-recyceltes-graue-melange;recyceltes graue melange;1;;offen
+recyceltes-graue-melange;recyceltes graue melange;1;Grau;manuell vorgeschlagen
 red-2;red 2;1;Rot;automatisch
 red-recycelt;red recycelt;1;Rot;automatisch
 royal-blue-3;royal blue 3;1;Blau;automatisch
 royal-blue-recycelt;royal blue recycelt;1;Blau;automatisch
-terrakotta;terrakotta;1;;offen
+terrakotta;terrakotta;1;Braun;manuell vorgeschlagen
 transparent-fuchsie;transparent fuchsie;1;Pink / Rosa | Transparent;automatisch, mehrere Familien
 transparent-gelb;transparent gelb;1;Gelb | Transparent;automatisch, mehrere Familien
 weiss-2;weiß 2;1;Weiß;automatisch

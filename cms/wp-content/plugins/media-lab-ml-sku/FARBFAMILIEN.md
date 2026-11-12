@@ -9,7 +9,7 @@ nur dem Filter und ist unsichtbar (kein Eintrag im Tab „Zusätzliche Informati
 | Datei | Inhalt |
 |---|---|
 | `inc/farbfamilien.php` | Logik: Sweep nach dem Import, Zuordnung, WP-CLI-Befehle, Filter-Hooks |
-| `data/farbfamilien.csv` | Zuordnungstabelle (Stand 29.10.2026: 2.459 Zeilen, 186 ohne Familie) |
+| `data/farbfamilien.csv` | Zuordnungstabelle (Stand 12.11.2026: 2.459 Zeilen, 92 ohne Familie) |
 
 ## Die 17 Familien (Reihenfolge im Filter)
 
