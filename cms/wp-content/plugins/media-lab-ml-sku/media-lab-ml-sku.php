@@ -4,7 +4,7 @@
  * Description: Generates Media Lab SKUs (ML-CODE-NNNNNN(-VVV)) for WooCommerce products/variations.
  *              Fires after WP All Import finishes writing custom fields (pmxi_saved_post),
  *              with a manual-save fallback and an atomic counter to avoid race conditions.
- * Version: 0.4.0
+ * Version: 0.5.0
  */
 
 defined('ABSPATH') || exit;
@@ -1666,3 +1666,6 @@ if ( ! function_exists( 'ml_sku_debug' ) ) {
 
 // Farbfamilien (10/2026): Lieferantenfarben auf 17 Farbfamilien abbilden, siehe inc/farbfamilien.php
 require_once __DIR__ . '/inc/farbfamilien.php';
+
+// Größenfilter (11/2026): Lieferantengrößen auf normalisierte Werte in Gruppen abbilden, siehe inc/groessen.php
+require_once __DIR__ . '/inc/groessen.php';

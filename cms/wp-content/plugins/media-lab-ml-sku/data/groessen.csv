@@ -1,0 +1,291 @@
+﻿slug;name;produkte;gruppe;werte;hinweis
+m;m;2605;Kleidergrößen;M;Buchstabengröße
+l;l;2565;Kleidergrößen;L;Buchstabengröße
+xl;xl;2546;Kleidergrößen;XL;Buchstabengröße
+s;s;2542;Kleidergrößen;S;Buchstabengröße
+xxl;xxl;2487;Kleidergrößen;XXL;Buchstabengröße
+3xl;3XL;1769;Kleidergrößen;3XL;Buchstabengröße
+xs;xs;1336;Kleidergrößen;XS;Buchstabengröße
+4xl;4xl;934;Kleidergrößen;4XL;Buchstabengröße
+5xl;5XL;464;Kleidergrößen;5XL;Buchstabengröße
+s-m;s/m;112;Kleidergrößen;S | M;Doppelgröße, beide Größen
+l-xl;l/xl;109;Kleidergrößen;L | XL;Doppelgröße, beide Größen
+xxs;XXS;107;Kleidergrößen;XXS;Buchstabengröße
+6xl;6XL;80;Kleidergrößen;6XL;Buchstabengröße
+xxxl;xxxl;54;Kleidergrößen;3XL;Buchstabengröße
+10_s;10_S;18;Kleidergrößen;S;UK-Zahl mit Buchstabe, Buchstabe zählt
+12_m;12_M;18;Kleidergrößen;M;UK-Zahl mit Buchstabe, Buchstabe zählt
+14_l;14_L;18;Kleidergrößen;L;UK-Zahl mit Buchstabe, Buchstabe zählt
+16_xl;16_XL;18;Kleidergrößen;XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+18_xxl;18_XXL;18;Kleidergrößen;XXL;UK-Zahl mit Buchstabe, Buchstabe zählt
+20_3xl;20_3XL;17;Kleidergrößen;3XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+8_xs;8_XS;15;Kleidergrößen;XS;UK-Zahl mit Buchstabe, Buchstabe zählt
+22_4xl;22_4XL;12;Kleidergrößen;4XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+m-l;m/l;10;Kleidergrößen;M | L;Doppelgröße, beide Größen
+7xl;7XL;9;Kleidergrößen;7XL;Buchstabengröße
+24_5xl;24_5XL;9;Kleidergrößen;5XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+6_2xs;6_2XS;8;Kleidergrößen;XXS;UK-Zahl mit Buchstabe, Buchstabe zählt
+2xl-3xl;2XL/3XL;7;Kleidergrößen;XXL | 3XL;Doppelgröße, beide Größen
+6-xxs;6/XXS;6;Kleidergrößen;XXS;UK-Zahl mit Buchstabe, Buchstabe zählt
+7-xs;7/XS;6;Kleidergrößen;XS;UK-Zahl mit Buchstabe, Buchstabe zählt
+8-s;8/S;6;Kleidergrößen;S;UK-Zahl mit Buchstabe, Buchstabe zählt
+9-m;9/M;6;Kleidergrößen;M;UK-Zahl mit Buchstabe, Buchstabe zählt
+10-l;10/L;6;Kleidergrößen;L;UK-Zahl mit Buchstabe, Buchstabe zählt
+11-xl;11/XL;6;Kleidergrößen;XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+12-xxl;12/XXL;6;Kleidergrößen;XXL;UK-Zahl mit Buchstabe, Buchstabe zählt
+xl-xxl;xl/xxl;4;Kleidergrößen;XL | XXL;Doppelgröße, beide Größen
+xxl-3xl;XXL/3XL;4;Kleidergrößen;XXL | 3XL;Doppelgröße, beide Größen
+26_6xl;26_6XL;4;Kleidergrößen;6XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+28_7xl;28_7XL;4;Kleidergrößen;7XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+3xl-4xl;3XL/4XL;3;Kleidergrößen;3XL | 4XL;Doppelgröße, beide Größen
+xs-s;XS/S;2;Kleidergrößen;XS | S;Doppelgröße, beide Größen
+m-xl;M/XL;2;Kleidergrößen;M | XL;Doppelgröße, beide Größen
+xxl-4xl;XXL/4XL;2;Kleidergrößen;XXL | 4XL;Doppelgröße, beide Größen
+4xl-5xl;4XL/5XL;2;Kleidergrößen;4XL | 5XL;Doppelgröße, beide Größen
+8xl;8XL;2;Kleidergrößen;8XL;Buchstabengröße
+13-xxxl;13/XXXL;2;Kleidergrößen;3XL;UK-Zahl mit Buchstabe, Buchstabe zählt
+3xs;3XS;1;Kleidergrößen;3XS;Buchstabengröße
+xxs-xs;XXS/XS;1;Kleidergrößen;XXS | XS;Doppelgröße, beide Größen
+46;46;114;Zahlengrößen (Konfektion, Schuhe);46;Zahl
+44;44;108;Zahlengrößen (Konfektion, Schuhe);44;Zahl
+42;42;97;Zahlengrößen (Konfektion, Schuhe);42;Zahl
+48;48;80;Zahlengrößen (Konfektion, Schuhe);48;Zahl
+38;38;74;Zahlengrößen (Konfektion, Schuhe);38;Zahl
+40;40;72;Zahlengrößen (Konfektion, Schuhe);40;Zahl
+50;50;65;Zahlengrößen (Konfektion, Schuhe);50;Zahl
+52;52;65;Zahlengrößen (Konfektion, Schuhe);52;Zahl
+54;54;59;Zahlengrößen (Konfektion, Schuhe);54;Zahl
+36;36;53;Zahlengrößen (Konfektion, Schuhe);36;Zahl
+56;56;51;Zahlengrößen (Konfektion, Schuhe);56;Zahl
+58;58;48;Zahlengrößen (Konfektion, Schuhe);58;Zahl
+60;60;43;Zahlengrößen (Konfektion, Schuhe);60;Zahl
+62;62;43;Zahlengrößen (Konfektion, Schuhe);62;Zahl
+34;34;36;Zahlengrößen (Konfektion, Schuhe);34;Zahl
+64;64;26;Zahlengrößen (Konfektion, Schuhe);64;Zahl
+43;43;22;Zahlengrößen (Konfektion, Schuhe);43;Zahl
+41;41;21;Zahlengrößen (Konfektion, Schuhe);41;Zahl
+39;39;18;Zahlengrößen (Konfektion, Schuhe);39;Zahl
+45;45;18;Zahlengrößen (Konfektion, Schuhe);45;Zahl
+37;37;15;Zahlengrößen (Konfektion, Schuhe);37;Zahl
+32;32;14;Zahlengrößen (Konfektion, Schuhe);32;Zahl
+8_42;8_42;14;Zahlengrößen (Konfektion, Schuhe);42;Schuh UK_EU, EU-Zahl
+30;30;11;Zahlengrößen (Konfektion, Schuhe);30;Zahl
+47;47;8;Zahlengrößen (Konfektion, Schuhe);47;Zahl
+7_41;7_(41);8;Zahlengrößen (Konfektion, Schuhe);41;Schuh UK_EU, EU-Zahl
+9_43;9_(43);8;Zahlengrößen (Konfektion, Schuhe);43;Schuh UK_EU, EU-Zahl
+4_37;4_37;7;Zahlengrößen (Konfektion, Schuhe);37;Schuh UK_EU, EU-Zahl
+5_38;5_38;7;Zahlengrößen (Konfektion, Schuhe);38;Schuh UK_EU, EU-Zahl
+65_40;6,5_40;6;Zahlengrößen (Konfektion, Schuhe);40;Schuh UK_EU, EU-Zahl
+12_47;12_47;6;Zahlengrößen (Konfektion, Schuhe);47;Schuh UK_EU, EU-Zahl
+33;33;5;Zahlengrößen (Konfektion, Schuhe);33;Zahl
+10_44;10_(44);5;Zahlengrößen (Konfektion, Schuhe);44;Schuh UK_EU, EU-Zahl
+11_45;11_(45);5;Zahlengrößen (Konfektion, Schuhe);45;Schuh UK_EU, EU-Zahl
+12_46;12_(46);5;Zahlengrößen (Konfektion, Schuhe);46;Schuh UK_EU, EU-Zahl
+35;35;4;Zahlengrößen (Konfektion, Schuhe);35;Zahl
+6_39;6_(39);4;Zahlengrößen (Konfektion, Schuhe);39;Schuh UK_EU, EU-Zahl
+6-5_40;6.5_(40);4;Zahlengrößen (Konfektion, Schuhe);40;Schuh UK_EU, EU-Zahl
+31;31;3;Zahlengrößen (Konfektion, Schuhe);31;Zahl
+35_36;3,5_36;3;Zahlengrößen (Konfektion, Schuhe);36;Schuh UK_EU, EU-Zahl
+85_43;8,5_43;3;Zahlengrößen (Konfektion, Schuhe);43;Schuh UK_EU, EU-Zahl
+95_44;9,5_44;3;Zahlengrößen (Konfektion, Schuhe);44;Schuh UK_EU, EU-Zahl
+105_45;10,5_45;3;Zahlengrößen (Konfektion, Schuhe);45;Schuh UK_EU, EU-Zahl
+11_46;11_(46);3;Zahlengrößen (Konfektion, Schuhe);46;Schuh UK_EU, EU-Zahl
+49;49;2;Zahlengrößen (Konfektion, Schuhe);49;Zahl
+51;51;2;Zahlengrößen (Konfektion, Schuhe);51;Zahl
+53;53;2;Zahlengrößen (Konfektion, Schuhe);53;Zahl
+6_40;6_(40);2;Zahlengrößen (Konfektion, Schuhe);40;Schuh UK_EU, EU-Zahl
+037;037;1;Zahlengrößen (Konfektion, Schuhe);37;Zahl
+041;041;1;Zahlengrößen (Konfektion, Schuhe);41;Zahl
+125_48;12,5_48;1;Zahlengrößen (Konfektion, Schuhe);48;Schuh UK_EU, EU-Zahl
+13_48;13_(48);1;Zahlengrößen (Konfektion, Schuhe);48;Schuh UK_EU, EU-Zahl
+135_49;13,5_49;1;Zahlengrößen (Konfektion, Schuhe);49;Schuh UK_EU, EU-Zahl
+145_50;14,5_50;1;Zahlengrößen (Konfektion, Schuhe);50;Schuh UK_EU, EU-Zahl
+35-38;35-38;11;Schuh- und Sockengrößen;35-38;Schuh-/Sockenbereich
+37-41;37-41;8;Schuh- und Sockengrößen;37-41;Schuh-/Sockenbereich
+39-42;39-42;8;Schuh- und Sockengrößen;39-42;Schuh-/Sockenbereich
+42-46;42-46;8;Schuh- und Sockengrößen;42-46;Schuh-/Sockenbereich
+43-46;43-46;8;Schuh- und Sockengrößen;43-46;Schuh-/Sockenbereich
+42-44;42-44;7;Schuh- und Sockengrößen;42-44;Schuh-/Sockenbereich
+39-41;39-41;6;Schuh- und Sockengrößen;39-41;Schuh-/Sockenbereich
+45-47;45-47;6;Schuh- und Sockengrößen;45-47;Schuh-/Sockenbereich
+6_395;6_39,5;6;Schuh- und Sockengrößen;39,5;Schuh UK_EU, EU-Zahl mit Bruch
+7_40-3-4;7_40 3/4;6;Schuh- und Sockengrößen;40,75;Schuh UK_EU, EU-Zahl mit Bruch
+75_415;7,5_41,5;6;Schuh- und Sockengrößen;41,5;Schuh UK_EU, EU-Zahl mit Bruch
+39-5;39.5;4;Schuh- und Sockengrößen;39,5;Schuhgröße mit halber Zahl
+44-5;44.5;4;Schuh- und Sockengrößen;44,5;Schuhgröße mit halber Zahl
+36-37;36-37;3;Schuh- und Sockengrößen;36-37;Schuh-/Sockenbereich
+38-39;38-39;3;Schuh- und Sockengrößen;38-39;Schuh-/Sockenbereich
+40-41;40-41;3;Schuh- und Sockengrößen;40-41;Schuh-/Sockenbereich
+42-43;42-43;3;Schuh- und Sockengrößen;42-43;Schuh-/Sockenbereich
+44-45;44-45;3;Schuh- und Sockengrößen;44-45;Schuh-/Sockenbereich
+3_355;3_35,5;3;Schuh- und Sockengrößen;35,5;Schuh UK_EU, EU-Zahl mit Bruch
+45_375;4,5_37,5;3;Schuh- und Sockengrößen;37,5;Schuh UK_EU, EU-Zahl mit Bruch
+55_38-3-4;5,5_38 3/4;3;Schuh- und Sockengrößen;38,75;Schuh UK_EU, EU-Zahl mit Bruch
+9_435;9_43,5;3;Schuh- und Sockengrößen;43,5;Schuh UK_EU, EU-Zahl mit Bruch
+10_44-5;10_(44.5);3;Schuh- und Sockengrößen;44,5;Schuh UK_EU, EU-Zahl mit Bruch
+10_445;10_44,5;3;Schuh- und Sockengrößen;44,5;Schuh UK_EU, EU-Zahl mit Bruch
+11_45-3-4;11_45 3/4;3;Schuh- und Sockengrößen;45,75;Schuh UK_EU, EU-Zahl mit Bruch
+115_465;11,5_46,5;3;Schuh- und Sockengrößen;46,5;Schuh UK_EU, EU-Zahl mit Bruch
+13_485;13_48,5;3;Schuh- und Sockengrößen;48,5;Schuh UK_EU, EU-Zahl mit Bruch
+14_495;14_49,5;2;Schuh- und Sockengrößen;49,5;Schuh UK_EU, EU-Zahl mit Bruch
+27-31;27-31;1;Schuh- und Sockengrößen;27-31;Schuh-/Sockenbereich
+28-30;28/30;1;Schuh- und Sockengrößen;28-30;Schuh-/Sockenbereich
+31-33;31/33;1;Schuh- und Sockengrößen;31-33;Schuh-/Sockenbereich
+32-36;32-36;1;Schuh- und Sockengrößen;32-36;Schuh-/Sockenbereich
+34-36;34/36;1;Schuh- und Sockengrößen;34-36;Schuh-/Sockenbereich
+36-38;36-38;1;Schuh- und Sockengrößen;36-38;Schuh-/Sockenbereich
+37-39;37/39;1;Schuh- und Sockengrößen;37-39;Schuh-/Sockenbereich
+38-40;38/40;1;Schuh- und Sockengrößen;38-40;Schuh-/Sockenbereich
+40-42;40/42;1;Schuh- und Sockengrößen;40-42;Schuh-/Sockenbereich
+43-45;43/45;1;Schuh- und Sockengrößen;43-45;Schuh-/Sockenbereich
+46-48;46/48;1;Schuh- und Sockengrößen;46-48;Schuh-/Sockenbereich
+47-50;47-50;1;Schuh- und Sockengrößen;47-50;Schuh-/Sockenbereich
+15_505;15_50,5;1;Schuh- und Sockengrößen;50,5;Schuh UK_EU, EU-Zahl mit Bruch
+116;116;32;Kinder, Körpergröße in cm;116;Zahl ab 65 als Körpergröße cm
+104;104;29;Kinder, Körpergröße in cm;104;Zahl ab 65 als Körpergröße cm
+152;152;29;Kinder, Körpergröße in cm;152;Zahl ab 65 als Körpergröße cm
+128;128;19;Kinder, Körpergröße in cm;128;Zahl ab 65 als Körpergröße cm
+140;140;19;Kinder, Körpergröße in cm;140;Zahl ab 65 als Körpergröße cm
+92;92;18;Kinder, Körpergröße in cm;92;Zahl ab 65 als Körpergröße cm
+68;68;15;Kinder, Körpergröße in cm;68;Zahl ab 65 als Körpergröße cm
+122-128;122-128;15;Kinder, Körpergröße in cm;122-128;Bereich in cm
+134-140;134-140;15;Kinder, Körpergröße in cm;134-140;Bereich in cm
+146-152;146-152;15;Kinder, Körpergröße in cm;146-152;Bereich in cm
+158-164;158-164;15;Kinder, Körpergröße in cm;158-164;Bereich in cm
+66;66;13;Kinder, Körpergröße in cm;66;Zahl ab 65 als Körpergröße cm
+88;88;13;Kinder, Körpergröße in cm;88;Zahl ab 65 als Körpergröße cm
+96;96;13;Kinder, Körpergröße in cm;96;Zahl ab 65 als Körpergröße cm
+100;100;13;Kinder, Körpergröße in cm;100;Zahl ab 65 als Körpergröße cm
+108;108;13;Kinder, Körpergröße in cm;108;Zahl ab 65 als Körpergröße cm
+112;112;13;Kinder, Körpergröße in cm;112;Zahl ab 65 als Körpergröße cm
+120;120;13;Kinder, Körpergröße in cm;120;Zahl ab 65 als Körpergröße cm
+164;164;11;Kinder, Körpergröße in cm;164;Zahl ab 65 als Körpergröße cm
+146;146;10;Kinder, Körpergröße in cm;146;Zahl ab 65 als Körpergröße cm
+148;148;10;Kinder, Körpergröße in cm;148;Zahl ab 65 als Körpergröße cm
+150;150;10;Kinder, Körpergröße in cm;150;Zahl ab 65 als Körpergröße cm
+154;154;10;Kinder, Körpergröße in cm;154;Zahl ab 65 als Körpergröße cm
+156;156;10;Kinder, Körpergröße in cm;156;Zahl ab 65 als Körpergröße cm
+74;74;9;Kinder, Körpergröße in cm;74;Zahl ab 65 als Körpergröße cm
+98;98;9;Kinder, Körpergröße in cm;98;Zahl ab 65 als Körpergröße cm
+70;70;6;Kinder, Körpergröße in cm;70;Zahl ab 65 als Körpergröße cm
+72;72;6;Kinder, Körpergröße in cm;72;Zahl ab 65 als Körpergröße cm
+110-116;110-116;6;Kinder, Körpergröße in cm;110-116;Bereich in cm
+92-98;92/98;4;Kinder, Körpergröße in cm;92-98;Bereich in cm
+104-110;104/110;4;Kinder, Körpergröße in cm;104-110;Bereich in cm
+116-122;116/122;4;Kinder, Körpergröße in cm;116-122;Bereich in cm
+124;124;4;Kinder, Körpergröße in cm;124;Zahl ab 65 als Körpergröße cm
+128-134;128/134;4;Kinder, Körpergröße in cm;128-134;Bereich in cm
+140-146;140/146;4;Kinder, Körpergröße in cm;140-146;Bereich in cm
+152-158;152/158;4;Kinder, Körpergröße in cm;152-158;Bereich in cm
+80;80;3;Kinder, Körpergröße in cm;80;Zahl ab 65 als Körpergröße cm
+86;86;3;Kinder, Körpergröße in cm;86;Zahl ab 65 als Körpergröße cm
+90;90;3;Kinder, Körpergröße in cm;90;Zahl ab 65 als Körpergröße cm
+110-120;110/120;3;Kinder, Körpergröße in cm;110-120;Bereich in cm
+130-140;130/140;3;Kinder, Körpergröße in cm;130-140;Bereich in cm
+150-160;150/160;3;Kinder, Körpergröße in cm;150-160;Bereich in cm
+98-104;98-104;2;Kinder, Körpergröße in cm;98-104;Bereich in cm
+170-176;170-176;2;Kinder, Körpergröße in cm;170-176;Bereich in cm
+68-74;68/74;1;Kinder, Körpergröße in cm;68-74;Bereich in cm
+80-92;80/92;1;Kinder, Körpergröße in cm;80-92;Bereich in cm
+98-110;98/110;1;Kinder, Körpergröße in cm;98-110;Bereich in cm
+116-128;116/128;1;Kinder, Körpergröße in cm;116-128;Bereich in cm
+135-150;135/150;1;Kinder, Körpergröße in cm;135-150;Bereich in cm
+152-164;152/164;1;Kinder, Körpergröße in cm;152-164;Bereich in cm
+7-8;7-8;33;Kinder, Alter in Jahren;7-8;Altersbereich in Jahren
+5-6;5-6;32;Kinder, Alter in Jahren;5-6;Altersbereich in Jahren
+12-14;12-14;28;Kinder, Alter in Jahren;12-14;Altersbereich in Jahren
+10-12;10-12;24;Kinder, Alter in Jahren;10-12;Altersbereich in Jahren
+6-8;6-8;23;Kinder, Alter in Jahren;6-8;Altersbereich in Jahren
+9-11;9-11;22;Kinder, Alter in Jahren;9-11;Altersbereich in Jahren
+3-4;3-4;19;Kinder, Alter in Jahren;3-4;Altersbereich in Jahren
+8-10;8-10;19;Kinder, Alter in Jahren;8-10;Altersbereich in Jahren
+6-y;6 Y;16;Kinder, Alter in Jahren;6;Jahre (Y)
+8-y;8 Y;16;Kinder, Alter in Jahren;8;Jahre (Y)
+10-y;10 Y;16;Kinder, Alter in Jahren;10;Jahre (Y)
+12-y;12 Y;16;Kinder, Alter in Jahren;12;Jahre (Y)
+4-y;4 Y;15;Kinder, Alter in Jahren;4;Jahre (Y)
+12-13;12-13;13;Kinder, Alter in Jahren;12-13;Altersbereich in Jahren
+4-5;4-5;12;Kinder, Alter in Jahren;4-5;Altersbereich in Jahren
+9-10;9-10;10;Kinder, Alter in Jahren;9-10;Altersbereich in Jahren
+11-12;11-12;10;Kinder, Alter in Jahren;11-12;Altersbereich in Jahren
+2-y;2 Y;7;Kinder, Alter in Jahren;2;Jahre (Y)
+2-3;2-3;6;Kinder, Alter in Jahren;2-3;Altersbereich in Jahren
+14-15;14-15;6;Kinder, Alter in Jahren;14-15;Altersbereich in Jahren
+14-y;14 Y;5;Kinder, Alter in Jahren;14;Jahre (Y)
+13-14;13-14;3;Kinder, Alter in Jahren;13-14;Altersbereich in Jahren
+1-2;1-2;2;Kinder, Alter in Jahren;1-2;Altersbereich in Jahren
+7-9;7-9;1;Kinder, Alter in Jahren;7-9;Altersbereich in Jahren
+10-11;10-11;1;Kinder, Alter in Jahren;10-11;Altersbereich in Jahren
+15-16;15-16;1;Kinder, Alter in Jahren;15-16;Altersbereich in Jahren
+6-12;6-12;18;Baby, Alter in Monaten;6-12 Monate;Monatsbereich
+12-18;12-18;16;Baby, Alter in Monaten;12-18 Monate;Monatsbereich
+3-6;3-6;13;Baby, Alter in Monaten;3-6 Monate;Monatsbereich
+18-24;18-24;10;Baby, Alter in Monaten;18-24 Monate;Monatsbereich
+0-3;0-3;5;Baby, Alter in Monaten;0-3 Monate;Monatsbereich
+6m;6M;5;Baby, Alter in Monaten;6 Monate;Monate (M)
+9m;9M;5;Baby, Alter in Monaten;9 Monate;Monate (M)
+12m;12M;5;Baby, Alter in Monaten;12 Monate;Monate (M)
+18m;18M;5;Baby, Alter in Monaten;18 Monate;Monate (M)
+24m;24M;5;Baby, Alter in Monaten;24 Monate;Monate (M)
+36m;36M;4;Baby, Alter in Monaten;36 Monate;Monate (M)
+18-23;18-23;2;Baby, Alter in Monaten;18-23 Monate;Monatsbereich
+3m;3M;2;Baby, Alter in Monaten;3 Monate;Monate (M)
+12-m;12 M;1;Baby, Alter in Monaten;12 Monate;Monate (M)
+24-m;24 M;1;Baby, Alter in Monaten;24 Monate;Monate (M)
+4-6;4/6;11;Weitere Größen;4/6;nicht erkannt, bleibt unter Weitere
+8;8;10;Weitere Größen;8;nicht erkannt, bleibt unter Weitere
+25;(25);9;Weitere Größen;(25);nicht erkannt, bleibt unter Weitere
+26;(26);9;Weitere Größen;(26);nicht erkannt, bleibt unter Weitere
+27;(27);9;Weitere Größen;(27);nicht erkannt, bleibt unter Weitere
+28;(28);9;Weitere Größen;(28);nicht erkannt, bleibt unter Weitere
+84;(84);9;Weitere Größen;(84);nicht erkannt, bleibt unter Weitere
+hom;Herren;9;Weitere Größen;Herren;nicht erkannt, bleibt unter Weitere
+muj;Damen;9;Weitere Größen;Damen;nicht erkannt, bleibt unter Weitere
+10;10;8;Weitere Größen;10;nicht erkannt, bleibt unter Weitere
+12;12;8;Weitere Größen;12;nicht erkannt, bleibt unter Weitere
+16;16;8;Weitere Größen;16;nicht erkannt, bleibt unter Weitere
+6;6;7;Weitere Größen;6;nicht erkannt, bleibt unter Weitere
+94;(94);7;Weitere Größen;(94);nicht erkannt, bleibt unter Weitere
+102;(102);7;Weitere Größen;(102);nicht erkannt, bleibt unter Weitere
+106;(106);7;Weitere Größen;(106);nicht erkannt, bleibt unter Weitere
+110;(110);7;Weitere Größen;(110);nicht erkannt, bleibt unter Weitere
+7;7;6;Weitere Größen;7;nicht erkannt, bleibt unter Weitere
+9;9;6;Weitere Größen;9;nicht erkannt, bleibt unter Weitere
+11;11;6;Weitere Größen;11;nicht erkannt, bleibt unter Weitere
+14;14;6;Weitere Größen;14;nicht erkannt, bleibt unter Weitere
+kids;Kids;6;Weitere Größen;Kids;nicht erkannt, bleibt unter Weitere
+135;13,5;4;Weitere Größen;13,5;nicht erkannt, bleibt unter Weitere
+145;14,5;4;Weitere Größen;14,5;nicht erkannt, bleibt unter Weitere
+15;15;4;Weitere Größen;15;nicht erkannt, bleibt unter Weitere
+155;15,5;4;Weitere Größen;15,5;nicht erkannt, bleibt unter Weitere
+165;16,5;4;Weitere Größen;16,5;nicht erkannt, bleibt unter Weitere
+17;17;4;Weitere Größen;17;nicht erkannt, bleibt unter Weitere
+175;17,5;4;Weitere Größen;17,5;nicht erkannt, bleibt unter Weitere
+18;18;4;Weitere Größen;18;nicht erkannt, bleibt unter Weitere
+185;18,5;4;Weitere Größen;18,5;nicht erkannt, bleibt unter Weitere
+19;19;4;Weitere Größen;19;nicht erkannt, bleibt unter Weitere
+195;19,5;4;Weitere Größen;19,5;nicht erkannt, bleibt unter Weitere
+20;20;4;Weitere Größen;20;nicht erkannt, bleibt unter Weitere
+21;21;4;Weitere Größen;21;nicht erkannt, bleibt unter Weitere
+22;22;4;Weitere Größen;22;nicht erkannt, bleibt unter Weitere
+23;23;4;Weitere Größen;23;nicht erkannt, bleibt unter Weitere
+youth;Youth;4;Weitere Größen;Youth;nicht erkannt, bleibt unter Weitere
+16-18;16/18;3;Weitere Größen;16/18;nicht erkannt, bleibt unter Weitere
+20-22;20/22;3;Weitere Größen;20/22;nicht erkannt, bleibt unter Weitere
+toddler;Toddler;2;Weitere Größen;Toddler;nicht erkannt, bleibt unter Weitere
+child;child;2;Weitere Größen;child;nicht erkannt, bleibt unter Weitere
+s_305;S_305;1;Weitere Größen;S_305;nicht erkannt, bleibt unter Weitere
+m_404;M_404;1;Weitere Größen;M_404;nicht erkannt, bleibt unter Weitere
+l_505;L_505;1;Weitere Größen;L_505;nicht erkannt, bleibt unter Weitere
+4;4;1;Weitere Größen;4;nicht erkannt, bleibt unter Weitere
+cz-n;CZ N;1;Weitere Größen;CZ N;nicht erkannt, bleibt unter Weitere
+cz-p;CZ P;1;Weitere Größen;CZ P;nicht erkannt, bleibt unter Weitere
+de-chf;DE CHF;1;Weitere Größen;DE CHF;nicht erkannt, bleibt unter Weitere
+de-n;DE N;1;Weitere Größen;DE N;nicht erkannt, bleibt unter Weitere
+de-p;DE P;1;Weitere Größen;DE P;nicht erkannt, bleibt unter Weitere
+en-n;EN N;1;Weitere Größen;EN N;nicht erkannt, bleibt unter Weitere
+en-p;EN P;1;Weitere Größen;EN P;nicht erkannt, bleibt unter Weitere
+it-n;IT N;1;Weitere Größen;IT N;nicht erkannt, bleibt unter Weitere
+it-p;IT P;1;Weitere Größen;IT P;nicht erkannt, bleibt unter Weitere
+large;large;1;Weitere Größen;large;nicht erkannt, bleibt unter Weitere
+regular;regular;1;Weitere Größen;regular;nicht erkannt, bleibt unter Weitere
