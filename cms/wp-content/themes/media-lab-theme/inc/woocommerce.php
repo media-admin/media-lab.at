@@ -211,3 +211,69 @@ add_action( 'wp', function () {
     }
 } );
 
+
+/**
+ * Produktseite: Breadcrumb über dem Produkt (Shop › Hauptkategorie › Unterkategorie › Produkt).
+ * Die Breadcrumb des Seitenkopfs bleibt entfernt (siehe oben); hier steht sie direkt vor dem Produkt. WooCommerce bildet den Pfad
+ * aus den Elternkategorien der tiefsten Kategorie des Produkts.
+ */
+add_action( 'woocommerce_before_single_product', function () {
+    if ( function_exists( 'woocommerce_breadcrumb' ) ) {
+        woocommerce_breadcrumb();
+    }
+}, 5 );
+
+add_filter( 'woocommerce_breadcrumb_defaults', function ( $defaults ) {
+    $defaults['delimiter']   = ' <span class="separator" aria-hidden="true">›</span> ';
+    $defaults['wrap_before'] = '<nav class="woocommerce-breadcrumb" aria-label="' . esc_attr__( 'Brotkrumen', 'custom-theme' ) . '">';
+    $defaults['wrap_after']  = '</nav>';
+    $defaults['home']        = __( 'Startseite', 'custom-theme' );
+    return $defaults;
+} );
+
+/**
+ * Produktseite: Zeile "Kategorie" in der Meta-Angabe als Pfad mit Links auf jede Ebene (Textilien › T-Shirts).
+ * Nur innerhalb der Produkt-Zusammenfassung (Meta-Angabe); Oberkategorien, die nur der Pfad einer tieferen Kategorie des Produkts sind,
+ * stehen nicht noch einmal einzeln da.
+ */
+add_filter( 'term_links-product_cat', function ( $links ) {
+    if ( ! doing_action( 'woocommerce_single_product_summary' ) ) {
+        return $links;
+    }
+    $post_id = get_the_ID();
+    $terms   = $post_id ? get_the_terms( $post_id, 'product_cat' ) : false;
+    if ( ! $terms || is_wp_error( $terms ) ) {
+        return $links;
+    }
+    $default = (int) get_option( 'default_product_cat' );
+    $out     = [];
+    foreach ( $terms as $term ) {
+        if ( (int) $term->term_id === $default ) {
+            continue;
+        }
+        $is_ancestor = false;
+        foreach ( $terms as $other ) {
+            if ( $other->term_id !== $term->term_id && term_is_ancestor_of( $term->term_id, $other->term_id, 'product_cat' ) ) {
+                $is_ancestor = true;
+                break;
+            }
+        }
+        if ( $is_ancestor ) {
+            continue;
+        }
+        $chain = array_reverse( get_ancestors( $term->term_id, 'product_cat', 'taxonomy' ) );   // Hauptkategorie zuerst
+        $chain[] = $term->term_id;
+        $parts   = [];
+        foreach ( $chain as $term_id ) {
+            $item = get_term( $term_id, 'product_cat' );
+            $url  = $item && ! is_wp_error( $item ) ? get_term_link( $item ) : null;
+            if ( $url && ! is_wp_error( $url ) ) {
+                $parts[] = '<a href="' . esc_url( $url ) . '" rel="tag">' . esc_html( $item->name ) . '</a>';
+            }
+        }
+        if ( $parts ) {
+            $out[] = implode( ' <span class="mlw-cat-sep" aria-hidden="true">›</span> ', $parts );
+        }
+    }
+    return $out ?: $links;
+} );

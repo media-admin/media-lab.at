@@ -11,6 +11,9 @@
  *   - Die Einträge (<li>) werden nur UMGEHÄNGT, nicht neu erzeugt: Ereignisse, Zähler und das Filtern in mlwf-filters.js
  *     funktionieren unverändert. Das Skript wird VOR mlwf-filters.js ausgeführt (import am Anfang von mlwf-filters.js).
  *   - Ohne JSON oder ohne passende Liste passiert nichts. Fehler lassen die Liste, wie sie ist.
+ *   - Kategorien: Schlüssel "product_cat" gilt für die Kategorie-Liste der Suche (data-attribute="product_cat") und der Filterleiste
+ *     (data-filter-type="subcategory"). Optional steht an vierter Stelle eine Beschriftung ("Alle Textilien" für die Hauptkategorie).
+ *     Gibt es nur eine einzige Gruppe (z. B. Unterkategorien einer Kategorie-Seite), bleibt die Liste flach, ohne Überschrift.
  *
  * Markup je Gruppe (Styles: _woocommerce.scss, Abschnitt "Gruppen in der Checkbox-Liste"):
  *   li.wc-filter-checklist__group > details.wc-filter-subgroup > summary.wc-filter-subgroup__title + ul.wc-filter-checklist--sub
@@ -49,7 +52,7 @@
 		} );
 	}
 
-	function groupList( groupEl, info ) {
+	function groupList( groupEl, info, flatSingle ) {
 		const list = groupEl.querySelector( '.wc-filter-checklist' );
 		if ( ! list || groupEl.dataset.mlwfGrouped ) return;
 
@@ -62,6 +65,7 @@
 				const meta = info[ slug ];
 				return {
 					li,
+					slug,
 					group:      meta ? String( meta[ 0 ] ) : FALLBACK,
 					groupOrder: meta ? Number( meta[ 1 ] ) : 999999,
 					order:      meta ? Number( meta[ 2 ] ) : 999999,
@@ -77,6 +81,18 @@
 		} );
 		const sorted = Array.from( groups.values() ).sort( ( a, b ) => a.order - b.order );
 		sorted.forEach( g => g.items.sort( ( a, b ) => a.order - b.order ) );
+
+		// Kategorien: eine einzige Gruppe ergäbe nur eine Überschrift über der ganzen Liste, die Liste bleibt dann flach
+		if ( flatSingle && sorted.length === 1 ) return;
+
+		// optionale Beschriftung (vierte Stelle), erst jetzt: flache Listen bleiben unverändert
+		items.forEach( item => {
+			const meta = info[ item.slug ];
+			if ( meta && meta[ 3 ] ) {
+				const lab = item.li.querySelector( '.wc-filter-option__label' );
+				if ( lab ) lab.textContent = String( meta[ 3 ] );
+			}
+		} );
 
 		const onlyOne = sorted.length === 1;
 		const frag    = document.createDocumentFragment();
@@ -126,7 +142,10 @@
 			Object.keys( data ).forEach( attr => {
 				const info = data[ attr ];
 				if ( ! info || typeof info !== 'object' ) return;
-				document.querySelectorAll( '.wc-filter-group[data-attribute="' + attr + '"]' ).forEach( groupEl => groupList( groupEl, info ) );
+				// Kategorien: Liste der Suche (data-attribute) und Kategorie-Filter der Filterleiste (data-filter-type="subcategory")
+				const isCat    = attr === 'product_cat';
+				const selector = '.wc-filter-group[data-attribute="' + attr + '"]' + ( isCat ? ', .wc-filter-group[data-filter-type="subcategory"]' : '' );
+				document.querySelectorAll( selector ).forEach( groupEl => groupList( groupEl, info, isCat ) );
 			} );
 
 			// "Zurücksetzen" setzt die Kästchen ohne change-Ereignis zurück: Zähler danach nachziehen
