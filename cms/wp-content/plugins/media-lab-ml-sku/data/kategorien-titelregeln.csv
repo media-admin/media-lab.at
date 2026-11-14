@@ -1,0 +1,104 @@
+﻿nr;muster;haupt;unter;fallback
+1;polo-?shirt|\bpolo\b;Textilien;Polos;0
+2;t-?shirt;Textilien;T-Shirts;0
+3;sweatshirt|hoodie|kapuzenpulli|pullover;Textilien;Sweats & Hoodies;0
+4;softshell|fleece;Textilien;Fleece & Softshell;0
+5;warnweste|sicherheitsweste|reflektier;Werkzeug, Auto & Schlüsselanhänger;Reflektierende Artikel;0
+6;parka|windjacke|regenjacke|jacke|weste|bodywarmer|regenmantel|poncho;Textilien;Jacken & Westen;0
+7;hemd|bluse;Textilien;Hemden & Blusen;0
+8;\bhose|shorts|bermuda;Textilien;Hosen & Shorts;0
+9;socken;Textilien;Unterwäsche & Socken;0
+10;schürze|topflappen|küchenhandschuh;Haushalt, Küche & Wellness;Küchen- & Tischtextilien;0
+11;sneaker|schuh|slipper|flip-?flop|sandale;Kopfbedeckung & Accessoires;Schuhe;0
+12;\bcap\b|kappe|baseball|visier;Kopfbedeckung & Accessoires;Caps;0
+13;mütze|beanie|bommel;Kopfbedeckung & Accessoires;Beanies & Mützen;0
+14;\bhut\b|strohhut|sonnenhut;Kopfbedeckung & Accessoires;Hüte;0
+15;schlauchschal|foulard|halstuch|\bschal\b|handschuh|bandana;Kopfbedeckung & Accessoires;Schals & Handschuhe;0
+16;sonnenbrille;Kopfbedeckung & Accessoires;Sonnenbrillen;0
+17;lanyard|schlüsselband|halsband;Kopfbedeckung & Accessoires;Lanyards;0
+18;button|anstecknadel|abzeichen|badge|namensschild|ausweishalter;Kopfbedeckung & Accessoires;Badges & Buttons;0
+19;halter armband|handyhalter|handy|smartphone|telefon|phone;Technologie;Smartphone-Zubehör;0
+20;ohrring|\bring\b|schmuck|krawatte|gürtel(?!tasche)|hosenträger|armband(?!tasche);Kopfbedeckung & Accessoires;Weitere Accessoires;0
+21;rucksack;Taschen & Reisen;Rucksäcke;0
+22;trolley|reisetasche|koffer(?!anhänger);Taschen & Reisen;Reisetaschen & Trolleys;0
+23;kühltasche|kühlbox|thermotasche;Taschen & Reisen;Sport- & Kühltaschen;0
+24;laptop-?tasche|laptop-?hülle|aktentasche|businesstasche|dokumententasche;Taschen & Reisen;Business-Taschen & Laptophüllen;0
+25;kosmetik ?tasche|kulturbeutel|kulturtasche;Haushalt, Küche & Wellness;Körperpflege & Kosmetik;0
+26;gürteltasche|bauchtasche|umhängetasche|armbandtasche|sporttasche|turnbeutel|strandtasche;Taschen & Reisen;Sport- & Kühltaschen;0
+27;einkaufstasche|shopper|tragetasche|beutel|faltbare[rn]? tasche|netz\b;Taschen & Reisen;Einkaufstaschen & Beutel;0
+28;regenschirm|\bschirm;Taschen & Reisen;Regenschirme;0
+29;kartenetui|kartenhalter|portemonnaie|geldbörse|geldbeutel|gepäckanhänger|kofferanhänger;Taschen & Reisen;Reise-Accessoires;0
+30;wärme ?(flasche|trinkbecher|becher|tasse|kanne)|thermo(?!meter)|isolier|doppelwandig;Essen & Trinken;Thermoskannen & Isolierbecher;0
+31;flaschenöffner|korkenzieher|cocktail|wein ?set|barset|teesieb|\btee\b|kaffee(?!becher|tasse|kanne);Essen & Trinken;Bar, Tee & Kaffee;0
+32;trinkflasche|flasche;Essen & Trinken;Flaschen;0
+33;tasse|becher|\bmug\b|\bkrug;Essen & Trinken;Tassen & Becher;0
+34;\bglas\b|gläser|weinglas|karaffe;Essen & Trinken;Gläser;0
+35;lunch ?box|brotdose|besteck|strohhalm|essgeschirr|teller\b;Essen & Trinken;Lunchboxen & Besteck;0
+36;kugelschreiber|\broller\b|jotter|bleistift|textmarker|füller|\bpen\b|\bstift\b;Büro & Schreibgeräte;Schreibgeräte;0
+37;stifthalter|lineal|taschenrechner|cutter|tischuhr|briefbeschwerer;Büro & Schreibgeräte;Schreibtisch-Zubehör;0
+38;notizbuch|tagebuch|notebook;Büro & Schreibgeräte;Notizbücher;0
+39;notizblock|notizzettel|haftnotiz|haftender|kalender|lesezeichen|merkzettel;Büro & Schreibgeräte;Kalender & Haftnotizen;0
+40;mappe|(?<!pflege )\bordner\b|portfolio|konferenz|etui;Büro & Schreibgeräte;Mappen & Portfolios;0
+41;power ?bank|powerbank;Technologie;Powerbanks;0
+42;ladegerät|ladekabel|kabel|ladestation|adapter|netzteil|akku;Technologie;Ladegeräte & Kabel;0
+43;lautsprecher|kopfhörer|ohrhörer|earbuds|headset|bluetooth;Technologie;Lautsprecher & Kopfhörer;0
+44;usb(?![ -]?hub);Technologie;USB-Sticks;0
+45;\bhub\b|\bmaus\b|mauspad|webcam|tastatur|laptopständer|computer;Technologie;Computer-Zubehör;0
+46;intelligente[rn]? (uhr|armband)|smartwatch|\bsmart\b|tracker|finder|batterie|piepser|sterilisator;Technologie;Smart-Geräte & Batterien;0
+47;\buhr\b;Büro & Schreibgeräte;Schreibtisch-Zubehör;0
+48;kerze|duft|lufterfrischer|raumduft;Haushalt, Küche & Wellness;Kerzen & Düfte;0
+49;spiegel|bürste|\bkamm\b|lippenbalsam|maniküre|seife|\bgel\b|hydroalkoholisch|desinfektion|sonnencreme|handcreme|zahnbürste|nagel;Haushalt, Küche & Wellness;Körperpflege & Kosmetik;0
+50;decke|handtuch|badetuch|plaid;Haushalt, Küche & Wellness;Frottier & Decken;0
+51;blumentopf|vase|rahmen|sparschwein|figur|windlicht|schmuckbox;Haushalt, Küche & Wellness;Dekoration;0
+52;schneidebrett|messer|untersetzer|dosenöffner|küchen;Haushalt, Küche & Wellness;Küchenhelfer;0
+53;haustier|\bhund|katze;Haushalt, Küche & Wellness;Haustierzubehör;0
+54;schlüsselanhänger|keyfinder|ek-chip|einkaufswagenchip;Werkzeug, Auto & Schlüsselanhänger;Schlüsselanhänger;0
+55;taschenmesser|multiwerkzeug|werkzeug|maßband|zollstock|taschenlampe|stirnlampe|multitool|\blampe\b;Werkzeug, Auto & Schlüsselanhänger;Werkzeuge & Taschenlampen;0
+56;eiskratzer|autosonnenschutz|parkscheibe|kfz|\bauto\b|fahrzeug;Werkzeug, Auto & Schlüsselanhänger;Autozubehör;0
+57;picnic|picknick|grill|camping|sitzkissen|hängematte|klappstuhl|\bstuhl\b;Outdoor, Sport & Freizeit;Picknick, Camping & Grillen;0
+58;strand|sonnenschirm|frisbee|sandspielzeug|wasserball|schwimm|aufblas;Outdoor, Sport & Freizeit;Strand & Sommer;0
+59;samen|pflanz|garten|saatgut;Outdoor, Sport & Freizeit;Garten & Landwirtschaft;0
+60;fahrrad|\bbike\b|fahrradklingel;Outdoor, Sport & Freizeit;Fahrrad & Laufen;0
+61;fitness|yoga|fußball|\bball\b|expander|sport;Outdoor, Sport & Freizeit;Sport & Fitness;0
+62;fächer|ventilator;Geschenke, Events & Saisonales;Veranstaltungen & Party;0
+63;plüsch|teddy|kuscheltier|stofftier;Kinder & Spiele;Plüschtiere;0
+64;puzzle|spiel|kartenspiel|domino|schach|antistress|kicker|würfel|jonglier|brettspiel;Kinder & Spiele;Spiele;0
+65;malset|buntstift|malbuch|knete|basteln;Kinder & Spiele;Malen & Basteln;0
+66;baby|rassel|schnuller|lätzchen;Kinder & Spiele;Baby & Kleinkinder;0
+67;plakette|\bpin\b;Kopfbedeckung & Accessoires;Badges & Buttons;0
+68;flachmann;Essen & Trinken;Bar, Tee & Kaffee;0
+69;tablet-?tasche|tablet-?hülle;Taschen & Reisen;Business-Taschen & Laptophüllen;0
+70;wanduhr|tacker|anspitzer|büroklammer|markerset|büro-?set|schreibtablett;Büro & Schreibgeräte;Schreibtisch-Zubehör;0
+71;wochenplaner|planer;Büro & Schreibgeräte;Kalender & Haftnotizen;0
+72;notlicht|notlampe|sicherheitslicht|nothammer|v16;Werkzeug, Auto & Schlüsselanhänger;Autozubehör;0
+73;wasserwage|laser|messgerät;Werkzeug, Auto & Schlüsselanhänger;Werkzeuge & Taschenlampen;0
+74;radio|projektor|mikrofon|cd-player|drohne|monopod|ringlicht|pointer|kamera;Technologie;Smart-Geräte & Batterien;0
+75;diffusor;Haushalt, Küche & Wellness;Kerzen & Düfte;0
+76;drachen|yoyo|flöte|frisbie;Kinder & Spiele;Spiele;0
+77;backform|backblech|kuchenform|kochlöffel|pfanne|putztuch;Haushalt, Küche & Wellness;Küchenhelfer;0
+78;ornament;Haushalt, Küche & Wellness;Dekoration;1
+79;aromatisch;Haushalt, Küche & Wellness;Kerzen & Düfte;0
+80;vlies;Textilien;Fleece & Softshell;0
+81;zelt|schlafsack|\btisch\b|holzträger;Outdoor, Sport & Freizeit;Picknick, Camping & Grillen;0
+82;gehstock|wanderstock;Outdoor, Sport & Freizeit;Fahrrad & Laufen;0
+83;basketball|handball|volleyball|sprungseil|hantel;Outdoor, Sport & Freizeit;Sport & Fitness;0
+84;karabiner;Werkzeug, Auto & Schlüsselanhänger;Schlüsselanhänger;0
+85;alkoholtester;Werkzeug, Auto & Schlüsselanhänger;Autozubehör;0
+86;maßstab|\bzange\b;Werkzeug, Auto & Schlüsselanhänger;Werkzeuge & Taschenlampen;0
+87;fahne|flagge;Geschenke, Events & Saisonales;Veranstaltungen & Party;0
+88;kreisel|mundharmonika|xylophon|dartschreibe|dartscheibe|karten ?set;Kinder & Spiele;Spiele;0
+89;\btafel\b;Kinder & Spiele;Spiele;1
+90;brillengestell;Kopfbedeckung & Accessoires;Sonnenbrillen;0
+91;schleife\b;Kopfbedeckung & Accessoires;Badges & Buttons;0
+92;reise ?set;Taschen & Reisen;Reise-Accessoires;0
+93;virtual-?reality|klimaanlage;Technologie;Smart-Geräte & Batterien;0
+94;sound-?verstärker|mischpult;Technologie;Lautsprecher & Kopfhörer;0
+95;bildschirmträger|displayreiniger|reinigungsset|gamer ?set;Technologie;Computer-Zubehör;0
+96;mehrzweckhülle|halterung|tripod;Technologie;Smartphone-Zubehör;0
+97;\bhalter\b;Technologie;Smartphone-Zubehör;1
+98;wetterstation|thermometer;Büro & Schreibgeräte;Schreibtisch-Zubehör;1
+99;\bclip\b|gummiband;Büro & Schreibgeräte;Schreibtisch-Zubehör;1
+100;tasche\b;Taschen & Reisen;Einkaufstaschen & Beutel;1
+101;weihnacht|advent|nikolaus|christbaum|halloween;Geschenke, Events & Saisonales;Weihnachten & Saisonales;0
+102;party|konfetti|luftballon|girlande;Geschenke, Events & Saisonales;Veranstaltungen & Party;0
+103;bonbon|schokolade|kaugummi|minze|keks;Geschenke, Events & Saisonales;Süßigkeiten & Snacks;0

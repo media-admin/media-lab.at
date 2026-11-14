@@ -645,26 +645,34 @@ add_filter('mlwf_search_facets', 'ml_gr_sort_facets', 10, 1);
 /**
  * Gruppen fuer die Filterleiste: Das Theme (assets/src/js/components/mlwf-term-groups.js) liest dieses JSON und haengt die Werte der
  * Liste in Gruppen mit Ueberschrift um (Kleidergroessen immer offen, die uebrigen eingeklappt). Format:
- * {"pa_groesse": {"<termslug>": ["<Gruppenname>", <Gruppennummer>, <Platz in der Gruppe>], ...}}
+ * {"pa_groesse": {"<termslug>": ["<Gruppenname>", <Gruppennummer>, <Platz in der Gruppe>], ...}, ...}
  * Nur auf Seiten mit Filterleiste (Shop, Kategorie, Schlagwort, Marke, Suche).
  */
 function ml_gr_print_term_groups() {
-    if (!function_exists('is_shop') || !taxonomy_exists('pa_groesse')) {
+    if (!function_exists('is_shop')) {
         return;
     }
     $page = is_shop() || is_product_category() || is_product_tag() || is_tax('product_brand') || is_search();
     if (!$page) {
         return;
     }
-    $map = array();
-    foreach (ml_gr_term_order() as $slug => $o) {
-        $map[$slug] = array($o['group'], $o['group_order'], $o['order']);
+    $data = array();
+    if (taxonomy_exists('pa_groesse')) {
+        $map = array();
+        foreach (ml_gr_term_order() as $slug => $o) {
+            $map[$slug] = array($o['group'], $o['group_order'], $o['order']);
+        }
+        if ($map) {
+            $data['pa_groesse'] = $map;
+        }
     }
-    if (!$map) {
+    // weitere Gruppen (z. B. Kategorien, inc/kategorie-filter.php) ergaenzen das JSON ueber diesen Filter
+    $data = apply_filters('ml_term_groups', $data);
+    if (!$data) {
         return;
     }
     echo '<script type="application/json" id="mlwf-term-groups">'
-        . wp_json_encode(array('pa_groesse' => $map), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
+        . wp_json_encode($data, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
         . "</script>\n";
 }
 add_action('wp_footer', 'ml_gr_print_term_groups', 5);

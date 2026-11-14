@@ -1,0 +1,393 @@
+﻿pfad;aktion;zielkategorie;kollektion;stufe;hinweis
+Kleidung & Wearables > Anlass zum Tragen > Sport- & Aktivbekleidung;zuordnen;Textilien > Sportbekleidung;;sicher;leer (0)
+Saisonale Präsente > Katalog;streichen;;;sicher;Katalog, leer (0)
+Accessories;zuordnen;Kopfbedeckung & Accessoires > Weitere Accessoires;;Vorschlag;Accessories
+Baby;zuordnen;Textilien > Kinder & Baby;;sicher;
+Bags;haupt;Taschen & Reisen;;Vorschlag;Bags
+Beanies & Headwear;zuordnen;Kopfbedeckung & Accessoires > Beanies & Mützen;;sicher;
+Business;haupt;Textilien;;Vorschlag;Business (67): Unterkategorie je Produkt (Hemden, Blusen, Jacken, Hosen)
+Caps;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;
+Fleece;zuordnen;Textilien > Fleece & Softshell;;sicher;
+Frottier;zuordnen;Haushalt, Küche & Wellness > Frottier & Decken;;Vorschlag;Frottier
+Jackets;zuordnen;Textilien > Jacken & Westen;;sicher;
+NULL;streichen;;;sicher;NULL (4): fehlerhafte Kategorie
+Packing material;zuordnen;Verpackung & Zubehör > Verpackungsmaterial;;sicher;
+Polos;zuordnen;Textilien > Polos;;sicher;
+Pullover;zuordnen;Textilien > Sweats & Hoodies;;Vorschlag;Pullover
+Sales Support;zuordnen;Verpackung & Zubehör > Sales Support;;sicher;
+Shirts;zuordnen;Textilien > Hemden & Blusen;;Vorschlag;Shirts
+Shoes;zuordnen;Kopfbedeckung & Accessoires > Schuhe;;sicher;
+Sports;zuordnen;Textilien > Sportbekleidung;;Vorschlag;Sports
+Sweats;zuordnen;Textilien > Sweats & Hoodies;;sicher;
+T-Shirts;zuordnen;Textilien > T-Shirts;;sicher;
+Traditional Costumes;zuordnen;Textilien > Trachten;;sicher;
+Trousers/Skirts/Dresses;zuordnen;Textilien > Hosen & Shorts | Textilien > Röcke & Kleider;;Vorschlag;Trousers/Skirts/Dresses: Produkte kommen in beide
+Umbrellas;zuordnen;Taschen & Reisen > Regenschirme;;sicher;
+Underwear;zuordnen;Textilien > Unterwäsche & Socken;;sicher;
+Workwear & Safety;zuordnen;Textilien > Workwear & Sicherheit;;sicher;
+Antibakteriell;kollektion;;Hygiene & Antibakteriell;sicher;Antibakteriell, zusammen mit Hygieneschutzartikel
+Auslauf;kollektion;;Auslaufartikel;sicher;Auslauf, Entscheidung 12.11.2026: Outlet = Auslaufartikel
+BE COMPETITIVE;streichen;;;sicher;BE COMPETITIVE: wird nicht benötigt (Markus 12.11.2026)
+Büro- und Arbeitszubehör;haupt;Büro & Schreibgeräte;;sicher;
+DGT;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Reflektierende Artikel;;Vorschlag;DGT (spanische Verkehrsbehörde): Warnartikel, 1 Produkt
+Damenartikel;streichen;;;sicher;Damenartikel: Zielgruppe statt Warengruppe, Produkte stehen in ihren Warengruppen (Markus 12.11.2026)
+Freizeit und Unterhaltung;haupt;Outdoor, Sport & Freizeit;;Vorschlag;Freizeit und Unterhaltung
+Geschenke und Werbegaben;haupt;Geschenke, Events & Saisonales;;Vorschlag;Geschenke und Werbegaben, sehr allgemein
+Getränke- und Barzubehör;zuordnen;Essen & Trinken > Bar, Tee & Kaffee;;sicher;
+Haus und Dekoration;zuordnen;Haushalt, Küche & Wellness > Dekoration;;sicher;
+Heimtierzubehör;zuordnen;Haushalt, Küche & Wellness > Haustierzubehör;;sicher;
+Hygieneschutzartikel;kollektion;;Hygiene & Antibakteriell;sicher;Hygieneschutzartikel
+Hüte;zuordnen;Kopfbedeckung & Accessoires > Hüte;;sicher;
+Kappen und Hüte;zuordnen;Kopfbedeckung & Accessoires > Caps;;Vorschlag;Kappen und Hüte
+Kinder;haupt;Kinder & Spiele;;sicher;
+Landwirtschaft;zuordnen;Outdoor, Sport & Freizeit > Garten & Landwirtschaft;;Vorschlag;Landwirtschaft
+Limited Edition;kollektion;;Limited Edition;Vorschlag;Limited Edition
+Made in europe;kollektion;;Made in Europe;sicher;Schreibweise vereinheitlicht
+Marken;streichen;;;sicher;Marken, gehört nach product_brand
+Nachhaltige Artikel;kollektion;;Nachhaltig;sicher;Nachhaltige Artikel
+Novedades;kollektion;;Neuheiten;sicher;Novedades ist Spanisch, deutsch: Neuheiten
+OUTDOOR-SAISON;haupt;Outdoor, Sport & Freizeit;;Vorschlag;OUTDOOR-SAISON
+Outlet Keya;kollektion;;Auslaufartikel;sicher;Outlet Keya, wie Auslauf
+Persönliche Pflege und Pharma;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;
+Premium line;kollektion;;Premium;sicher;Premium line
+Regen und Kälte;zuordnen;Outdoor, Sport & Freizeit > Regen & Kälte;;Vorschlag;Regen und Kälte (Schirme, Regenkleidung, Schals gemischt)
+Reise;zuordnen;Taschen & Reisen > Reise-Accessoires;;Vorschlag;Reise
+Rucksäcke;zuordnen;Taschen & Reisen > Rucksäcke;;sicher;
+Schreibwaren;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;
+Sommer am Strand;zuordnen;Outdoor, Sport & Freizeit > Strand & Sommer;;sicher;
+Spain Line;streichen;;;sicher;Spain Line: wird nicht benötigt (Markus 12.11.2026)
+Spezielle Verpackung;zuordnen;Verpackung & Zubehör > Verpackungsmaterial;;sicher;
+Sport und Abenteuer;zuordnen;Outdoor, Sport & Freizeit > Sport & Fitness;;sicher;
+Sublimationslinie;kollektion;;Sublimation;sicher;Sublimationslinie
+Take Away;zuordnen;Essen & Trinken > Take Away;;sicher;
+Taschen;haupt;Taschen & Reisen;;sicher;
+Tassen, Krüge und Thermoskannen;haupt;Essen & Trinken;;Vorschlag;Tassen, Krüge und Thermoskannen (Unterkategorie je nach Produkt)
+Technologie und Zubehör;haupt;Technologie;;sicher;
+Textile Outlet;kollektion;;Auslaufartikel;sicher;Textile Outlet, wie Auslauf
+Textilien;haupt;Textilien;;sicher;
+USB STOCK;zuordnen;Technologie > USB-Sticks;;sicher;
+Uncategorized;offen;;;offen;Uncategorized (36 Produkte): Produkte prüfen
+Veranstaltungen und Party;zuordnen;Geschenke, Events & Saisonales > Veranstaltungen & Party;;sicher;
+WINTER TEXTILE;haupt;Textilien;;sicher;WINTER TEXTILE
+Weihnachten;zuordnen;Geschenke, Events & Saisonales > Weihnachten & Saisonales;;sicher;
+Werkzeug und KFZ-Zubehör;haupt;Werkzeug, Auto & Schlüsselanhänger;;sicher;
+World Cup 2026;zuordnen;Outdoor, Sport & Freizeit > Sport & Fitness;;sicher;World Cup 2026: nicht mehr als Kollektion, Produkte unter Sport & Fitness (Markus 12.11.2026)
+Büro & Schreiben;haupt;Büro & Schreibgeräte;;sicher;"Eltern; Unterkategorien entscheiden"
+Büro & Schreiben > Computer-Zubehör;zuordnen;Technologie > Computer-Zubehör;;sicher;
+Büro & Schreiben > Computer-Zubehör > Hubs;zuordnen;Technologie > Computer-Zubehör;;sicher;wie Eltern
+Büro & Schreiben > Computer-Zubehör > Smartphoneständer & -halter;zuordnen;Technologie > Smartphone-Zubehör;;sicher;
+Büro & Schreiben > Notizbücher;zuordnen;Büro & Schreibgeräte > Notizbücher;;sicher;
+Büro & Schreiben > Notizbücher > Hard Cover;zuordnen;Büro & Schreibgeräte > Notizbücher;;sicher;wie Eltern
+Büro & Schreiben > Notizbücher > Kombi-Sets;zuordnen;Büro & Schreibgeräte > Notizbücher;;sicher;wie Eltern
+Büro & Schreiben > Notizbücher > Ringgebunden (Spirale);zuordnen;Büro & Schreibgeräte > Notizbücher;;sicher;wie Eltern
+Büro & Schreiben > Notizbücher > Soft Cover;zuordnen;Büro & Schreibgeräte > Notizbücher;;sicher;wie Eltern
+Büro & Schreiben > Phone Accessoires;zuordnen;Technologie > Smartphone-Zubehör;;sicher;
+Büro & Schreiben > Phone Accessoires > Weitere;zuordnen;Technologie > Smartphone-Zubehör;;sicher;wie Eltern
+Büro & Schreiben > Portfolios;zuordnen;Büro & Schreibgeräte > Mappen & Portfolios;;sicher;
+Büro & Schreiben > Portfolios > Intelligente Mappen;zuordnen;Büro & Schreibgeräte > Mappen & Portfolios;;sicher;wie Eltern
+Büro & Schreiben > Portfolios > Konferenzmappen;zuordnen;Büro & Schreibgeräte > Mappen & Portfolios;;sicher;wie Eltern
+Büro & Schreiben > Schreiben;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;
+Büro & Schreiben > Schreiben > Accessoires & Etuis;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreiben > Bleistifte;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreiben > Geschenk-Schreibsets;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreiben > Kugelschreiber;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreiben > Multifunktionale Stifte;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreiben > Stylus-Stifte;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreiben > Textmarker;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreiben > Tintenlose Schreibgeräte;zuordnen;Büro & Schreibgeräte > Schreibgeräte;;sicher;wie Eltern
+Büro & Schreiben > Schreibtisch Accessoires;zuordnen;Büro & Schreibgeräte > Schreibtisch-Zubehör;;sicher;
+Büro & Schreiben > Schreibtisch Accessoires > Mousepads & Mouses;zuordnen;Technologie > Computer-Zubehör;;Vorschlag;Mousepads & Mouses
+Büro & Schreiben > Schreibtisch Accessoires > Pokale (Ehrentafeln) & Briefbeschwerer;zuordnen;Büro & Schreibgeräte > Schreibtisch-Zubehör;;sicher;wie Eltern
+Büro & Schreiben > Schreibtisch Accessoires > Schreibtischlampen;zuordnen;Büro & Schreibgeräte > Schreibtisch-Zubehör;;sicher;wie Eltern
+Büro & Schreiben > Schreibtisch Accessoires > Tisch- & Wanduhren;zuordnen;Büro & Schreibgeräte > Schreibtisch-Zubehör;;sicher;wie Eltern
+Büro & Schreiben > Schreibtisch Accessoires > Weitere;zuordnen;Büro & Schreibgeräte > Schreibtisch-Zubehör;;sicher;wie Eltern
+Büro & Schreiben > Schreibtisch Accessoires > Wetterstationen;zuordnen;Büro & Schreibgeräte > Schreibtisch-Zubehör;;sicher;wie Eltern
+Büro & Schreiben > Schreibtisch-Accessoires aus Papier;zuordnen;Büro & Schreibgeräte > Kalender & Haftnotizen;;sicher;
+Büro & Schreiben > Schreibtisch-Accessoires aus Papier > Notizblöcke & Haftnotizen;zuordnen;Büro & Schreibgeräte > Kalender & Haftnotizen;;sicher;wie Eltern
+Büro & Schreiben > Schreibtisch-Accessoires aus Papier > Schreibtischunterlagen & Kalender;zuordnen;Büro & Schreibgeräte > Kalender & Haftnotizen;;sicher;wie Eltern
+Getränke- & Essgeschirr;haupt;Essen & Trinken;;sicher;"Eltern; Unterkategorien entscheiden"
+Getränke- & Essgeschirr > Essgeschirr;zuordnen;Essen & Trinken > Lunchboxen & Besteck;;sicher;
+Getränke- & Essgeschirr > Essgeschirr > Bestecke;zuordnen;Essen & Trinken > Lunchboxen & Besteck;;sicher;wie Eltern
+Getränke- & Essgeschirr > Essgeschirr > Lunchboxen;zuordnen;Essen & Trinken > Lunchboxen & Besteck;;sicher;wie Eltern
+Getränke- & Essgeschirr > Essgeschirr > Trinkhalme;zuordnen;Essen & Trinken > Lunchboxen & Besteck;;sicher;wie Eltern
+Getränke- & Essgeschirr > Flaschen;zuordnen;Essen & Trinken > Flaschen;;sicher;
+Getränke- & Essgeschirr > Flaschen > Doppelwandige Flaschen;zuordnen;Essen & Trinken > Thermoskannen & Isolierbecher;;Vorschlag;doppelwandige Flaschen
+Getränke- & Essgeschirr > Flaschen > Flachmänner;zuordnen;Essen & Trinken > Flaschen;;sicher;wie Eltern
+Getränke- & Essgeschirr > Flaschen > Flaschen aus Glas;zuordnen;Essen & Trinken > Flaschen;;sicher;wie Eltern
+Getränke- & Essgeschirr > Flaschen > Isolierflaschen;zuordnen;Essen & Trinken > Thermoskannen & Isolierbecher;;Vorschlag;Isolierflaschen
+Getränke- & Essgeschirr > Flaschen > Smarte Flaschen & Sets;zuordnen;Essen & Trinken > Flaschen;;sicher;wie Eltern
+Getränke- & Essgeschirr > Flaschen > Wasser- & Sportflaschen;zuordnen;Essen & Trinken > Flaschen;;sicher;wie Eltern
+Getränke- & Essgeschirr > Gastronomie-Gläser;zuordnen;Essen & Trinken > Gläser;;sicher;
+Getränke- & Essgeschirr > Gastronomie-Gläser > Hohe Gläser;zuordnen;Essen & Trinken > Gläser;;sicher;wie Eltern
+Getränke- & Essgeschirr > Gastronomie-Gläser > Karaffen;zuordnen;Essen & Trinken > Gläser;;sicher;wie Eltern
+Getränke- & Essgeschirr > Gastronomie-Gläser > Kurze Gläser;zuordnen;Essen & Trinken > Gläser;;sicher;wie Eltern
+Getränke- & Essgeschirr > Gastronomie-Gläser > Schnapsgläser;zuordnen;Essen & Trinken > Gläser;;sicher;wie Eltern
+Getränke- & Essgeschirr > Gastronomie-Gläser > Sets;zuordnen;Essen & Trinken > Gläser;;sicher;wie Eltern
+Getränke- & Essgeschirr > Gastronomie-Gläser > Tee- & Kaffeegläser;zuordnen;Essen & Trinken > Gläser;;sicher;wie Eltern
+Getränke- & Essgeschirr > Gastronomie-Gläser > Weingläser;zuordnen;Essen & Trinken > Gläser;;sicher;wie Eltern
+Getränke- & Essgeschirr > Keramik;zuordnen;Essen & Trinken > Tassen & Becher;;sicher;
+Getränke- & Essgeschirr > Keramik > Becher;zuordnen;Essen & Trinken > Tassen & Becher;;sicher;wie Eltern
+Getränke- & Essgeschirr > Keramik > Sets;zuordnen;Essen & Trinken > Tassen & Becher;;sicher;wie Eltern
+Getränke- & Essgeschirr > Tassen & Becher;zuordnen;Essen & Trinken > Tassen & Becher;;sicher;
+Getränke- & Essgeschirr > Tassen & Becher > Becher & Tassen;zuordnen;Essen & Trinken > Tassen & Becher;;sicher;wie Eltern
+Getränke- & Essgeschirr > Tassen & Becher > Becher doppelwandig;zuordnen;Essen & Trinken > Thermoskannen & Isolierbecher;;Vorschlag;doppelwandige Becher
+Getränke- & Essgeschirr > Tassen & Becher > Becher einwandig;zuordnen;Essen & Trinken > Tassen & Becher;;sicher;wie Eltern
+Heim & Wellness;haupt;Haushalt, Küche & Wellness;;sicher;"Eltern; Unterkategorien entscheiden"
+Heim & Wellness > Handtücher & Decken;zuordnen;Haushalt, Küche & Wellness > Frottier & Decken;;sicher;
+Heim & Wellness > Handtücher & Decken > Decken;zuordnen;Haushalt, Küche & Wellness > Frottier & Decken;;sicher;wie Eltern
+Heim & Wellness > Kerzen & Düfte;zuordnen;Haushalt, Küche & Wellness > Kerzen & Düfte;;sicher;
+Heim & Wellness > Kerzen & Düfte > Kerzen;zuordnen;Haushalt, Küche & Wellness > Kerzen & Düfte;;sicher;wie Eltern
+Heim & Wellness > Kerzen & Düfte > Lufterfrischer & Raumdüfte;zuordnen;Haushalt, Küche & Wellness > Kerzen & Düfte;;sicher;wie Eltern
+Heim & Wellness > Kosmetika;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;
+Heim & Wellness > Kosmetika > Lippenbalsam;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Kosmetika > Sonnencremes;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Körperpflege;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;
+Heim & Wellness > Körperpflege > Bad Accessoires;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Körperpflege > Kulturbeutel & Kosmetiktaschen;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Körperpflege > Maniküre-Sets;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Körperpflege > Pflege-Essentials;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Körperpflege > Seifen & Gele;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Körperpflege > Spiegel;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Körperpflege > Wärme- & Kältekissen;zuordnen;Haushalt, Küche & Wellness > Körperpflege & Kosmetik;;sicher;wie Eltern
+Heim & Wellness > Minzbonbons & Süßigkeiten;zuordnen;Geschenke, Events & Saisonales > Süßigkeiten & Snacks;;sicher;
+Kinder & Spiele;haupt;Kinder & Spiele;;sicher;"Eltern; Unterkategorien entscheiden"
+Kinder & Spiele > Baby & Kleinkinder;zuordnen;Kinder & Spiele > Baby & Kleinkinder;;sicher;
+Kinder & Spiele > Plüschtiere;zuordnen;Kinder & Spiele > Plüschtiere;;sicher;
+Kinder & Spiele > Schreiben & Malen;zuordnen;Kinder & Spiele > Malen & Basteln;;sicher;
+Kinder & Spiele > Schreiben & Malen > Buntstifte;zuordnen;Kinder & Spiele > Malen & Basteln;;sicher;wie Eltern
+Kinder & Spiele > Schreiben & Malen > Malbeutel für Kinder;zuordnen;Kinder & Spiele > Malen & Basteln;;sicher;wie Eltern
+Kinder & Spiele > Schreiben & Malen > Malsets;zuordnen;Kinder & Spiele > Malen & Basteln;;sicher;wie Eltern
+Kinder & Spiele > Schreiben & Malen > Schlampermäppchen & Zubehör;zuordnen;Kinder & Spiele > Malen & Basteln;;sicher;wie Eltern
+Kinder & Spiele > Schreiben & Malen > Zeichen-Set;zuordnen;Kinder & Spiele > Malen & Basteln;;sicher;wie Eltern
+Kinder & Spiele > Spiele für drinnen;zuordnen;Kinder & Spiele > Spiele;;sicher;
+Kinder & Spiele > Spiele für drinnen > Anti-Stress;zuordnen;Kinder & Spiele > Spiele;;sicher;wie Eltern
+Kinder & Spiele > Spiele für drinnen > Geduldsspiele;zuordnen;Kinder & Spiele > Spiele;;sicher;wie Eltern
+Kinder & Spiele > Spiele für drinnen > Kartenspiele;zuordnen;Kinder & Spiele > Spiele;;sicher;wie Eltern
+Kinder & Spiele > Spiele für drinnen > Spiele für den Schreibtisch;zuordnen;Kinder & Spiele > Spiele;;sicher;wie Eltern
+Kinder & Spiele > Spiele für drinnen > Weitere;zuordnen;Kinder & Spiele > Spiele;;sicher;wie Eltern
+Kinder & Spiele > Spiele im Freien;zuordnen;Kinder & Spiele > Spiele;;sicher;
+Kinder & Spiele > Spiele im Freien > Aufblasbare Produkte;zuordnen;Kinder & Spiele > Spiele;;sicher;wie Eltern
+Kinder & Spiele > Spiele im Freien > Spiele im Freien;zuordnen;Kinder & Spiele > Spiele;;sicher;wie Eltern
+Kleidung & Wearables;haupt;Textilien;;sicher;"Eltern; Unterkategorien entscheiden"
+Kleidung & Wearables > Anlass zum Tragen;streichen;;;sicher;Sammelkategorie, Unterkategorien haben eine eigene Zuordnung
+Kleidung & Wearables > Anlass zum Tragen > Corporate- & Berufskleidung;zuordnen;Textilien > Workwear & Sicherheit;;sicher;
+Kleidung & Wearables > Christmas jumpers;zuordnen;Textilien > Sweats & Hoodies;;Vorschlag;Christmas jumpers (Pullover)
+Kleidung & Wearables > Fleece & Softshell;zuordnen;Textilien > Fleece & Softshell;;sicher;
+Kleidung & Wearables > Fleece & Softshell > Fleece;zuordnen;Textilien > Fleece & Softshell;;sicher;wie Eltern
+Kleidung & Wearables > Fleece & Softshell > Softshell;zuordnen;Textilien > Fleece & Softshell;;sicher;wie Eltern
+Kleidung & Wearables > Hemden;zuordnen;Textilien > Hemden & Blusen;;sicher;
+Kleidung & Wearables > Hosen & Shorts;zuordnen;Textilien > Hosen & Shorts;;sicher;
+Kleidung & Wearables > Hosen & Shorts > Bermudas & Shorts;zuordnen;Textilien > Hosen & Shorts;;sicher;wie Eltern
+Kleidung & Wearables > Hosen & Shorts > Hosen;zuordnen;Textilien > Hosen & Shorts;;sicher;wie Eltern
+Kleidung & Wearables > Kids;zuordnen;Textilien > Kinder & Baby;;sicher;
+Kleidung & Wearables > Marken;streichen;;;sicher;Marke, gehört nach product_brand
+Kleidung & Wearables > Marken > ATF;streichen;;;sicher;"Marke, gehört nach product_brand; wie Eltern"
+Kleidung & Wearables > Marken > NEOBLU;streichen;;;sicher;"Marke, gehört nach product_brand; wie Eltern"
+Kleidung & Wearables > Marken > RTP-Bekleidung;streichen;;;sicher;"Marke, gehört nach product_brand; wie Eltern"
+Kleidung & Wearables > Outerwear;zuordnen;Textilien > Jacken & Westen;;sicher;
+Kleidung & Wearables > Outerwear > Bodywarmer/Westen;zuordnen;Textilien > Jacken & Westen;;sicher;wie Eltern
+Kleidung & Wearables > Outerwear > Jacken;zuordnen;Textilien > Jacken & Westen;;sicher;wie Eltern
+Kleidung & Wearables > Outerwear > Parkas;zuordnen;Textilien > Jacken & Westen;;sicher;wie Eltern
+Kleidung & Wearables > Outerwear > Windjacken;zuordnen;Textilien > Jacken & Westen;;sicher;wie Eltern
+Kleidung & Wearables > Polos;zuordnen;Textilien > Polos;;sicher;
+Kleidung & Wearables > Polos > Long sleeves;zuordnen;Textilien > Polos;;sicher;wie Eltern
+Kleidung & Wearables > Polos > Short sleeves;zuordnen;Textilien > Polos;;sicher;wie Eltern
+Kleidung & Wearables > Röcke & Kleider;zuordnen;Textilien > Röcke & Kleider;;sicher;
+Kleidung & Wearables > Suit;zuordnen;Textilien > Jacken & Westen;;Vorschlag;Suit (Sakkos)
+Kleidung & Wearables > Suit > Jackets;zuordnen;Textilien > Jacken & Westen;;Vorschlag;"Suit (Sakkos); wie Eltern"
+Kleidung & Wearables > Sweatshirts;zuordnen;Textilien > Sweats & Hoodies;;sicher;
+Kleidung & Wearables > Sweatshirts > Durchgehender Reißverschluss;zuordnen;Textilien > Sweats & Hoodies;;sicher;wie Eltern
+Kleidung & Wearables > Sweatshirts > Halber Reißverschluss;zuordnen;Textilien > Sweats & Hoodies;;sicher;wie Eltern
+Kleidung & Wearables > Sweatshirts > Hoodie;zuordnen;Textilien > Sweats & Hoodies;;sicher;wie Eltern
+Kleidung & Wearables > Sweatshirts > Rundhalsausschnitt;zuordnen;Textilien > Sweats & Hoodies;;sicher;wie Eltern
+Kleidung & Wearables > T-Shirts;zuordnen;Textilien > T-Shirts;;sicher;
+Kleidung & Wearables > T-Shirts > Long sleeves;zuordnen;Textilien > T-Shirts;;sicher;wie Eltern
+Kleidung & Wearables > T-Shirts > Short sleeves;zuordnen;Textilien > T-Shirts;;sicher;wie Eltern
+Kleidung & Wearables > T-Shirts > Tanktops;zuordnen;Textilien > T-Shirts;;sicher;wie Eltern
+Kleidung & Wearables > Textile Accessoires;zuordnen;Kopfbedeckung & Accessoires > Weitere Accessoires;;sicher;
+Kleidung & Wearables > Textile Accessoires > Krawatte;zuordnen;Kopfbedeckung & Accessoires > Weitere Accessoires;;sicher;wie Eltern
+Kleidung & Wearables > Textile Accessoires > Lätzchen;zuordnen;Textilien > Kinder & Baby;;Vorschlag;Lätzchen
+Kleidung & Wearables > Textile Accessoires > Others;zuordnen;Kopfbedeckung & Accessoires > Weitere Accessoires;;sicher;wie Eltern
+Kleidung & Wearables > Textile Accessoires > Socken;zuordnen;Textilien > Unterwäsche & Socken;;sicher;
+Kopf- & Multiwear;haupt;Kopfbedeckung & Accessoires;;sicher;"Eltern; Unterkategorien entscheiden"
+Kopf- & Multiwear > Beanies;zuordnen;Kopfbedeckung & Accessoires > Beanies & Mützen;;sicher;
+Kopf- & Multiwear > Beanies > Beanies;zuordnen;Kopfbedeckung & Accessoires > Beanies & Mützen;;sicher;wie Eltern
+Kopf- & Multiwear > Caps & Hüte;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;
+Kopf- & Multiwear > Caps & Hüte > Baseball Caps 5 Panels;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;wie Eltern
+Kopf- & Multiwear > Caps & Hüte > Baseball Caps 6 Panels;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;wie Eltern
+Kopf- & Multiwear > Caps & Hüte > Bucket Hats;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;wie Eltern
+Kopf- & Multiwear > Caps & Hüte > Hüte;zuordnen;Kopfbedeckung & Accessoires > Hüte;;sicher;
+Kopf- & Multiwear > Caps & Hüte > Performance Caps;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;wie Eltern
+Kopf- & Multiwear > Caps & Hüte > Sonnenvisore;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;wie Eltern
+Kopf- & Multiwear > Caps & Hüte > Trucker Caps;zuordnen;Kopfbedeckung & Accessoires > Caps;;sicher;wie Eltern
+Kopf- & Multiwear > Multifunktions-Schals;zuordnen;Kopfbedeckung & Accessoires > Schals & Handschuhe;;sicher;
+Kopf- & Multiwear > Multifunktions-Schals > Multifunktions-Schals;zuordnen;Kopfbedeckung & Accessoires > Schals & Handschuhe;;sicher;wie Eltern
+Kopf- & Multiwear > Multifunktions-Schals > Stirnlampen;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;Vorschlag;Stirnlampen
+Kopf- & Multiwear > Schals & Handschuhe;zuordnen;Kopfbedeckung & Accessoires > Schals & Handschuhe;;sicher;
+Kopf- & Multiwear > Schals & Handschuhe > Handschuhe;zuordnen;Kopfbedeckung & Accessoires > Schals & Handschuhe;;sicher;wie Eltern
+Kopf- & Multiwear > Schals & Handschuhe > Schals;zuordnen;Kopfbedeckung & Accessoires > Schals & Handschuhe;;sicher;wie Eltern
+Kopf- & Multiwear > Schuhe;zuordnen;Kopfbedeckung & Accessoires > Schuhe;;sicher;
+Kopf- & Multiwear > Schuhe > Slipper & Schlappen;zuordnen;Kopfbedeckung & Accessoires > Schuhe;;sicher;wie Eltern
+Kopf- & Multiwear > Schuhe > Sneakers;zuordnen;Kopfbedeckung & Accessoires > Schuhe;;sicher;wie Eltern
+Kopf- & Multiwear > Schuhe > Socks;zuordnen;Textilien > Unterwäsche & Socken;;sicher;
+Küche & Zubehör;haupt;Haushalt, Küche & Wellness;;sicher;"Eltern; Unterkategorien entscheiden"
+Küche & Zubehör > Geschenksets;zuordnen;Geschenke, Events & Saisonales > Geschenksets;;sicher;
+Küche & Zubehör > Geschenksets > Cocktail-Sets & Zubehör;zuordnen;Essen & Trinken > Bar, Tee & Kaffee;;Vorschlag;Cocktail-Sets
+Küche & Zubehör > Geschenksets > Käse-Sets;zuordnen;Geschenke, Events & Saisonales > Geschenksets;;sicher;wie Eltern
+Küche & Zubehör > Geschenksets > Weinsets & Zubehör;zuordnen;Geschenke, Events & Saisonales > Geschenksets;;sicher;wie Eltern
+Küche & Zubehör > Heim- & Gastronomietextilien;zuordnen;Haushalt, Küche & Wellness > Küchen- & Tischtextilien;;sicher;
+Küche & Zubehör > Heim- & Gastronomietextilien > Küchen- & Tischwäsche;zuordnen;Haushalt, Küche & Wellness > Küchen- & Tischtextilien;;sicher;wie Eltern
+Küche & Zubehör > Heim- & Gastronomietextilien > Schürzen & Topfhandschuhe;zuordnen;Haushalt, Küche & Wellness > Küchen- & Tischtextilien;;sicher;wie Eltern
+Küche & Zubehör > Heim- & Gastronomietextilien > Weitere;zuordnen;Haushalt, Küche & Wellness > Küchen- & Tischtextilien;;sicher;wie Eltern
+Küche & Zubehör > Küchenutensilien;zuordnen;Haushalt, Küche & Wellness > Küchenhelfer;;sicher;
+Küche & Zubehör > Küchenutensilien > Flaschenöffner & Verschlüsse;zuordnen;Essen & Trinken > Bar, Tee & Kaffee;;Vorschlag;Flaschenöffner & Verschlüsse
+Küche & Zubehör > Küchenutensilien > Küchenhelfer;zuordnen;Haushalt, Küche & Wellness > Küchenhelfer;;sicher;wie Eltern
+Küche & Zubehör > Küchenutensilien > Küchenmesser;zuordnen;Haushalt, Küche & Wellness > Küchenhelfer;;sicher;wie Eltern
+Küche & Zubehör > Küchenutensilien > Schneidebretter;zuordnen;Haushalt, Küche & Wellness > Küchenhelfer;;sicher;wie Eltern
+Küche & Zubehör > Küchenutensilien > Untersetzer;zuordnen;Haushalt, Küche & Wellness > Küchenhelfer;;sicher;wie Eltern
+Küche & Zubehör > Küchenutensilien > Weitere;zuordnen;Haushalt, Küche & Wellness > Küchenhelfer;;sicher;wie Eltern
+Küche & Zubehör > Tee & Kaffee;zuordnen;Essen & Trinken > Bar, Tee & Kaffee;;Vorschlag;Tee & Kaffee
+Lanyards & Veranstaltungen;haupt;Kopfbedeckung & Accessoires;;sicher;"Eltern; Unterkategorien entscheiden"
+Lanyards & Veranstaltungen > Anstecknadeln & Buttons;zuordnen;Kopfbedeckung & Accessoires > Badges & Buttons;;sicher;
+Lanyards & Veranstaltungen > Anstecknadeln & Buttons > Buttons;zuordnen;Kopfbedeckung & Accessoires > Badges & Buttons;;sicher;wie Eltern
+Lanyards & Veranstaltungen > Armbänder;zuordnen;Kopfbedeckung & Accessoires > Weitere Accessoires;;Vorschlag;Armbänder
+Lanyards & Veranstaltungen > Badges & Halter;zuordnen;Kopfbedeckung & Accessoires > Badges & Buttons;;sicher;
+Lanyards & Veranstaltungen > Lanyards;zuordnen;Kopfbedeckung & Accessoires > Lanyards;;sicher;
+Lanyards & Veranstaltungen > Lanyards > Handgelenk- & Handyhalter;zuordnen;Kopfbedeckung & Accessoires > Lanyards;;sicher;wie Eltern
+Lanyards & Veranstaltungen > Lanyards > Kordel-Lanyards;zuordnen;Kopfbedeckung & Accessoires > Lanyards;;sicher;wie Eltern
+Lanyards & Veranstaltungen > Lanyards > Lanyards mit Ausweishalter;zuordnen;Kopfbedeckung & Accessoires > Lanyards;;sicher;wie Eltern
+Lanyards & Veranstaltungen > Lanyards > Siebdruck-Lanyards;zuordnen;Kopfbedeckung & Accessoires > Lanyards;;sicher;wie Eltern
+Lanyards & Veranstaltungen > Lanyards > Spezielle Lanyards;zuordnen;Kopfbedeckung & Accessoires > Lanyards;;sicher;wie Eltern
+Lanyards & Veranstaltungen > Sonnenbrillen;zuordnen;Kopfbedeckung & Accessoires > Sonnenbrillen;;sicher;
+Lanyards & Veranstaltungen > Sonnenbrillen > Reinigungstücher & Etuis;zuordnen;Kopfbedeckung & Accessoires > Sonnenbrillen;;sicher;wie Eltern
+Outdoor & Freizeit;haupt;Outdoor, Sport & Freizeit;;sicher;"Eltern; Unterkategorien entscheiden"
+Outdoor & Freizeit > Gartenarbeiten;zuordnen;Outdoor, Sport & Freizeit > Garten & Landwirtschaft;;sicher;
+Outdoor & Freizeit > Gartenarbeiten > Gartenwerkzeug;zuordnen;Outdoor, Sport & Freizeit > Garten & Landwirtschaft;;sicher;wie Eltern
+Outdoor & Freizeit > Gartenarbeiten > Pflanzen & Saatgut;zuordnen;Outdoor, Sport & Freizeit > Garten & Landwirtschaft;;sicher;wie Eltern
+Outdoor & Freizeit > Grillen;zuordnen;Outdoor, Sport & Freizeit > Picknick, Camping & Grillen;;sicher;
+Outdoor & Freizeit > Hängematten & Klappstühle;zuordnen;Outdoor, Sport & Freizeit > Picknick, Camping & Grillen;;sicher;
+Outdoor & Freizeit > Picknick & Camping;zuordnen;Outdoor, Sport & Freizeit > Picknick, Camping & Grillen;;sicher;
+Outdoor & Freizeit > Sonnenbrillen;zuordnen;Kopfbedeckung & Accessoires > Sonnenbrillen;;sicher;
+Outdoor & Freizeit > Sonnenbrillen > Sonnenbrillen;zuordnen;Kopfbedeckung & Accessoires > Sonnenbrillen;;sicher;wie Eltern
+Outdoor & Freizeit > Sport & Gesundheit;zuordnen;Outdoor, Sport & Freizeit > Sport & Fitness;;sicher;
+Outdoor & Freizeit > Sport & Gesundheit > Fahrrad-Zubehör;zuordnen;Outdoor, Sport & Freizeit > Fahrrad & Laufen;;sicher;
+Outdoor & Freizeit > Sport & Gesundheit > Fitness- & Yoga-Zubehör;zuordnen;Outdoor, Sport & Freizeit > Sport & Fitness;;sicher;wie Eltern
+Outdoor & Freizeit > Sport & Gesundheit > Fußball-Artikel;zuordnen;Outdoor, Sport & Freizeit > Sport & Fitness;;sicher;wie Eltern
+Outdoor & Freizeit > Sport & Gesundheit > Lauf- & Wanderzubehör;zuordnen;Outdoor, Sport & Freizeit > Fahrrad & Laufen;;sicher;
+Outdoor & Freizeit > Sport & Gesundheit > Medaillen;zuordnen;Outdoor, Sport & Freizeit > Sport & Fitness;;sicher;wie Eltern
+Outdoor & Freizeit > Sport & Gesundheit > Multifunktions-Schals;zuordnen;Kopfbedeckung & Accessoires > Schals & Handschuhe;;sicher;
+Outdoor & Freizeit > Sport & Gesundheit > Reflektierende Produkte;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Reflektierende Artikel;;sicher;
+Outdoor & Freizeit > Sport & Gesundheit > Smartphone-Hüllen;zuordnen;Technologie > Smartphone-Zubehör;;Vorschlag;Smartphone-Hüllen
+Outdoor & Freizeit > Sport & Gesundheit > Sporthandtücher;zuordnen;Outdoor, Sport & Freizeit > Sport & Fitness;;sicher;wie Eltern
+Outdoor & Freizeit > Strandartikel;zuordnen;Outdoor, Sport & Freizeit > Strand & Sommer;;sicher;
+Outdoor & Freizeit > Strandartikel > Handtücher für Strand & Hamam;zuordnen;Outdoor, Sport & Freizeit > Strand & Sommer;;sicher;wie Eltern
+Outdoor & Freizeit > Strandartikel > Strandspiele;zuordnen;Outdoor, Sport & Freizeit > Strand & Sommer;;sicher;wie Eltern
+Outdoor & Freizeit > Veranstaltungen im Freien;zuordnen;Geschenke, Events & Saisonales > Veranstaltungen & Party;;Vorschlag;Fächer, Sitzkissen
+Outdoor & Freizeit > Veranstaltungen im Freien > Fächer;zuordnen;Geschenke, Events & Saisonales > Veranstaltungen & Party;;Vorschlag;"Fächer, Sitzkissen; wie Eltern"
+Outdoor & Freizeit > Veranstaltungen im Freien > Sitzkissen;zuordnen;Geschenke, Events & Saisonales > Veranstaltungen & Party;;Vorschlag;"Fächer, Sitzkissen; wie Eltern"
+Regenschirme & Regenkleidung;streichen;;;sicher;Sammelkategorie, Unterkategorien haben eine eigene Zuordnung
+Regenschirme & Regenkleidung > Regenkleidung;zuordnen;Textilien > Jacken & Westen;;Vorschlag;Regenkleidung (Ponchos, Regenmäntel)
+Regenschirme & Regenkleidung > Regenkleidung > Ponchos;zuordnen;Textilien > Jacken & Westen;;Vorschlag;"Regenkleidung (Ponchos, Regenmäntel); wie Eltern"
+Regenschirme & Regenkleidung > Regenkleidung > Regenmäntel;zuordnen;Textilien > Jacken & Westen;;Vorschlag;"Regenkleidung (Ponchos, Regenmäntel); wie Eltern"
+Regenschirme & Regenkleidung > Regenschirme;zuordnen;Taschen & Reisen > Regenschirme;;sicher;
+Regenschirme & Regenkleidung > Regenschirme > Faltbare Regenschirme;zuordnen;Taschen & Reisen > Regenschirme;;sicher;wie Eltern
+Regenschirme & Regenkleidung > Regenschirme > Sonnenschirme;zuordnen;Taschen & Reisen > Regenschirme;;sicher;wie Eltern
+Regenschirme & Regenkleidung > Regenschirme > Standard Regenschirme;zuordnen;Taschen & Reisen > Regenschirme;;sicher;wie Eltern
+Regenschirme & Regenkleidung > Regenschirme > Windbeständige Regenschirme;zuordnen;Taschen & Reisen > Regenschirme;;sicher;wie Eltern
+Saisonale Präsente;haupt;Geschenke, Events & Saisonales;;sicher;"Eltern; Unterkategorien entscheiden"
+Saisonale Präsente > Dekoration;zuordnen;Geschenke, Events & Saisonales > Weihnachten & Saisonales;;Vorschlag;saisonale Dekoration
+Saisonale Präsente > Getränke- & Essgeschirr;zuordnen;Geschenke, Events & Saisonales > Weihnachten & Saisonales;;Vorschlag;saisonales Geschirr
+Saisonale Präsente > Kerzen & Lichter;zuordnen;Haushalt, Küche & Wellness > Kerzen & Düfte;;sicher;
+Saisonale Präsente > Wearables;zuordnen;Geschenke, Events & Saisonales > Weihnachten & Saisonales;;Vorschlag;saisonale Wearables
+Saisonale Präsente > Weitere;zuordnen;Geschenke, Events & Saisonales > Weihnachten & Saisonales;;Vorschlag;Weitere
+Taschen & Reisen;haupt;Taschen & Reisen;;sicher;"Eltern; Unterkategorien entscheiden"
+Taschen & Reisen > Beutel mit Kordelzug;zuordnen;Taschen & Reisen > Einkaufstaschen & Beutel;;sicher;
+Taschen & Reisen > Business bags;zuordnen;Taschen & Reisen > Business-Taschen & Laptophüllen;;sicher;
+Taschen & Reisen > Business bags > Dokumententaschen;zuordnen;Taschen & Reisen > Business-Taschen & Laptophüllen;;sicher;wie Eltern
+Taschen & Reisen > Business bags > Laptop-Hüllen;zuordnen;Taschen & Reisen > Business-Taschen & Laptophüllen;;sicher;wie Eltern
+Taschen & Reisen > Business bags > Laptop-Taschen;zuordnen;Taschen & Reisen > Business-Taschen & Laptophüllen;;sicher;wie Eltern
+Taschen & Reisen > Einkaufstaschen;zuordnen;Taschen & Reisen > Einkaufstaschen & Beutel;;sicher;
+Taschen & Reisen > Einkaufstaschen > Faltbare Taschen;zuordnen;Taschen & Reisen > Einkaufstaschen & Beutel;;sicher;wie Eltern
+Taschen & Reisen > Einkaufstaschen > Große Einkaufstaschen;zuordnen;Taschen & Reisen > Einkaufstaschen & Beutel;;sicher;wie Eltern
+Taschen & Reisen > Einkaufstaschen > Lebensmittelbeutel;zuordnen;Taschen & Reisen > Einkaufstaschen & Beutel;;sicher;wie Eltern
+Taschen & Reisen > Einkaufstaschen > Tragetaschen;zuordnen;Taschen & Reisen > Einkaufstaschen & Beutel;;sicher;wie Eltern
+Taschen & Reisen > Geschenktüten;zuordnen;Verpackung & Zubehör > Geschenktüten;;sicher;
+Taschen & Reisen > Geschenktüten > Geschenktüten;zuordnen;Verpackung & Zubehör > Geschenktüten;;sicher;wie Eltern
+Taschen & Reisen > Geschenktüten > Papiertüten;zuordnen;Verpackung & Zubehör > Geschenktüten;;sicher;wie Eltern
+Taschen & Reisen > Reise Accessoires;zuordnen;Taschen & Reisen > Reise-Accessoires;;sicher;
+Taschen & Reisen > Reise Accessoires > Adapter SKROSS;zuordnen;Taschen & Reisen > Reise-Accessoires;;sicher;wie Eltern
+Taschen & Reisen > Reise Accessoires > Decken & Kissen;zuordnen;Taschen & Reisen > Reise-Accessoires;;sicher;wie Eltern
+Taschen & Reisen > Reise Accessoires > Geldbörsen & RFID;zuordnen;Taschen & Reisen > Reise-Accessoires;;sicher;wie Eltern
+Taschen & Reisen > Reise Accessoires > Gepäckanhänger;zuordnen;Taschen & Reisen > Reise-Accessoires;;sicher;wie Eltern
+Taschen & Reisen > Reise Accessoires > Kulturbeutel;zuordnen;Taschen & Reisen > Reise-Accessoires;;Vorschlag;Kulturbeutel (auch unter Körperpflege & Kosmetik denkbar)
+Taschen & Reisen > Reise Accessoires > Reise Accessoires;zuordnen;Taschen & Reisen > Reise-Accessoires;;sicher;wie Eltern
+Taschen & Reisen > Reisetaschen & Trolleys;zuordnen;Taschen & Reisen > Reisetaschen & Trolleys;;sicher;
+Taschen & Reisen > Reisetaschen & Trolleys > Reisetaschen;zuordnen;Taschen & Reisen > Reisetaschen & Trolleys;;sicher;wie Eltern
+Taschen & Reisen > Reisetaschen & Trolleys > Shopping-Trolleys;zuordnen;Taschen & Reisen > Reisetaschen & Trolleys;;sicher;wie Eltern
+Taschen & Reisen > Rucksäcke;zuordnen;Taschen & Reisen > Rucksäcke;;sicher;
+Taschen & Reisen > Rucksäcke > Anti-theft backpacks;zuordnen;Taschen & Reisen > Rucksäcke;;sicher;wie Eltern
+Taschen & Reisen > Rucksäcke > Laptop-Rucksäcke;zuordnen;Taschen & Reisen > Rucksäcke;;sicher;wie Eltern
+Taschen & Reisen > Rucksäcke > Reflektierende Taschen;zuordnen;Taschen & Reisen > Rucksäcke;;sicher;wie Eltern
+Taschen & Reisen > Rucksäcke > Rucksäcke;zuordnen;Taschen & Reisen > Rucksäcke;;sicher;wie Eltern
+Taschen & Reisen > Sport- & Outdoor-Taschen;zuordnen;Taschen & Reisen > Sport- & Kühltaschen;;sicher;
+Taschen & Reisen > Sport- & Outdoor-Taschen > Gürteltaschen & Crossbody-Taschen;zuordnen;Taschen & Reisen > Sport- & Kühltaschen;;sicher;wie Eltern
+Taschen & Reisen > Sport- & Outdoor-Taschen > Kühltaschen;zuordnen;Taschen & Reisen > Sport- & Kühltaschen;;sicher;wie Eltern
+Taschen & Reisen > Sport- & Outdoor-Taschen > Sport- & Turnbeutel;zuordnen;Taschen & Reisen > Sport- & Kühltaschen;;sicher;wie Eltern
+Taschen & Reisen > Sport- & Outdoor-Taschen > Strandtaschen;zuordnen;Taschen & Reisen > Sport- & Kühltaschen;;sicher;wie Eltern
+Taschen & Reisen > Sport- & Outdoor-Taschen > Wasserfeste Taschen;zuordnen;Taschen & Reisen > Sport- & Kühltaschen;;sicher;wie Eltern
+Technologie;haupt;Technologie;;sicher;"Eltern; Unterkategorien entscheiden"
+Technologie > AA/AAA-Batterien;zuordnen;Technologie > Smart-Geräte & Batterien;;sicher;
+Technologie > Kabellose Ladegeräte;zuordnen;Technologie > Ladegeräte & Kabel;;sicher;
+Technologie > Kabellose Ladegeräte > Kabellose Ladegeräte;zuordnen;Technologie > Ladegeräte & Kabel;;sicher;wie Eltern
+Technologie > Kabellose Ladegeräte > Kfz-Ladegeräte;zuordnen;Technologie > Ladegeräte & Kabel;;sicher;wie Eltern
+Technologie > Kabellose Ladegeräte > Magnetische Ladegeräte;zuordnen;Technologie > Ladegeräte & Kabel;;sicher;wie Eltern
+Technologie > Kabellose Ladegeräte > Multifunktionale Ladegeräte;zuordnen;Technologie > Ladegeräte & Kabel;;sicher;wie Eltern
+Technologie > Kabellose Ladegeräte > Sets;zuordnen;Technologie > Ladegeräte & Kabel;;sicher;wie Eltern
+Technologie > Lautsprecher & Ohrhörer;zuordnen;Technologie > Lautsprecher & Kopfhörer;;sicher;
+Technologie > Lautsprecher & Ohrhörer > Kopfhörer;zuordnen;Technologie > Lautsprecher & Kopfhörer;;sicher;wie Eltern
+Technologie > Lautsprecher & Ohrhörer > Lautsprecher;zuordnen;Technologie > Lautsprecher & Kopfhörer;;sicher;wie Eltern
+Technologie > Lautsprecher & Ohrhörer > Multifunktionale Lautsprecher;zuordnen;Technologie > Lautsprecher & Kopfhörer;;sicher;wie Eltern
+Technologie > Lautsprecher & Ohrhörer > Ohrhörer/TWS;zuordnen;Technologie > Lautsprecher & Kopfhörer;;sicher;wie Eltern
+Technologie > Phone Accessoires;zuordnen;Technologie > Smartphone-Zubehör;;sicher;
+Technologie > Phone Accessoires > Handyketten & -bänder;zuordnen;Technologie > Smartphone-Zubehör;;sicher;wie Eltern
+Technologie > Phone Accessoires > Kabel;zuordnen;Technologie > Ladegeräte & Kabel;;Vorschlag;Kabel
+Technologie > Phone Accessoires > Smartphoneständer & -halter;zuordnen;Technologie > Smartphone-Zubehör;;sicher;wie Eltern
+Technologie > Phone Accessoires > Weitere;zuordnen;Technologie > Smartphone-Zubehör;;sicher;wie Eltern
+Technologie > Powerbanks;zuordnen;Technologie > Powerbanks;;sicher;
+Technologie > Powerbanks > Geringe Kapazität ≥2.000;zuordnen;Technologie > Powerbanks;;sicher;wie Eltern
+Technologie > Powerbanks > Hohe Kapazität ≥8.000;zuordnen;Technologie > Powerbanks;;sicher;wie Eltern
+Technologie > Powerbanks > Mittlere Kapazität ≥4.000;zuordnen;Technologie > Powerbanks;;sicher;wie Eltern
+Technologie > Powerbanks > Multifunktional;zuordnen;Technologie > Powerbanks;;sicher;wie Eltern
+Technologie > Powerbanks > Powerbank mit kabelloser Ladestation;zuordnen;Technologie > Powerbanks;;sicher;wie Eltern
+Technologie > Powerbanks > Solar;zuordnen;Technologie > Powerbanks;;sicher;wie Eltern
+Technologie > Smart Finder;zuordnen;Technologie > Smart-Geräte & Batterien;;sicher;
+Technologie > Smartwatches;zuordnen;Technologie > Smart-Geräte & Batterien;;sicher;
+Technologie > USB-Flash-Laufwerke;zuordnen;Technologie > USB-Sticks;;sicher;
+Werkzeuge & Schlüsselanhänger;haupt;Werkzeug, Auto & Schlüsselanhänger;;sicher;"Eltern; Unterkategorien entscheiden"
+Werkzeuge & Schlüsselanhänger > Autozubehör;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;
+Werkzeuge & Schlüsselanhänger > Autozubehör > Auto-Decken;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Autozubehör > Auto-Lufterfrischer;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Autozubehör > Eiskratzer;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Autozubehör > Kfz-Sicherheits-Werkzeuge;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Autozubehör > Kfz-Smartphone-Halter & Ladegeräte;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Autozubehör > Sonnenschutz;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Autozubehör > Weitere;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Autozubehör;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Reflektierende Artikel;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Reflektierende Artikel;;sicher;
+Werkzeuge & Schlüsselanhänger > Reflektierende Artikel > Reflektierende Artikel;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Reflektierende Artikel;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Reflektierende Artikel > Sicherheitswesten;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Reflektierende Artikel;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Basic Schlüsselanhänger;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Einkaufswagenchip-Schlüsselanhänger;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Intelligente Keyfinder & Alarme;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Multifunktionale Schlüsselanhänger;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Reflektierende Schlüsselanhänger;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Schlüsselanhänger mit Taschenlampe;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Schlüsselanhänger mit Öffner;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Schlüsselanhänger > Textile Schlüsselanhänger;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Schlüsselanhänger;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Werkzeuge & Taschenlampen;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;sicher;
+Werkzeuge & Schlüsselanhänger > Werkzeuge & Taschenlampen > Dynamo & Solar-Taschenlampen;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Werkzeuge & Taschenlampen > Maßbänder;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Werkzeuge & Taschenlampen > Multi-Tools;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Werkzeuge & Taschenlampen > Taschenlampen;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Werkzeuge & Taschenlampen > Taschenmesser;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;sicher;wie Eltern
+Werkzeuge & Schlüsselanhänger > Werkzeuge & Taschenlampen > Werkzeugsets & andere Werkzeuge;zuordnen;Werkzeug, Auto & Schlüsselanhänger > Werkzeuge & Taschenlampen;;sicher;wie Eltern
