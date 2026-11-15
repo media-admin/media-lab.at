@@ -141,12 +141,17 @@
     // Dritte Ribbon-Ebene (nach .onsale und .ml-product-badge).
     .ml-product-badge {
         position:       absolute !important;
-        top:            calc(#{$spacing-3} + 28px) !important;
+        // Ohne Sale-Badge: gleiche Oberkante und Höhe wie das Wunschlisten-Herz (.mlw-add-to-wishlist--loop)
+        top:            $spacing-3 !important;
+        display:        inline-flex !important;
+        align-items:    center !important;
+        height:         36px !important;
+        line-height:    1 !important;
         left:           $spacing-3 !important;
         z-index:        2 !important;
         font-size:      var(--text-xs) !important;
         font-weight:    $font-weight-bold !important;
-        padding:        4px $spacing-2 !important;
+        padding:        0 $spacing-2 !important;
         border-radius:  $radius-sm !important;
         text-transform: uppercase !important;
         letter-spacing: 0.5px !important;
@@ -157,6 +162,13 @@
         &.ml-product-badge--bestseller,
         &.ml-product-badge--limited,
         &.ml-product-badge--eco        { background: $color-gray-400 !important; }
+    }
+
+    // Mit Sale-Badge: Badge darunter (wie bisher), damit sich beide nicht überdecken
+    &:has(.onsale) .ml-product-badge {
+        top:     calc(#{$spacing-3} + 28px) !important;
+        height:  auto !important;
+        padding: 4px $spacing-2 !important;
     }
 
     .ml-availability-badge {
