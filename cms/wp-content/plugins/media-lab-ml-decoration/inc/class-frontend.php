@@ -113,6 +113,7 @@ class ML_Deco_Frontend {
 		add_filter( 'woocommerce_product_tabs', [ __CLASS__, 'tabs' ], 25 );
 		// Farbcode der gewählten Variante (MidOcean) an die Variationsdaten hängen: die Positionsbilder folgen der Farbe
 		add_filter( 'woocommerce_available_variation', [ __CLASS__, 'variation_color' ], 10, 3 );
+		add_filter( 'body_class', [ __CLASS__, 'body_class' ] );
 		add_shortcode( 'ml_decoration', [ __CLASS__, 'shortcode' ] );
 		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'assets' ] );
 	}
@@ -130,6 +131,23 @@ class ML_Deco_Frontend {
 			},
 		];
 		return $tabs;
+	}
+
+	/**
+	 * Produkte mit Veredelung: Klasse mld-wide-tabs, damit der Tab-Bereich über die volle Breite läuft (Layout in decoration.css:
+	 * Galerie und Zusammenfassung oben, Veredelung darunter). Abschaltbar per Filter ml_deco_wide_tabs.
+	 *
+	 * @param mixed $classes Body-Klassen.
+	 */
+	public static function body_class( $classes ) {
+		if ( ! is_array( $classes ) || ! function_exists( 'is_product' ) || ! is_product() ) {
+			return $classes;
+		}
+		$id = (int) get_queried_object_id();
+		if ( $id && ML_Deco_Render::available( $id ) && apply_filters( 'ml_deco_wide_tabs', true, $id ) ) {
+			$classes[] = 'mld-wide-tabs';
+		}
+		return $classes;
 	}
 
 	/** [ml_decoration id="123"] - ohne id das aktuelle Produkt. Für Themes ohne Tabs. */

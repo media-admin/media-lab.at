@@ -792,3 +792,14 @@
 		text-align: left;
 	}
 }
+
+/* Seitenlayout: Das Theme (Opt-in "Tabs unter der Galerie") legt Tabs links unter die Galerie. Mit Veredelung bekommt der
+   Tab-Bereich die volle Breite, die Zusammenfassung bleibt neben der Galerie. Gilt nur dort, wo das Theme ein Raster nutzt;
+   sonst haben grid-column und grid-row keine Wirkung. */
+.single-product.mlw-tabs-under-gallery.mld-wide-tabs div.product > .woocommerce-tabs {
+	grid-column: 1 / -1;
+}
+
+.single-product.mlw-tabs-under-gallery.mld-wide-tabs div.product > .summary {
+	grid-row: 1;
+}
