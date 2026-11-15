@@ -351,6 +351,9 @@
 			inArea.step = '0.5';
 			inArea.min = '1';
 			var wrapArea = field( t.motifArea, inArea, true );
+			// Motivmaße und Logo teilen sich eine Zeile (Desktop nebeneinander, Smartphone untereinander)
+			var extras = el( 'div', 'mld-calc__extras' );
+			extras.hidden = true;
 				// Motivmaße: Breite und Höhe in cm (höchstens die Maße der Position), die Fläche ergibt sich daraus
 				var wrapDims = null;
 				var inW = null;
@@ -385,10 +388,17 @@
 					dimsNote = el( 'p', 'mld-calc__dims-note' );
 					dimsNote.setAttribute( 'aria-live', 'polite' );
 					wrapDims.appendChild( dimsNote );
-					row.appendChild( wrapDims );
+					extras.appendChild( wrapDims );
 				}
 
-				function round1( v ) {
+				/** Zeile mit Motivmaßen/Logo nur zeigen, wenn mindestens eines davon sichtbar ist. */
+			function syncExtras() {
+				extras.hidden = ! Array.prototype.some.call( extras.children, function ( c ) {
+					return ! c.hidden;
+				} );
+			}
+
+			function round1( v ) {
 					return Math.round( v * 10 ) / 10;
 				}
 
@@ -822,7 +832,10 @@
 			}
 
 			controls[ pi ] = {
-				refreshLogo: refreshLogo,
+				refreshLogo: function () {
+					refreshLogo();
+					syncExtras();
+				},
 				clear: function () {
 					resetLogo();
 					ps.techId = '';
@@ -858,8 +871,9 @@
 			body.appendChild( row );
 			fs.appendChild( body );
 			if ( logoWrap ) {
-				fs.appendChild( logoWrap );
+				extras.appendChild( logoWrap );
 			}
+			fs.appendChild( extras );
 			form.appendChild( fs );
 		} );
 
@@ -951,6 +965,10 @@
 		result.setAttribute( 'aria-live', 'polite' );
 
 		ui.appendChild( hint );
+			if ( data.positions.some( function ( p ) { return p.image && ! ( p.colors && p.colors.length ); } ) ) {
+				// Bilder, die der Farbe der Variante nicht folgen (z. B. Makito: ein Bild je Position), sind Beispielabbildungen
+				ui.appendChild( el( 'p', 'mld__note mld-calc__imgnote', t.exampleImages ) );
+			}
 		ui.appendChild( form );
 		ui.appendChild( global );
 		ui.appendChild( result );

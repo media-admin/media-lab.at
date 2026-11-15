@@ -304,6 +304,7 @@ class ML_Deco_Calculator {
 			'resetPos'    => __( 'Zurücksetzen', 'media-lab-ml-decoration' ),
 			'resetPosFor' => __( 'Veredelung für „%s“ zurücksetzen', 'media-lab-ml-decoration' ),
 			'resetAll'    => __( 'Auswahl zurücksetzen', 'media-lab-ml-decoration' ),
+			'exampleImages' => __( 'Die Bilder der Druckpositionen sind Beispielabbildungen des Lieferanten, die Produktfarbe kann abweichen.', 'media-lab-ml-decoration' ),
 			'motifDims'   => __( 'Motivmaße', 'media-lab-ml-decoration' ),
 			'motifW'      => __( 'Breite (cm)', 'media-lab-ml-decoration' ),
 			'motifH'      => __( 'Höhe (cm)', 'media-lab-ml-decoration' ),

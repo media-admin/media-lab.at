@@ -451,9 +451,25 @@
 .mld-calc__logo {
 	display: grid;
 	gap: 0.5rem;
+}
+
+/* Motivmaße und Logo in einer Zeile: nebeneinander, sobald Platz ist, sonst untereinander */
+.mld-calc__extras {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+	align-items: start;
+	gap: 0.75rem 2rem;
 	margin-top: 0.75rem;
 	padding-top: 0.75rem;
 	border-top: 1px solid var(--color-border);
+}
+
+.mld-calc__extras[hidden] {
+	display: none;
+}
+
+.mld-calc__imgnote {
+	margin: 0 0 0.75rem;
 }
 
 .mld-calc__logo[hidden],
