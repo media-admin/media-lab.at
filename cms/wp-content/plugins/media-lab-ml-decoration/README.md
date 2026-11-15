@@ -5,6 +5,7 @@ Projekt-Plugin für at.media-lab (nicht im Starter-Kit). Zeigt auf der WooCommer
 
 ## Changelog
 
+- 1.10.0 (in Arbeit): Logo-/Motiv-Upload je Veredelung, Teil 1: Upload-Endpunkt `mld_logo_upload` / `mld_logo_delete` (Formate PDF, SVG, AI, EPS, PNG, JPG, max. 10 MB, Dateikopf-Prüfung, SVG ohne Skripte), geschützter Ordner `uploads/ml-deco-logos/` mit Zufallsnamen, Marker `_mlw_pending_upload` (Aufräum-Cron 30 Tage), Besitzliste je Besucher. Die Auswahlzeile trägt `file` (Attachment-ID) und `same` ("gleiches Logo wie Position X"); Anfrage-/Wunschlisten-Zeilen "Logo – <Position>". Noch ohne Oberfläche, ohne Übergabe der Datei an die Anfrage und ohne 2-Jahres-Cron (folgen).
 - 1.9.3: Farbcode aus der Lieferanten-SKU auch bei Produktcodes mit Bindestrich (MidOcean "MO1001 -16GB-07"): Es gilt der erste Teil nach dem Produktcode, der unter den Farbcodes der Veredelung des Produkts vorkommt, sonst der zweite Teil.
 - 1.9.2: Einheitliche Grundfarbe der Positionsbilder (defaultColor): Ohne Farbwahl zeigen alle Positionen dieselbe Produktfarbe statt je Position der ersten Farbe der Lieferantenliste (mal schwarz, mal weiß). Gewählt wird die erste Farbe, zu der jede Position mit Farbliste ein Bild hat; gibt es keine gemeinsame Farbe, bleibt das erste Bild der Position.
 - 1.9.1: Die Positionsbilder wechseln schon, wenn nur die Farbe gewählt ist (vorher erst mit allen Feldern der Variante). Dafür liefert die Seite die Zuordnung Farbwert -> Farbcode (colorMap, aus _ml_supplier_variant_sku und dem Farbattribut, Filter ml_deco_color_attribute, Standard pa_color).

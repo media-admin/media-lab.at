@@ -49,10 +49,18 @@ class ML_Deco_Selection {
 		$product_id = (int) ( $_POST['product_id'] ?? 0 );
 		$all        = self::all();
 		$sel        = $all[ $product_id ] ?? null;
+		$files      = [];
 		if ( is_array( $sel ) ) {
 			unset( $sel['ts'] );
+			// Dateiinfos (Name, Größe) für die Anzeige; nie Pfad oder URL. Fehlt die Datei (Aufräumen nach 30 Tagen): gone.
+			foreach ( (array) ( $sel['lines'] ?? [] ) as $l ) {
+				$fid = (int) ( $l['file'] ?? 0 );
+				if ( $fid > 0 && ! isset( $files[ $fid ] ) ) {
+					$files[ $fid ] = ML_Deco_Files::status( $fid, false ) === 'ok' ? ML_Deco_Files::describe( $fid ) : [ 'id' => $fid, 'gone' => true ];
+				}
+			}
 		}
-		wp_send_json_success( [ 'selection' => $sel ] );
+		wp_send_json_success( [ 'selection' => $sel, 'files' => (object) $files ] );
 	}
 
 	/**
@@ -69,7 +77,7 @@ class ML_Deco_Selection {
 
 	/** @return array{item_id:?string, quantity:?int} */
 	public static function wishlist_state( int $product_id, int $variation_id, $raw_selection ): array {
-		$clean = $product_id ? self::sanitize( $product_id, $raw_selection ) : null;
+		$clean = $product_id ? self::sanitize( $product_id, $raw_selection, true ) : null;
 		$item  = $product_id ? self::find_wishlist_item( $product_id, $variation_id, $clean ) : null;
 		return [
 			'item_id'  => $item ? (string) $item['item_id'] : null,
@@ -107,7 +115,7 @@ class ML_Deco_Selection {
 
 	/** @return array|null die gespeicherte (bereinigte) Auswahl, null wenn leer/ungültig (Eintrag wird dann gelöscht) */
 	public static function save( int $product_id, $raw ): ?array {
-		$clean = $product_id ? self::sanitize( $product_id, $raw ) : null;
+		$clean = $product_id ? self::sanitize( $product_id, $raw, true ) : null; // true: Dateien müssen dem Besucher gehören
 		$all   = self::all();
 
 		if ( $clean === null ) {
@@ -122,9 +130,15 @@ class ML_Deco_Selection {
 	/**
 	 * Prüft die Auswahl gegen die Produktdaten.
 	 *
-	 * @return array|null ['lines' => [['pos','tech','colours','range','area'], ...], 'repeat' => bool]
+	 * Logo je Position: "file" = Attachment-ID der Logo-Datei, "same" = Position, deren Logo mitgenutzt wird. Beide Schlüssel
+	 * stehen nur in der Zeile, wenn es sie gibt (bestehende Wunschlisten-Einträge ohne Logo behalten ihre ID).
+	 * $check_owner = true beim Speichern aus dem Browser: Die Datei muss dem Besucher gehören (ML_Deco_Files::is_owned()).
+	 * Bei false (gespeicherte Daten, geteilte Ansicht) genügt eine Logo-Datei dieses Plugins; fehlt sie (Aufräumen), bleibt die ID
+	 * stehen und die Anzeige sagt "nicht mehr vorhanden".
+	 *
+	 * @return array|null ['lines' => [['pos','tech','colours','range','area', 'file'?, 'same'?], ...], 'repeat' => bool]
 	 */
-	public static function sanitize( int $product_id, $raw ): ?array {
+	public static function sanitize( int $product_id, $raw, bool $check_owner = false ): ?array {
 		$ctx = self::context( $product_id );
 		if ( ! $ctx || ! is_array( $raw ) ) {
 			return null;
@@ -136,8 +150,10 @@ class ML_Deco_Selection {
 			$byPos[ (string) ( $pos['id'] ?? '' ) ] = $pos;
 		}
 
-		$lines = [];
-		$used  = [];
+		$lines   = [];
+		$used    = [];
+		$sameRaw = [];
+		$logos   = ML_Deco_Files::enabled();
 		foreach ( (array) ( $raw['lines'] ?? [] ) as $l ) {
 			if ( ! is_array( $l ) ) {
 				continue;
@@ -172,8 +188,39 @@ class ML_Deco_Selection {
 				$area = $area > 0 ? min( $area, $maxArea ) : $maxArea;
 			}
 
-			$lines[]       = [ 'pos' => $posId, 'tech' => $techId, 'colours' => $colours, 'range' => $range, 'area' => round( $area, 1 ) ];
+			$line = [ 'pos' => $posId, 'tech' => $techId, 'colours' => $colours, 'range' => $range, 'area' => round( $area, 1 ) ];
+			if ( $logos ) {
+				$fileId = (int) ( $l['file'] ?? 0 );
+				if ( $fileId > 0 ) {
+					$st = ML_Deco_Files::status( $fileId, $check_owner );
+					if ( $st === 'ok' || ( ! $check_owner && $st === 'gone' ) ) {
+						$line['file'] = $fileId;
+					}
+				}
+				if ( empty( $line['file'] ) && ! empty( $l['same'] ) ) {
+					$sameRaw[ $posId ] = (string) $l['same'];
+				}
+			}
+			$lines[]        = $line;
 			$used[ $posId ] = true;
+		}
+
+		// "Gleiches Logo wie Position X": gilt nur, wenn X in dieser Auswahl eine eigene Datei hat (keine Ketten, kein Selbstbezug)
+		if ( $sameRaw ) {
+			$own = [];
+			foreach ( $lines as $ln ) {
+				if ( ! empty( $ln['file'] ) ) {
+					$own[ $ln['pos'] ] = (int) $ln['file'];
+				}
+			}
+			foreach ( $lines as &$ln ) {
+				$target = $sameRaw[ $ln['pos'] ] ?? '';
+				if ( empty( $ln['file'] ) && $target !== '' && $target !== $ln['pos'] && isset( $own[ $target ] ) ) {
+					$ln['file'] = $own[ $target ];
+					$ln['same'] = $target;
+				}
+			}
+			unset( $ln );
 		}
 
 		return $lines ? [ 'lines' => $lines, 'repeat' => ! empty( $raw['repeat'] ) ] : null;
@@ -293,7 +340,7 @@ class ML_Deco_Selection {
 			if ( $clean === null ) {
 				continue;
 			}
-			$rows = self::rows( $pid, $clean, max( 1, (int) ( $item['quantity'] ?? 1 ) ) );
+			$rows = self::rows( $pid, $clean, max( 1, (int) ( $item['quantity'] ?? 1 ) ), (bool) $own_list );
 			if ( ! $rows ) {
 				continue;
 			}
@@ -336,9 +383,12 @@ class ML_Deco_Selection {
 	 * Zeilen "Label => Text" für die Anfrage. Beträge nur, wenn "Preise anzeigen" für den Lieferanten aktiv ist
 	 * (die Kundenmail enthält dieselbe Produktliste).
 	 *
+	 * Logo-Zeilen ("Logo – <Position>"): Dateiname, "folgt per Mail", "gleiches Logo wie <Position>" oder "Datei nicht mehr
+	 * vorhanden". $names = false (geteilte Ansicht): nur "Logo hinterlegt", kein Dateiname.
+	 *
 	 * @return array<string,string>
 	 */
-	public static function rows( int $product_id, array $selection, int $qty ): array {
+	public static function rows( int $product_id, array $selection, int $qty, bool $names = true ): array {
 		$ctx = self::context( $product_id );
 		if ( ! $ctx ) {
 			return [];
@@ -415,6 +465,14 @@ class ML_Deco_Selection {
 				}
 			}
 			$rows[ $label ] = $text;
+
+			if ( ML_Deco_Files::enabled() ) {
+				$logoLabel = sprintf( /* translators: %s: Positionsname */ __( 'Logo – %s', 'media-lab-ml-decoration' ), $pos['label'] );
+				if ( isset( $rows[ $logoLabel ] ) ) {
+					$logoLabel .= ' (' . $pos['id'] . ')';
+				}
+				$rows[ $logoLabel ] = self::logo_text( $l, $posByid, $names );
+			}
 		}
 
 		if ( $rows && $show && $any ) {
@@ -429,6 +487,25 @@ class ML_Deco_Selection {
 			$rows[ __( 'Veredelung – Wiederholungsauftrag', 'media-lab-ml-decoration' ) ] = __( 'Ja', 'media-lab-ml-decoration' );
 		}
 		return $rows;
+	}
+
+	/** Text der Logo-Zeile einer Position (reiner Text, config_display wird escaped). */
+	private static function logo_text( array $line, array $posByid, bool $names ): string {
+		$fid = (int) ( $line['file'] ?? 0 );
+		if ( $fid <= 0 ) {
+			return __( 'folgt per Mail', 'media-lab-ml-decoration' );
+		}
+		if ( ML_Deco_Files::status( $fid, false ) !== 'ok' ) {
+			return __( 'Datei nicht mehr vorhanden (bitte per Mail senden)', 'media-lab-ml-decoration' );
+		}
+		if ( ! $names ) {
+			return __( 'Logo hinterlegt', 'media-lab-ml-decoration' );
+		}
+		$same = (string) ( $line['same'] ?? '' );
+		if ( $same !== '' && isset( $posByid[ $same ] ) ) {
+			return sprintf( /* translators: %s: Positionsname */ __( 'gleiches Logo wie %s', 'media-lab-ml-decoration' ), $posByid[ $same ]['label'] );
+		}
+		return ML_Deco_Files::name( $fid );
 	}
 
 	/** Betrag als reiner Text (config_display wird in der Mail escaped, kein HTML erlaubt). */
