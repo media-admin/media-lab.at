@@ -28,7 +28,7 @@
         padding:       0;
 
         a { color: var(--color-text-muted); text-decoration: none; &:hover { color: $color-primary; } }
-        .separator { margin: 0 $spacing-1; }
+        .separator { margin: 0 4px; }
     }
 }
 
@@ -1505,7 +1505,7 @@ details.wc-filter-subgroup[open] > summary.wc-filter-subgroup__title::after {
 // Mehr Abstand nach oben (zum Header), weniger nach unten (zum Produkt). Die Startseite ist ein Home-Icon: der Link bleibt,
 // der Text "Startseite" bleibt für Screenreader im Link (font-size 0), das Icon kommt als Maske (Farbe wie die übrigen Krumen).
 .woocommerce.single-product .woocommerce-breadcrumb {
-    margin-top:    $spacing-8;
+    margin-top:    $spacing-4;
     margin-bottom: $spacing-2;
 
     > a:first-child {
@@ -1524,4 +1524,11 @@ details.wc-filter-subgroup[open] > summary.wc-filter-subgroup__title::after {
                     mask:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3 2 12h3v8h5v-6h4v6h5v-8h3L12 3z'/%3E%3C/svg%3E") center / contain no-repeat;
         }
     }
+}
+
+// ── Titel der Produkt-Archive (Shop, Kategorie, Marke) ────────────────────────
+// Mehr Abstand zum Header: der Titel (z. B. Markenname) klebte direkt unter der Kopfzeile.
+.woocommerce .woocommerce-products-header,
+.woocommerce-page .woocommerce-products-header {
+    margin-top: $spacing-6;
 }
