@@ -284,7 +284,7 @@
 		var form = el( 'div', 'mld-calc__form' );
 
 		data.positions.forEach( function ( pos, pi ) {
-			var ps = { techId: '', colours: 1, rangeIdx: null, area: pos.maxArea || 0 };
+			var ps = { techId: '', colours: 1, rangeIdx: null, area: pos.maxArea || 0, dw: pos.w || 0, dh: pos.h || 0, mode: 'later', same: '', file: null, gone: false, busy: false, msg: '', err: false };
 			state.positions.push( ps );
 
 			var fs = el( 'fieldset', 'mld-calc__pos' );
@@ -351,11 +351,98 @@
 			inArea.step = '0.5';
 			inArea.min = '1';
 			var wrapArea = field( t.motifArea, inArea, true );
+				// Motivmaße: Breite und Höhe in cm (höchstens die Maße der Position), die Fläche ergibt sich daraus
+				var wrapDims = null;
+				var inW = null;
+				var inH = null;
+				var dimsNote = null;
+				if ( pos.w > 0 && pos.h > 0 ) {
+					wrapDims = el( 'div', 'mld-calc__field mld-calc__dims' );
+					wrapDims.hidden = true;
+					wrapDims.setAttribute( 'role', 'group' );
+					wrapDims.setAttribute( 'aria-label', t.motifDims );
+					wrapDims.appendChild( el( 'span', 'mld-calc__dims-title', t.motifDims ) );
+					var dimsRow = el( 'div', 'mld-calc__dims-row' );
+					var dimField = function ( labelText, input, max ) {
+						var box = el( 'div', 'mld-calc__dim' );
+						var lab = el( 'label', null, labelText );
+						input.type = 'number';
+						input.step = '0.5';
+						input.min = '0.5';
+						input.max = String( max );
+						input.id = uid + '-' + pi + '-' + labelText.replace( /\W+/g, '' );
+						lab.setAttribute( 'for', input.id );
+						box.appendChild( lab );
+						box.appendChild( input );
+						return box;
+					};
+					inW = el( 'input' );
+					inH = el( 'input' );
+					dimsRow.appendChild( dimField( t.motifW, inW, pos.w ) );
+					dimsRow.appendChild( el( 'span', 'mld-calc__dims-x', '×' ) );
+					dimsRow.appendChild( dimField( t.motifH, inH, pos.h ) );
+					wrapDims.appendChild( dimsRow );
+					dimsNote = el( 'p', 'mld-calc__dims-note' );
+					dimsNote.setAttribute( 'aria-live', 'polite' );
+					wrapDims.appendChild( dimsNote );
+					row.appendChild( wrapDims );
+				}
+
+				function round1( v ) {
+					return Math.round( v * 10 ) / 10;
+				}
+
+				function updateDimsNote() {
+					if ( dimsNote ) {
+						dimsNote.textContent = fill( t.dimsMax, [ num( pos.w ), num( pos.h ) ] ) + ' · ' + fill( t.dimsArea, [ num( ps.area ) ] );
+					}
+				}
+
+				/** Maße setzen: je Seite höchstens das Maß der Position, die Fläche höchstens die Maximalfläche. */
+				function setDims( w, h ) {
+					w = Math.min( Math.max( w, 0.5 ), pos.w );
+					h = Math.min( Math.max( h, 0.5 ), pos.h );
+					var a = w * h;
+					if ( pos.maxArea > 0 && a > pos.maxArea ) {
+						var s = Math.sqrt( pos.maxArea / a );
+						w *= s;
+						h *= s;
+						a = pos.maxArea;
+					}
+					ps.dw = round1( w );
+					ps.dh = round1( h );
+					ps.area = round1( a );
+				}
+
+				if ( wrapDims ) {
+					var onDims = function () {
+						var w = parseFloat( inW.value );
+						var h = parseFloat( inH.value );
+						if ( w > 0 && h > 0 ) {
+							setDims( w, h );
+							updateDimsNote();
+							render();
+						}
+					};
+					inW.addEventListener( 'input', onDims );
+					inH.addEventListener( 'input', onDims );
+					// beim Verlassen des Felds auf die zulässigen Werte zurücksetzen
+					var onDimsDone = function () {
+						inW.value = String( ps.dw );
+						inH.value = String( ps.dh );
+						updateDimsNote();
+					};
+					inW.addEventListener( 'change', onDimsDone );
+					inH.addEventListener( 'change', onDimsDone );
+				}
 
 			function refresh() {
 				var tech = ps.techId ? data.techniques[ ps.techId ] : null;
 				btnReset.hidden = ! ps.techId;
 				wrapColours.hidden = wrapRange.hidden = wrapArea.hidden = true;
+				if ( wrapDims ) {
+					wrapDims.hidden = true;
+				}
 				if ( ! tech ) {
 					return;
 				}
@@ -402,9 +489,16 @@
 					return ( r.scales || [] ).some( function ( s ) { return hasKey( s, 'cm' ) && s.cm; } );
 				} ) || tech.pricing === 'area';
 				if ( usesArea && pos.maxArea ) {
-					inArea.max = String( pos.maxArea );
-					inArea.value = String( ps.area );
-					wrapArea.hidden = false;
+					if ( wrapDims ) {
+						inW.value = String( ps.dw );
+						inH.value = String( ps.dh );
+						updateDimsNote();
+						wrapDims.hidden = false;
+					} else {
+						inArea.max = String( pos.maxArea );
+						inArea.value = String( ps.area );
+						wrapArea.hidden = false;
+					}
 				}
 			}
 
@@ -413,6 +507,8 @@
 				ps.colours = 1;
 				ps.rangeIdx = null;
 				ps.area = pos.maxArea || 0;
+				ps.dw = pos.w || 0;
+				ps.dh = pos.h || 0;
 				refresh();
 				render();
 			} );
@@ -430,21 +526,326 @@
 				render();
 			} );
 
+			// ── Logo / Motiv je Position (optional): später per Mail, Datei hochladen oder gleiches Logo wie eine andere Position ──
+			var logoWrap = null;
+			var selMode = null;
+			var fileInput = null;
+			var fileRow = null;
+			var statusEl = null;
+			var btnRemove = null;
+			var modeSig = '';
+			var card = null;
+			var thumbEl = null;
+			var nameEl = null;
+			var metaEl = null;
+			var btnReplace = null;
+			var noteEl = null;
+			var thumbSig = '';
+
+			if ( data.logo ) {
+				logoWrap = el( 'div', 'mld-calc__logo' );
+				logoWrap.hidden = true;
+				var modeId = uid + '-' + pi + '-logo';
+				var modeField = el( 'div', 'mld-calc__field mld-calc__logo-mode' );
+				var modeLabel = el( 'label', null, t.logoLabel );
+				modeLabel.setAttribute( 'for', modeId );
+				selMode = el( 'select' );
+				selMode.id = modeId;
+				modeField.appendChild( modeLabel );
+				modeField.appendChild( selMode );
+
+				fileRow = el( 'div', 'mld-calc__logo-file' );
+				fileInput = el( 'input' );
+				fileInput.type = 'file';
+				fileInput.accept = ( data.logo.ext || [] ).map( function ( e ) { return '.' + e; } ).join( ',' );
+				fileInput.setAttribute( 'aria-label', fill( t.logoFileFor, [ pos.label ] ) );
+				btnRemove = el( 'button', 'mld-calc__reset', t.logoRemove );
+				btnRemove.type = 'button';
+				btnRemove.hidden = true;
+				fileRow.appendChild( fileInput );
+				card = el( 'div', 'mld-calc__logo-card' );
+	card.hidden = true;
+	thumbEl = el( 'span', 'mld-calc__logo-thumb' );
+	var info = el( 'div', 'mld-calc__logo-info' );
+	nameEl = el( 'strong', 'mld-calc__logo-name' );
+	metaEl = el( 'span', 'mld-calc__logo-meta' );
+	var acts = el( 'div', 'mld-calc__logo-actions' );
+	btnReplace = el( 'button', 'mld-calc__reset', t.logoReplace );
+	btnReplace.type = 'button';
+	btnReplace.addEventListener( 'click', function () {
+		fileInput.click();
+	} );
+	acts.appendChild( btnReplace );
+	acts.appendChild( btnRemove );
+	info.appendChild( nameEl );
+	info.appendChild( metaEl );
+	info.appendChild( acts );
+	card.appendChild( thumbEl );
+	card.appendChild( info );
+	fileRow.appendChild( card );
+
+				statusEl = el( 'p', 'mld-calc__logo-status' );
+				statusEl.setAttribute( 'aria-live', 'polite' );
+
+				noteEl = el( 'p', 'mld__note mld-calc__logo-note', fill( t.logoFormats, [ ( data.logo.ext || [] ).join( ', ' ).toUpperCase(), data.logo.maxMb ] ) + ' ' + t.logoPrivacy + ' ' );
+				if ( data.logo.privacyUrl ) {
+					var pa = el( 'a', null, t.logoPrivacyLink );
+					pa.href = data.logo.privacyUrl;
+					pa.target = '_blank';
+					pa.rel = 'noopener';
+					noteEl.appendChild( pa );
+				} else {
+					noteEl.appendChild( document.createTextNode( t.logoPrivacyLink ) );
+				}
+				noteEl.appendChild( document.createTextNode( '.' ) );
+				fileRow.appendChild( noteEl );
+
+				logoWrap.appendChild( modeField );
+				logoWrap.appendChild( fileRow );
+				logoWrap.appendChild( statusEl );
+
+				selMode.addEventListener( 'change', function () {
+					var v = selMode.value;
+					ps.msg = '';
+					ps.err = false;
+					ps.gone = false;
+					if ( v.indexOf( 'same:' ) === 0 ) {
+						ps.mode = 'same';
+						ps.same = v.slice( 5 );
+					} else {
+						ps.mode = v;
+						ps.same = '';
+					}
+					render();
+					if ( ps.mode === 'upload' && ! ps.file ) {
+						fileInput.focus();
+					}
+				} );
+				fileInput.addEventListener( 'change', function () {
+					if ( fileInput.files && fileInput.files[ 0 ] ) {
+						uploadLogo( fileInput.files[ 0 ] );
+					}
+				} );
+				btnRemove.addEventListener( 'click', function () {
+					var old = ps.file;
+					ps.file = null;
+					ps.msg = '';
+					ps.err = false;
+					if ( old ) {
+						dropFile( old.id );
+					}
+					render();
+					fileInput.focus();
+				} );
+			}
+
+			function logoFail( message ) {
+				ps.busy = false;
+				ps.err = true;
+				ps.msg = message;
+				if ( fileInput ) {
+					fileInput.value = '';
+				}
+				render();
+			}
+
+			function uploadLogo( file ) {
+				var ext = ( file.name.split( '.' ).pop() || '' ).toLowerCase();
+				if ( ( data.logo.ext || [] ).indexOf( ext ) === -1 ) {
+					logoFail( fill( t.logoBadType, [ ( data.logo.ext || [] ).join( ', ' ).toUpperCase() ] ) );
+					return;
+				}
+				if ( file.size > data.logo.maxMb * 1048576 ) {
+					logoFail( fill( t.logoTooBig, [ data.logo.maxMb ] ) );
+					return;
+				}
+				if ( ! cfg || typeof fetch !== 'function' || typeof FormData === 'undefined' ) {
+					logoFail( t.logoFailed );
+					return;
+				}
+				ps.busy = true;
+				ps.err = false;
+				ps.msg = '';
+				refreshLogo();
+				var body = new FormData();
+				body.append( 'action', 'mld_logo_upload' );
+				body.append( 'nonce', cfg.nonce );
+				body.append( 'file', file );
+				fetch( cfg.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } ).then( function ( r ) {
+					return r.json();
+				} ).then( function ( res ) {
+					if ( res && res.success && res.data ) {
+						var old = ps.file;
+						ps.file = res.data;
+						ps.busy = false;
+						ps.msg = '';
+						ps.err = false;
+						fileInput.value = '';
+						if ( old ) {
+							dropFile( old.id );   // ersetzte Datei entfernen (der Server behält sie, falls sie schon auf der Wunschliste steht)
+						}
+						render();
+					} else {
+						logoFail( ( res && res.data && res.data.message ) || t.logoFailed );
+					}
+				} ).catch( function () {
+					logoFail( t.logoFailed );
+				} );
+			}
+
+			function dropFile( id ) {
+				if ( cfg && typeof fetch === 'function' ) {
+					postAjax( 'mld_logo_delete', { id: String( id ) } ).catch( function () {} );
+				}
+			}
+
+			function resetLogo() {
+				ps.mode = 'later';
+				ps.same = '';
+				ps.file = null;
+				ps.gone = false;
+				ps.msg = '';
+				ps.err = false;
+			}
+
+			/** Gespeicherte Auswahl wieder einsetzen: files = Dateiinfos vom Server (mld_selection_get). */
+			function setLogo( line, files ) {
+				resetLogo();
+				if ( ! data.logo ) {
+					return;
+				}
+				if ( line.same ) {
+					ps.mode = 'same';
+					ps.same = String( line.same );
+				} else if ( line.file ) {
+					var info = files && files[ line.file ];
+					if ( info && ! info.gone ) {
+						ps.mode = 'upload';
+						ps.file = info;
+					} else {
+						ps.gone = true;
+					}
+				}
+			}
+
+			/** Vorschau der hochgeladenen Datei: Bild bei PNG/JPG/SVG (Vergrößerung per Klick), sonst Dateityp-Marke. */
+			function renderThumb() {
+				var f = ps.file;
+				var sig = f ? String( f.id ) : '';
+				if ( sig === thumbSig ) {
+					return;
+				}
+				thumbSig = sig;
+				thumbEl.innerHTML = '';
+				if ( ! f ) {
+					return;
+				}
+				var badge = function () {
+					thumbEl.innerHTML = '';
+					thumbEl.appendChild( el( 'span', 'mld-calc__logo-badge', ( f.ext || '' ).toUpperCase() ) );
+				};
+				if ( f.preview && [ 'png', 'jpg', 'jpeg', 'svg' ].indexOf( f.ext ) !== -1 ) {
+					var zoom = el( 'button', 'mld__img-btn mld-calc__logo-zoom' );
+					zoom.type = 'button';
+					zoom.setAttribute( 'data-mld-full', f.preview );
+					zoom.setAttribute( 'data-mld-title', f.name );
+					zoom.setAttribute( 'aria-label', fill( t.zoomImage || '%s', [ f.name ] ) );
+					var im = el( 'img', 'mld-calc__logo-img' );
+					im.alt = '';
+					im.addEventListener( 'error', badge );
+					im.src = f.preview;
+					zoom.appendChild( im );
+					thumbEl.appendChild( zoom );
+				} else {
+					badge();
+				}
+			}
+
+			function refreshLogo() {
+				if ( ! logoWrap ) {
+					return;
+				}
+				logoWrap.hidden = ! ps.techId;
+				if ( ! ps.techId ) {
+					return;
+				}
+
+				// Auswahl der Quelle: "gleiches Logo" nur für Positionen mit eigener hochgeladener Datei
+				var opts = [ [ 'later', t.logoLater ], [ 'upload', t.logoUpload ] ];
+				data.positions.forEach( function ( p2, i2 ) {
+					var s2 = state.positions[ i2 ];
+					if ( i2 !== pi && s2.techId && s2.mode === 'upload' && s2.file ) {
+						opts.push( [ 'same:' + p2.id, fill( t.logoSame, [ p2.label ] ) ] );
+					}
+				} );
+				var cur = ps.mode === 'same' ? 'same:' + ps.same : ps.mode;
+				if ( ! opts.some( function ( o ) { return o[ 0 ] === cur; } ) ) {
+					ps.mode = 'later';
+					ps.same = '';
+					cur = 'later';
+				}
+				var sig = JSON.stringify( opts );
+				if ( sig !== modeSig ) {
+					modeSig = sig;
+					selMode.innerHTML = '';
+					opts.forEach( function ( o ) {
+						var op = el( 'option', null, o[ 1 ] );
+						op.value = o[ 0 ];
+						selMode.appendChild( op );
+					} );
+				}
+				selMode.value = cur;
+
+				var up = ps.mode === 'upload';
+				fileRow.hidden = ! up;
+				fileInput.hidden = !! ps.file || ps.busy;
+				card.hidden = ! ( up && ps.file );
+				btnRemove.hidden = false;
+				noteEl.hidden = !! ps.file;
+				if ( up && ps.file ) {
+					nameEl.textContent = ps.file.name;
+					metaEl.textContent = ( ps.file.ext ? ps.file.ext.toUpperCase() : '' ) + ( ps.file.sizeLabel ? ' · ' + ps.file.sizeLabel : '' );
+				}
+				renderThumb();
+
+				var text = '';
+				if ( ps.busy ) {
+					text = t.logoUploading;
+				} else if ( ps.msg ) {
+					text = ps.msg;
+				} else if ( ps.gone && ps.mode === 'later' ) {
+					text = t.logoGone;
+				}
+				statusEl.textContent = text;
+				statusEl.classList.toggle( 'is-error', !! ps.err || ( ps.gone && ps.mode === 'later' && ! ps.busy && ! ps.msg ) );
+				statusEl.hidden = text === '';
+			}
+
 			controls[ pi ] = {
+				refreshLogo: refreshLogo,
 				clear: function () {
+					resetLogo();
 					ps.techId = '';
 					selTech.value = '';
 					ps.colours = 1;
 					ps.rangeIdx = null;
 					ps.area = pos.maxArea || 0;
+					ps.dw = pos.w || 0;
+					ps.dh = pos.h || 0;
 					refresh();
 				},
-				set: function ( line ) {
+				set: function ( line, files ) {
+					setLogo( line, files );
 					ps.techId = line.tech;
 					selTech.value = line.tech;
 					ps.colours = line.colours > 0 ? line.colours : 1;
 					ps.rangeIdx = line.range >= 0 ? line.range : null;
 					ps.area = line.area > 0 ? line.area : ( pos.maxArea || 0 );
+					if ( pos.w > 0 && pos.h > 0 ) {
+						var sc = pos.maxArea > 0 ? Math.min( 1, Math.sqrt( ps.area / pos.maxArea ) ) : 1;
+						ps.dw = round1( pos.w * sc );
+						ps.dh = round1( pos.h * sc );
+					}
 					refresh();
 				},
 			};
@@ -456,6 +857,9 @@
 			}
 			body.appendChild( row );
 			fs.appendChild( body );
+			if ( logoWrap ) {
+				fs.appendChild( logoWrap );
+			}
 			form.appendChild( fs );
 		} );
 
@@ -551,6 +955,21 @@
 		ui.appendChild( global );
 		ui.appendChild( result );
 
+		/** Kurztext zum Logo einer Position für die Zusammenfassung. */
+		function logoSummary( ps ) {
+			if ( ! data.logo ) {
+				return '';
+			}
+			if ( ps.mode === 'upload' && ps.file ) {
+				return ps.file.name;
+			}
+			if ( ps.mode === 'same' ) {
+				var target = data.positions.filter( function ( p ) { return p.id === ps.same; } )[ 0 ];
+				return target ? fill( t.logoSame, [ target.label ] ) : t.logoLater;
+			}
+			return t.logoLater;
+		}
+
 		function selectedLines() {
 			var lines = [];
 			data.positions.forEach( function ( pos, pi ) {
@@ -571,7 +990,16 @@
 			data.positions.forEach( function ( pos, pi ) {
 				var ps = state.positions[ pi ];
 				if ( ps.techId ) {
-					lines.push( { pos: pos.id, tech: ps.techId, colours: ps.colours, range: ps.rangeIdx || 0, area: ps.area || pos.maxArea || 0 } );
+					var line = { pos: pos.id, tech: ps.techId, colours: ps.colours, range: ps.rangeIdx || 0, area: ps.area || pos.maxArea || 0 };
+					// Logo: nur die Datei-ID bzw. die Bezugsposition. Der Server prüft, ob die Datei dem Besucher gehört.
+					if ( data.logo ) {
+						if ( ps.mode === 'upload' && ps.file ) {
+							line.file = ps.file.id;
+						} else if ( ps.mode === 'same' && ps.same ) {
+							line.same = ps.same;
+						}
+					}
+					lines.push( line );
 				}
 			} );
 			return { lines: lines, repeat: !! state.repeat };
@@ -624,7 +1052,7 @@
 						var pos = data.positions[ i ];
 						var known = pos.id === line.pos && pos.techniques.some( function ( t ) { return t.id === line.tech; } );
 						if ( known && controls[ i ] ) {
-							controls[ i ].set( line );
+							controls[ i ].set( line, res.data.files || {} );
 						}
 					}
 				} );
@@ -844,6 +1272,11 @@
 		}
 
 		function render() {
+			controls.forEach( function ( c ) {
+				if ( c && c.refreshLogo ) {
+					c.refreshLogo();
+				}
+			} );
 			scheduleSave();
 			wlRefresh( false );
 			result.innerHTML = '';
@@ -858,7 +1291,7 @@
 				result.appendChild( el( 'h4', 'mld-calc__h', t.selection ) );
 				var ul = el( 'ul', 'mld-calc__list' );
 				lines.forEach( function ( l ) {
-					ul.appendChild( el( 'li', null, l.pos.label + ': ' + l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) ) );
+					ul.appendChild( el( 'li', null, l.pos.label + ': ' + l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) + ( data.logo ? ' · ' + t.logoWord + ': ' + logoSummary( l.ps ) : '' ) ) );
 				} );
 				result.appendChild( ul );
 				if ( t.sendNote ) {
@@ -902,6 +1335,10 @@
 				first.appendChild( el( 'strong', null, l.pos.label ) );
 				first.appendChild( document.createElement( 'br' ) );
 				first.appendChild( document.createTextNode( l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) ) );
+					if ( data.logo ) {
+						first.appendChild( document.createElement( 'br' ) );
+						first.appendChild( el( 'span', 'mld-calc__logo-sum', t.logoWord + ': ' + logoSummary( l.ps ) ) );
+					}
 				tr.appendChild( first );
 
 				if ( calc.onRequest ) {

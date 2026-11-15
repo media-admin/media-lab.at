@@ -48,6 +48,14 @@ class ML_Deco_Calculator {
 			. '</section>';
 	}
 
+	/** Breite/Höhe einer Position in cm (mm und cm bekannt, sonst 0). */
+	private static function cm( array $position, string $key ): float {
+		$v = (float) ( $position[ $key ] ?? 0 );
+		$unit = strtolower( (string) ( $position['unit'] ?? 'mm' ) );
+		$f = $unit === 'cm' ? 1.0 : ( $unit === 'mm' ? 0.1 : 0.0 );
+		return $v > 0 ? round( $v * $f, 2 ) : 0.0;
+	}
+
 	public static function payload( array $data, array $pricelist, bool $show, float $factor, float $handling ): array {
 		$techs     = [];
 		$positions = [];
@@ -73,6 +81,9 @@ class ML_Deco_Calculator {
 				'label'      => ML_Deco_Render::position_label( $position ),
 				'size'       => ML_Deco_Render::size_label( $position ),
 				'maxArea'    => isset( $position['max_area'] ) ? (float) $position['max_area'] : 0.0,
+				// Maße der Position in cm (0 = unbekannt): Auswahl von Breite und Höhe des Motivs
+				'w'          => self::cm( $position, 'w' ),
+				'h'          => self::cm( $position, 'h' ),
 				'image'      => (string) ( $position['image'] ?? '' ),
 				// Farbcodes mit eigenem Positionsbild (MidOcean): das Bild einer Farbe ergibt sich aus dem Standardbild
 				'colors'     => array_values( array_map( 'strval', (array) ( $position['colors'] ?? [] ) ) ),
@@ -97,6 +108,12 @@ class ML_Deco_Calculator {
 			'techniques'   => (object) $techs,
 			'positions'    => $positions,
 			'defaultColor' => $common ? (string) $common[0] : '',
+			// Logo-Upload je Position (false = aus)
+			'logo'         => ML_Deco_Files::enabled() ? [
+				'maxMb'      => ML_Deco_Files::max_mb(),
+				'ext'        => ML_Deco_Files::EXTENSIONS,
+				'privacyUrl' => function_exists( 'get_privacy_policy_url' ) ? (string) get_privacy_policy_url() : '',
+			] : false,
 			'i18n'         => self::strings( $show ),
 		];
 	}
@@ -287,6 +304,27 @@ class ML_Deco_Calculator {
 			'resetPos'    => __( 'Zurücksetzen', 'media-lab-ml-decoration' ),
 			'resetPosFor' => __( 'Veredelung für „%s“ zurücksetzen', 'media-lab-ml-decoration' ),
 			'resetAll'    => __( 'Auswahl zurücksetzen', 'media-lab-ml-decoration' ),
+			'motifDims'   => __( 'Motivmaße', 'media-lab-ml-decoration' ),
+			'motifW'      => __( 'Breite (cm)', 'media-lab-ml-decoration' ),
+			'motifH'      => __( 'Höhe (cm)', 'media-lab-ml-decoration' ),
+			'dimsMax'     => __( 'Max. %s × %s cm', 'media-lab-ml-decoration' ),
+			'dimsArea'    => __( 'Fläche: %s cm²', 'media-lab-ml-decoration' ),
+			'logoReplace' => __( 'Ersetzen', 'media-lab-ml-decoration' ),
+			'logoWord'    => __( 'Logo', 'media-lab-ml-decoration' ),
+			'logoLabel'   => __( 'Logo / Motiv (optional)', 'media-lab-ml-decoration' ),
+			'logoLater'   => __( 'Logo später per Mail', 'media-lab-ml-decoration' ),
+			'logoUpload'  => __( 'Datei hochladen', 'media-lab-ml-decoration' ),
+			'logoSame'    => __( 'Gleiches Logo wie %s', 'media-lab-ml-decoration' ),
+			'logoRemove'  => __( 'Datei entfernen', 'media-lab-ml-decoration' ),
+			'logoFileFor' => __( 'Logo-Datei für „%s“', 'media-lab-ml-decoration' ),
+			'logoUploading' => __( 'Datei wird hochgeladen …', 'media-lab-ml-decoration' ),
+			'logoBadType' => __( 'Dieses Dateiformat ist nicht erlaubt. Erlaubt: %s.', 'media-lab-ml-decoration' ),
+			'logoTooBig'  => __( 'Die Datei ist zu groß (max. %d MB).', 'media-lab-ml-decoration' ),
+			'logoFailed'  => __( 'Der Upload ist fehlgeschlagen. Bitte versuchen Sie es noch einmal oder senden Sie das Logo per Mail.', 'media-lab-ml-decoration' ),
+			'logoGone'    => __( 'Die hochgeladene Datei ist nicht mehr vorhanden. Bitte laden Sie sie erneut hoch oder senden Sie das Logo per Mail.', 'media-lab-ml-decoration' ),
+			'logoFormats' => __( 'Erlaubt: %s, max. %d MB.', 'media-lab-ml-decoration' ),
+			'logoPrivacy' => __( 'Die Datei wird nur zur Bearbeitung Ihrer Anfrage gespeichert. Mehr dazu in der', 'media-lab-ml-decoration' ),
+			'logoPrivacyLink' => __( 'Datenschutzerklärung', 'media-lab-ml-decoration' ),
 		];
 	}
 }

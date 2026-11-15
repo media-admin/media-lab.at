@@ -44,7 +44,7 @@ class ML_Deco_Files {
 	];
 
 	public static function init(): void {
-		foreach ( [ 'mld_logo_upload' => 'ajax_upload', 'mld_logo_delete' => 'ajax_delete' ] as $action => $method ) {
+		foreach ( [ 'mld_logo_upload' => 'ajax_upload', 'mld_logo_delete' => 'ajax_delete', 'mld_logo_preview' => 'ajax_preview' ] as $action => $method ) {
 			add_action( "wp_ajax_{$action}", [ __CLASS__, $method ] );
 			add_action( "wp_ajax_nopriv_{$action}", [ __CLASS__, $method ] );
 		}
@@ -155,9 +155,52 @@ class ML_Deco_Files {
 		if ( self::status( $id ) !== 'ok' || get_post_meta( $id, '_mlw_inquiry_id', true ) ) {
 			self::fail( __( 'Diese Datei kann nicht entfernt werden.', 'media-lab-ml-decoration' ), 403 );
 		}
-		wp_delete_attachment( $id, true );
-		self::forget( $id );
+		// Steht die Datei in einem Wunschlisten-Eintrag, bleibt sie erhalten (sonst fehlte sie später in der Anfrage).
+		// Der Besucher verliert nur den Bezug in der Auswahl; abgesendet wird sie nie, der Aufräum-Cron entfernt sie nach 30 Tagen.
+		if ( ! self::in_wishlist( $id ) ) {
+			wp_delete_attachment( $id, true );
+			self::forget( $id );
+		}
 		wp_send_json_success( [ 'id' => $id ] );
+	}
+
+	/** Wird die Datei in einem Eintrag der Wunschliste des Besuchers verwendet? */
+	private static function in_wishlist( int $id ): bool {
+		if ( ! class_exists( 'MediaLab_Wishlist_Storage' ) ) {
+			return false;
+		}
+		foreach ( (array) MediaLab_Wishlist_Storage::get_items() as $item ) {
+			foreach ( (array) ( $item['extras']['decoration']['lines'] ?? [] ) as $l ) {
+				if ( (int) ( $l['file'] ?? 0 ) === $id ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Vorschau eines Logos (PNG, JPG, SVG) für den Besitzer und für angemeldete Redakteure. Kein öffentlicher Link:
+	 * Der Aufruf braucht den Nonce und die Berechtigung. SVG läuft mit sandbox-CSP, damit nichts ausgeführt wird.
+	 */
+	public static function ajax_preview(): void {
+		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+		$id  = (int) ( $_GET['id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification -- oben geprüft
+		$ext = strtolower( (string) get_post_meta( $id, self::META_EXT, true ) );
+		$ok  = self::status( $id ) === 'ok' || ( current_user_can( 'edit_posts' ) && self::status( $id, false ) === 'ok' );
+		$path = $ok ? (string) get_attached_file( $id ) : '';
+		if ( ! $ok || ! in_array( $ext, [ 'png', 'jpg', 'jpeg', 'svg' ], true ) || $path === '' || ! is_file( $path ) ) {
+			status_header( 404 );
+			exit;
+		}
+		nocache_headers();
+		header( 'Content-Type: ' . self::MIMES[ $ext ] );
+		header( 'Content-Length: ' . (string) filesize( $path ) );
+		header( 'X-Content-Type-Options: nosniff' );
+		header( "Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox" );
+		header( 'Content-Disposition: inline; filename="logo.' . $ext . '"' );
+		readfile( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		exit;
 	}
 
 	private static function fail( string $message, int $status = 400 ): void {
@@ -274,6 +317,10 @@ class ML_Deco_Files {
 			'id'        => $id,
 			'name'      => self::name( $id ),
 			'ext'       => (string) get_post_meta( $id, self::META_EXT, true ),
+			// Vorschau nur für Bildformate; Adresse braucht Nonce und Berechtigung (siehe ajax_preview)
+			'preview'    => in_array( (string) get_post_meta( $id, self::META_EXT, true ), [ 'png', 'jpg', 'jpeg', 'svg' ], true )
+				? add_query_arg( [ 'action' => 'mld_logo_preview', 'id' => $id, 'nonce' => wp_create_nonce( self::NONCE_ACTION ) ], admin_url( 'admin-ajax.php' ) )
+				: '',
 			'size'      => $size,
 			'sizeLabel' => $size > 0 ? size_format( $size, 1 ) : '',
 		];
