@@ -469,6 +469,33 @@
 	display: none;
 }
 
+/* Position: Bild + Technik links, Motivmaße + Logo rechts, sobald der Block breit genug ist (Container-Breite, nicht Fenster).
+   Darunter bleibt alles untereinander. */
+.mld-calc__pos-main {
+	container-type: inline-size;
+}
+
+.mld-calc__pos-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0;
+}
+
+@container (min-width: 36rem) {
+	.mld-calc__pos-grid {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: start;
+		gap: 1.5rem;
+	}
+
+	.mld-calc__pos-grid .mld-calc__extras {
+		grid-template-columns: minmax(0, 1fr);
+		margin-top: 0;
+		padding-top: 0;
+		border-top: 0;
+	}
+}
+
 .mld-calc__imgnote {
 	margin: 0 0 0.75rem;
 }
