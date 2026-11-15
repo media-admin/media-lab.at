@@ -869,11 +869,16 @@
 				body.appendChild( imageButton( pos ) );
 			}
 			body.appendChild( row );
-			fs.appendChild( body );
 			if ( logoWrap ) {
 				extras.appendChild( logoWrap );
 			}
-			fs.appendChild( extras );
+			// Links Bild + Technik, rechts Motivmaße + Logo (bei wenig Platz untereinander; siehe .mld-calc__pos-main)
+			var main = el( 'div', 'mld-calc__pos-main' );
+			var grid = el( 'div', 'mld-calc__pos-grid' );
+			grid.appendChild( body );
+			grid.appendChild( extras );
+			main.appendChild( grid );
+			fs.appendChild( main );
 			form.appendChild( fs );
 		} );
 

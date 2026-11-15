@@ -469,8 +469,10 @@
 	display: none;
 }
 
-/* Position: Bild + Technik links, Motivmaße + Logo rechts, sobald der Block breit genug ist (Container-Breite, nicht Fenster).
-   Darunter bleibt alles untereinander. */
+/* Position, je nach Breite des Blocks (Container-Breite, nicht Fenster):
+   schmal: alles untereinander (Maße und Logo ggf. nebeneinander),
+   mittel: Bild + Technik links, Motivmaße über Logo rechts,
+   breit: drei Spalten, Bild + Technik | Motivmaße | Logo. */
 .mld-calc__pos-main {
 	container-type: inline-size;
 }
@@ -493,6 +495,17 @@
 		margin-top: 0;
 		padding-top: 0;
 		border-top: 0;
+	}
+}
+
+@container (min-width: 52rem) {
+	.mld-calc__pos-grid {
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.9fr);
+	}
+
+	.mld-calc__pos-grid .mld-calc__extras {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.5rem;
 	}
 }
 
@@ -798,8 +811,15 @@
    sonst haben grid-column und grid-row keine Wirkung. */
 .single-product.mlw-tabs-under-gallery.mld-wide-tabs div.product > .woocommerce-tabs {
 	grid-column: 1 / -1;
+	margin-top: 0;
+	padding-top: 0;
 }
 
 .single-product.mlw-tabs-under-gallery.mld-wide-tabs div.product > .summary {
 	grid-row: 1;
+	margin-bottom: 0;
+}
+
+.single-product.mlw-tabs-under-gallery.mld-wide-tabs div.product > .woocommerce-product-gallery {
+	margin-bottom: 0;
 }
