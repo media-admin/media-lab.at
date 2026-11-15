@@ -27,6 +27,7 @@ require_once ML_DECO_PATH . 'inc/class-render.php';
 require_once ML_DECO_PATH . 'inc/class-calculator.php';
 require_once ML_DECO_PATH . 'inc/class-files.php';
 require_once ML_DECO_PATH . 'inc/class-selection.php';
+require_once ML_DECO_PATH . 'inc/class-inquiry.php';
 require_once ML_DECO_PATH . 'inc/class-frontend.php';
 
 add_action( 'plugins_loaded', function () {
@@ -37,4 +38,5 @@ add_action( 'plugins_loaded', function () {
 	ML_Deco_Frontend::init();
 	ML_Deco_Files::init();
 	ML_Deco_Selection::init();
+	ML_Deco_Inquiry::init();
 } );

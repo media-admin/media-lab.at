@@ -287,9 +287,36 @@ class ML_Deco_Selection {
 				$display[ $label ] = $value;
 			}
 			$item['config_display'] = $display;
+			$item = self::attach_files( $item, $clean );
 		}
 		unset( $item );
 		return $items;
+	}
+
+	/**
+	 * Hängt die Logo-Dateien einer Auswahl an items[].attachments der Anfrage (Engine: Marker entfernen, Zuordnung, Mail-Anhang).
+	 * Nur vorhandene Logo-Dateien; mehrfach verwendete ("gleiches Logo wie ...") zählen einmal.
+	 *
+	 * @param array $item      Zeile der Anfrage.
+	 * @param array $selection Bereinigte Auswahl des Produkts.
+	 */
+	private static function attach_files( array $item, array $selection ): array {
+		$ids = [];
+		foreach ( (array) ( $selection['lines'] ?? [] ) as $line ) {
+			$fid = (int) ( $line['file'] ?? 0 );
+			if ( $fid > 0 && ML_Deco_Files::status( $fid, false ) === 'ok' ) {
+				$ids[ $fid ] = $fid;
+			}
+		}
+		if ( ! $ids ) {
+			return $item;
+		}
+		$have = array_map( 'intval', (array) ( $item['attachments'] ?? [] ) );
+		$item['attachments'] = array_values( array_unique( array_merge( $have, array_values( $ids ) ) ) );
+		if ( class_exists( 'ML_Deco_Inquiry' ) ) {
+			ML_Deco_Inquiry::remember( array_values( $ids ) );
+		}
+		return $item;
 	}
 
 	private static function match_key( array $item ): string {
@@ -374,6 +401,7 @@ class ML_Deco_Selection {
 				$display[ $label ] = $value;
 			}
 			$item['config_display'] = $display;
+			$item = self::attach_files( $item, $all[ $pid ] );
 		}
 		unset( $item );
 		return $items;
