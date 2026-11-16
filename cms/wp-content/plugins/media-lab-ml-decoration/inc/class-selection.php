@@ -462,6 +462,7 @@ class ML_Deco_Selection {
 		$setup = 0.0;
 		$estimate = false; // Vorkosten nur als Richtwert (Cotton)
 		$any   = false;
+		$request = false;  // Positionen "Preis auf Anfrage" sind in der Summe nicht enthalten
 
 		foreach ( (array) ( $selection['lines'] ?? [] ) as $l ) {
 			$pos  = $posByid[ $l['pos'] ?? '' ] ?? null;
@@ -500,7 +501,8 @@ class ML_Deco_Selection {
 			if ( $show ) {
 				$calc = ML_Deco_Calculator::compute_line( $tech, $range, $qty, $colours, (float) $l['area'], ! empty( $selection['repeat'] ), (float) $payload['handling'] );
 				if ( $calc['onRequest'] ) {
-					$text .= ' – ' . __( 'Preis auf Anfrage', 'media-lab-ml-decoration' );
+					$request = true;
+					$text   .= ' – ' . __( 'Preis auf Anfrage', 'media-lab-ml-decoration' );
 				} else {
 					$any    = true;
 					$sum   += $calc['total'];
@@ -514,6 +516,14 @@ class ML_Deco_Selection {
 						self::plain( $calc['setup'] ),
 						self::plain( $calc['total'] )
 					);
+					if ( $calc['surcharge'] > 0 ) {
+						$text .= sprintf(
+							/* translators: 1: Mengengrenze, 2: Betrag */
+							' ' . __( '(inkl. Mindermengen-Zuschlag unter %1$s Stück: %2$s)', 'media-lab-ml-decoration' ),
+							number_format_i18n( (int) $tech['surchargeBelow'] ),
+							self::plain( $calc['surcharge'] )
+						);
+					}
 				}
 			}
 			$rows[ $label ] = $text;
@@ -533,7 +543,7 @@ class ML_Deco_Selection {
 				self::plain( $sum ),
 				$qty,
 				self::plain( $setup )
-			);
+			) . ( $request ? '. ' . $t['requestNote'] : '' );
 		}
 		if ( $rows && $show && $estimate && ML_Deco_Settings::setup_note() !== '' ) {
 			$rows[ __( 'Veredelung – Hinweis Vorkosten', 'media-lab-ml-decoration' ) ] = ML_Deco_Settings::setup_note();

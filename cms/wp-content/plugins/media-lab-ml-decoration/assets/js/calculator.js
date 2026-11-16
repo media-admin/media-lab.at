@@ -71,8 +71,9 @@
 		return found;
 	}
 
+	/** Wie PHP round( $v, 2 ): vor dem Runden auf 15 signifikante Stellen glätten (z. B. 18417.574999999997 → 18417.58). */
 	function round2( v ) {
-		return Math.round( v * 100 ) / 100;
+		return Math.round( parseFloat( ( v * 100 ).toPrecision( 15 ) ) ) / 100;
 	}
 
 	/**
@@ -80,7 +81,13 @@
 	 */
 	function computeLine( o ) {
 		var tech = o.tech;
-		var res = { onRequest: false, unit: 0, setup: 0, running: 0, total: 0, minJob: false, minQty: 0 };
+		var res = { onRequest: false, unit: 0, setup: 0, surcharge: 0, running: 0, total: 0, minJob: false, minQty: 0 };
+
+		// Technik ohne Vorab-Preis (Cotton: Stick, der Preis hängt vom Projekt ab)
+		if ( tech.onRequest ) {
+			res.onRequest = true;
+			return res;
+		}
 
 		var scale = findScale( o.range, o.qty );
 		if ( ! scale ) {
@@ -115,7 +122,14 @@
 		if ( tech.setupPerColour && o.colours > 1 ) {
 			res.setup *= o.colours;
 		}
-		res.total = round2( res.running ) + round2( res.setup );
+
+		// Mindermengen-Zuschlag (Cotton): einmal je Position und Technik, wenn die Menge unter der Grenze liegt
+		var below = Number( tech.surchargeBelow ) || 0;
+		var fee = Number( tech.surcharge ) || 0;
+		if ( below > 0 && fee > 0 && o.qty < below ) {
+			res.surcharge = fee;
+		}
+		res.total = round2( res.running ) + round2( res.setup ) + round2( res.surcharge );
 
 		if ( tech.minQty && o.qty < tech.minQty ) {
 			res.minQty = tech.minQty;
@@ -1579,6 +1593,10 @@
 					tr.appendChild( tdUnit );
 					tr.appendChild( tdSetup );
 					tr.appendChild( tdTotal );
+					if ( calc.surcharge > 0 ) {
+						first.appendChild( document.createElement( 'br' ) );
+						first.appendChild( el( 'span', 'mld-calc__surcharge', fill( t.surcharge, [ num( l.tech.surchargeBelow, 0 ), money2( calc.surcharge ) ] ) ) );
+					}
 					if ( calc.minJob && notes.indexOf( t.minJob ) === -1 ) {
 						notes.push( t.minJob );
 					}
@@ -1614,6 +1632,9 @@
 			}
 			if ( estimateShown && t.setupNote ) {
 				notes.push( t.setupNote );
+			}
+			if ( anyRequest && sum > 0 && t.requestNote ) {
+				notes.push( t.requestNote );
 			}
 			leadTimeNotes( lines, t ).forEach( function ( n ) { notes.push( n ); } );
 			notes.forEach( function ( n ) {

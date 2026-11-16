@@ -171,10 +171,15 @@ class ML_Deco_Render {
 		}
 		echo '</summary><div class="mld__tech-body">';
 
-		$ranges = ML_Deco_Calc::relevant_ranges( $tech, $area > 0 ? $area : null );
-		$multi  = count( $ranges ) > 1;
-		foreach ( $ranges as $range ) {
-			self::render_table( $tech, $range, $area, $factor, $handling, $multi );
+		if ( ! empty( $tech['on_request'] ) ) {
+			// kein Vorab-Preis (Cotton: Stick): keine Staffel, nur der Hinweis und die Produktionszeit
+			echo '<p class="mld__note">' . esc_html__( 'Preis auf Anfrage – er richtet sich nach Ihrem Motiv, Sie erhalten ihn mit Ihrem Angebot.', 'media-lab-ml-decoration' ) . '</p>';
+		} else {
+			$ranges = ML_Deco_Calc::relevant_ranges( $tech, $area > 0 ? $area : null );
+			$multi  = count( $ranges ) > 1;
+			foreach ( $ranges as $range ) {
+				self::render_table( $tech, $range, $area, $factor, $handling, $multi );
+			}
 		}
 
 		self::render_facts( $tech, $factor );
@@ -237,6 +242,14 @@ class ML_Deco_Render {
 		}
 		if ( ! empty( $tech['min_qty'] ) ) {
 			$facts[] = sprintf( __( 'Mindestmenge: %s Stk.', 'media-lab-ml-decoration' ), esc_html( number_format_i18n( (int) $tech['min_qty'] ) ) );
+		}
+		if ( ! empty( $tech['min_surcharge_below'] ) && ( $tech['min_surcharge'] ?? 0 ) > 0 ) {
+			$facts[] = sprintf(
+				/* translators: 1: Betrag, 2: Mengengrenze */
+				__( 'Mindermengen-Zuschlag: %1$s je Position (unter %2$s Stk.)', 'media-lab-ml-decoration' ),
+				self::money( $tech['min_surcharge'] * $factor ),
+				esc_html( number_format_i18n( (int) $tech['min_surcharge_below'] ) )
+			);
 		}
 		$lead = trim( (string) ( ( (array) ( $tech['lead_time'] ?? [] ) )['de'] ?? '' ) );
 		if ( $lead !== '' ) {

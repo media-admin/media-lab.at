@@ -597,7 +597,8 @@
 	color: var(--color-error, var(--color-primary));
 }
 
-.mld-calc__logo-sum {
+.mld-calc__logo-sum,
+.mld-calc__surcharge {
 	font-size: 0.85rem;
 	color: var(--color-text-muted);
 }

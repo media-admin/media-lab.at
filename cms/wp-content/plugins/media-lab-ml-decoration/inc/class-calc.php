@@ -5,6 +5,8 @@
  * Datenformat siehe supplier-sync: Services/MidOceanDecorations.php und MakitoDecorations.php.
  *
  *   Technik: pricing, next_colour, setup, setup_repeat, min_job, min_qty, min_unit_price,
+ *            min_surcharge_below + min_surcharge (Mindermengen-Zuschlag, Cotton: einmal je Position, wenn Menge < Grenze),
+ *            on_request (kein Vorab-Preis, Cotton Stick: "Preis auf Anfrage"; ranges ist dann nur ein Platzhalter),
  *            ranges[ {from, to, scales[ {qty, upto, price, next, cm} ]} ]
  *
  * Stückpreis:

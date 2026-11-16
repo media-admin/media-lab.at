@@ -230,12 +230,52 @@ class ML_Deco_Excel {
 			$setup    = self::num( $rows[6][1] ?? null );
 			$setupRep = self::num( $rows[7][1] ?? null );
 			$minQty   = self::num( $rows[8][1] ?? null );
-			foreach ( [ 6 => $setup, 7 => $setupRep ] as $r => $v ) {
-				if ( $v === null || $v < 0 ) {
-					$errors[] = $E( sprintf( __( 'Vorkosten in B%d fehlen oder sind negativ (0 eintragen, wenn es keine gibt).', 'media-lab-ml-decoration' ), $r ) );
+
+			// Mindermengen-Zuschlag (G6 Grenze, G7 Betrag) und "Preis nur auf Anfrage" (G8), je Technik und optional
+			$surBelow = self::num( $rows[6][6] ?? null );
+			$surFee   = self::num( $rows[7][6] ?? null );
+			$onReq    = in_array( mb_strtolower( trim( (string) ( $rows[8][6] ?? '' ) ) ), [ 'ja', 'j', 'x', '1', 'yes' ], true );
+			if ( $surBelow !== null || $surFee !== null ) {
+				if ( $surBelow === null || $surBelow < 2 || floor( $surBelow ) !== (float) $surBelow ) {
+					$errors[] = $E( __( 'Mindermengen-Zuschlag: "gilt unter (Stück)" (G6) muss eine ganze Zahl ab 2 sein, oder beide Felder (G6, G7) leer lassen.', 'media-lab-ml-decoration' ) );
+				}
+				if ( $surFee === null || $surFee <= 0 ) {
+					$errors[] = $E( __( 'Mindermengen-Zuschlag: Betrag (G7) fehlt oder ist nicht größer als 0, oder beide Felder (G6, G7) leer lassen.', 'media-lab-ml-decoration' ) );
+				}
+			}
+			if ( ! $onReq ) {
+				foreach ( [ 6 => $setup, 7 => $setupRep ] as $r => $v ) {
+					if ( $v === null || $v < 0 ) {
+						$errors[] = $E( sprintf( __( 'Vorkosten in B%d fehlen oder sind negativ (0 eintragen, wenn es keine gibt).', 'media-lab-ml-decoration' ), $r ) );
+					}
 				}
 			}
 			$extra = null;
+			if ( $onReq ) {
+				// Preis nur auf Anfrage (z. B. Stick bei Cotton): keine Preismatrix nötig, der Shop zeigt "Preis auf Anfrage".
+				$lead = trim( preg_replace( '/\s+/u', ' ', (string) ( $rows[10][1] ?? '' ) ) );
+				if ( mb_strlen( $lead ) > 80 ) {
+					$errors[] = $E( __( 'Produktionszeit (B10) ist zu lang (max. 80 Zeichen).', 'media-lab-ml-decoration' ) );
+				}
+				$techniques[ $id ] = [
+					'name'                => [ 'de' => $name ],
+					'pricing'             => $pricing,
+					'on_request'          => true,
+					'next_colour'         => false,
+					'setup'               => 0.0,
+					'setup_repeat'        => 0.0,
+					'min_qty'             => null,
+					'min_surcharge_below' => null,
+					'min_surcharge'       => null,
+					'setup_estimate'      => false,
+					'lead_time'           => $lead !== '' ? [ 'de' => $lead ] : (object) [],
+					// Platzhalter-Staffel, damit Flächen- und Positionslogik unverändert funktionieren. Preise werden nie ausgegeben.
+					'ranges'              => [ [ 'id' => 'S1', 'from' => 0.0, 'to' => null, 'scales' => [ [ 'qty' => 1, 'price' => 0.0 ] ] ] ],
+				];
+				$techBySheet[ $sheetName ] = $id;
+				$summary[] = sprintf( __( '%s: Preis nur auf Anfrage (keine Preise erforderlich)', 'media-lab-ml-decoration' ), $name );
+				continue;
+			}
 			if ( $pricing === 'colour_area_range' ) {
 				$extra = self::num( $rows[9][1] ?? null );
 				if ( $extra === null || $extra < 0 ) {
@@ -333,6 +373,8 @@ class ML_Deco_Excel {
 				'setup'        => $setup ?? 0.0,
 				'setup_repeat' => $setupRep ?? 0.0,
 				'min_qty'      => ( $minQty !== null && $minQty > 0 ) ? (int) $minQty : null,
+				'min_surcharge_below' => ( $surBelow !== null && $surFee !== null && $surFee > 0 ) ? (int) $surBelow : null,
+				'min_surcharge'       => ( $surBelow !== null && $surFee !== null && $surFee > 0 ) ? $surFee : null,
 				'setup_estimate' => true, // Vorkosten sind ein Richtwert, endgültig im Angebot
 				'lead_time'    => $lead !== '' ? [ 'de' => $lead ] : (object) [],
 				'ranges'       => $ranges,
@@ -349,6 +391,14 @@ class ML_Deco_Excel {
 				count( $qtys ),
 				number_format_i18n( (float) $setup, 2 )
 			);
+			if ( $techniques[ $id ]['min_surcharge'] !== null ) {
+				$summary[ count( $summary ) - 1 ] .= sprintf(
+					/* translators: 1: Betrag, 2: Mengengrenze */
+					__( ', Mindermengen-Zuschlag %1$s € unter %2$d Stück', 'media-lab-ml-decoration' ),
+					number_format_i18n( (float) $techniques[ $id ]['min_surcharge'], 2 ),
+					(int) $techniques[ $id ]['min_surcharge_below']
+				);
+			}
 		}
 
 		// ── Positionen je Warenart ──

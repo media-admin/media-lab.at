@@ -156,10 +156,15 @@ class ML_Deco_Calculator {
 	/**
 	 * Eine Linie (Position + Technik) berechnen. Werte sind bereits mit dem Faktor verrechnet.
 	 *
-	 * @return array{onRequest:bool, unit:float, setup:float, running:float, total:float, minJob:bool, minQty:int}
+	 * @return array{onRequest:bool, unit:float, setup:float, surcharge:float, running:float, total:float, minJob:bool, minQty:int}
 	 */
 	public static function compute_line( array $tech, array $range, int $qty, int $colours, float $area, bool $repeat, float $handling ): array {
-		$res   = [ 'onRequest' => false, 'unit' => 0.0, 'setup' => 0.0, 'running' => 0.0, 'total' => 0.0, 'minJob' => false, 'minQty' => 0 ];
+		$res   = [ 'onRequest' => false, 'unit' => 0.0, 'setup' => 0.0, 'surcharge' => 0.0, 'running' => 0.0, 'total' => 0.0, 'minJob' => false, 'minQty' => 0 ];
+		// Technik ohne Vorab-Preis (Cotton: Stick, der Preis hängt vom Projekt ab)
+		if ( ! empty( $tech['onRequest'] ) ) {
+			$res['onRequest'] = true;
+			return $res;
+		}
 		$scale = self::find_scale( $range, $qty );
 		if ( $scale === null ) {
 			$res['onRequest'] = true;
@@ -191,7 +196,14 @@ class ML_Deco_Calculator {
 		if ( ! empty( $tech['setupPerColour'] ) && $colours > 1 ) {
 			$res['setup'] *= $colours;
 		}
-		$res['total'] = round( $res['running'], 2 ) + round( $res['setup'], 2 );
+
+		// Mindermengen-Zuschlag (Cotton): einmal je Position und Technik, wenn die Menge unter der Grenze liegt
+		$below = (int) ( $tech['surchargeBelow'] ?? 0 );
+		$fee   = (float) ( $tech['surcharge'] ?? 0 );
+		if ( $below > 0 && $fee > 0 && $qty < $below ) {
+			$res['surcharge'] = $fee;
+		}
+		$res['total'] = round( $res['running'], 2 ) + round( $res['setup'], 2 ) + round( $res['surcharge'], 2 );
 
 		if ( ! empty( $tech['minQty'] ) && $qty < (int) $tech['minQty'] ) {
 			$res['minQty'] = (int) $tech['minQty'];
@@ -227,6 +239,9 @@ class ML_Deco_Calculator {
 		if ( ! $show ) {
 			return $payload;
 		}
+		if ( ! empty( $tech['on_request'] ) ) {
+			$payload['onRequest'] = true;   // kein Preis vorab, der Rechner zeigt "Preis auf Anfrage"
+		}
 		// Vorkosten sind nur ein Richtwert (Cotton): Spaltenüberschrift und Hinweis im Rechner ändern sich
 		$payload['setupEstimate'] = ! empty( $tech['setup_estimate'] ) && ( $tech['setup'] ?? 0 ) > 0;
 
@@ -261,6 +276,8 @@ class ML_Deco_Calculator {
 			'minJob'     => self::r( $tech['min_job'] ?? 0, $factor ),
 			'minQty'     => ! empty( $tech['min_qty'] ) ? (int) $tech['min_qty'] : 0,
 			'minUnit'    => self::r( $tech['min_unit_price'] ?? 0, $factor ),
+			'surchargeBelow' => ! empty( $tech['min_surcharge_below'] ) ? (int) $tech['min_surcharge_below'] : 0,
+			'surcharge'  => self::r( $tech['min_surcharge'] ?? 0, $factor ),
 			'ranges'     => $ranges,
 		];
 	}
@@ -296,6 +313,8 @@ class ML_Deco_Calculator {
 			'leadTime'    => __( 'Produktionszeit: %s', 'media-lab-ml-decoration' ),
 			'colTotal'    => __( 'Summe', 'media-lab-ml-decoration' ),
 			'onRequest'   => __( 'Preis auf Anfrage', 'media-lab-ml-decoration' ),
+			'surcharge'   => /* translators: 1: Mengengrenze, 2: Betrag */ __( 'inkl. Mindermengen-Zuschlag (unter %1$s Stück): %2$s', 'media-lab-ml-decoration' ),
+			'requestNote' => __( 'Positionen mit „Preis auf Anfrage“ sind in der Summe nicht enthalten.', 'media-lab-ml-decoration' ),
 			'total'       => __( 'Veredelung gesamt (netto, ca.)', 'media-lab-ml-decoration' ),
 			'average'     => __( 'Durchschnitt pro Stück: %s', 'media-lab-ml-decoration' ),
 			'minQty'      => __( 'Mindestmenge für diese Technik: %s Stück.', 'media-lab-ml-decoration' ),
