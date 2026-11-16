@@ -17,14 +17,17 @@ class ML_Deco_Store {
 
 	/**
 	 * Lieferanten. "code" ist das Kürzel aus dem Sync (Meta _ml_supplier_code).
+	 * "own_prices": Preise der Preisliste sind bereits Verkaufspreise (Faktor 1, Preise standardmäßig sichtbar, keine Warnung).
 	 * Per Filter erweiterbar.
 	 *
-	 * @return array<string, array{label:string, code:string}>
+	 * @return array<string, array{label:string, code:string, own_prices?:bool}>
 	 */
 	public static function suppliers(): array {
 		return apply_filters( 'ml_deco_suppliers', [
 			'midocean' => [ 'label' => 'MidOcean', 'code' => 'DIM' ],
 			'makito'   => [ 'label' => 'Makito',   'code' => 'TKM' ],
+			// Die Bezeichnung wird nur im Admin angezeigt, nie im Shop.
+			'cotton'   => [ 'label' => 'Cotton Classics', 'code' => 'LCC', 'own_prices' => true ],
 		] );
 	}
 
@@ -45,6 +48,11 @@ class ML_Deco_Store {
 	 * Produktdaten: ['manipulation' => ?string, 'template' => ?string, 'positions' => [...]]
 	 */
 	public static function product_data( int $product_id ): ?array {
+		// Cotton: Positionen kommen aus den Vorlagen (Excel) und der Zuordnung je Produkt, nicht aus einem Feed
+		if ( self::supplier_key_for_product( $product_id ) === ML_Deco_Excel::SUPPLIER_KEY ) {
+			return ML_Deco_Cotton::product_data( $product_id );
+		}
+
 		$raw = get_post_meta( $product_id, self::META_PRODUCT, true );
 		if ( ! is_string( $raw ) || $raw === '' ) {
 			return null;

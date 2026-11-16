@@ -39,6 +39,65 @@ class ML_Deco_Calc {
 		return $unit;
 	}
 
+	/** Zahl aus einer Eingabe (auch mit Komma als Dezimaltrenner), sonst 0. */
+	public static function to_float( $value ): float {
+		if ( ! is_scalar( $value ) ) {
+			return 0.0;
+		}
+		$v = str_replace( ',', '.', trim( (string) $value ) );
+		return is_numeric( $v ) ? (float) $v : 0.0;
+	}
+
+	/** Auf eine Nachkommastelle runden (kaufmännisch, gleiche Formel wie calculator.js). */
+	public static function round1( float $v ): float {
+		return floor( $v * 10 + 0.5 + 1e-9 ) / 10;
+	}
+
+	/** Auf eine Nachkommastelle abrunden (gleiche Formel wie calculator.js). */
+	public static function floor1( float $v ): float {
+		return floor( $v * 10 + 1e-9 ) / 10;
+	}
+
+	/**
+	 * Motivmaße (Breite x Höhe in cm) prüfen und die Fläche daraus berechnen. Gleiche Regel wie dims() in calculator.js:
+	 * 1. je Seite mindestens 0,5 cm und höchstens das Maß der Position (auf 0,1 abgerundet), Seiten auf 0,1 gerundet;
+	 * 2. ist die Fläche größer als die Maximalfläche der Position (z. B. rund), werden beide Seiten im gleichen
+	 *    Verhältnis verkleinert (auf 0,1 abgerundet, damit die Maximalfläche nicht überschritten wird);
+	 * 3. Fläche = Breite x Höhe der gerundeten Seiten, auf 0,1 gerundet.
+	 * Das Ergebnis ist stabil: dieselbe Regel auf das Ergebnis angewandt ändert nichts. Beide Werte sind nötig, sonst null.
+	 *
+	 * @return array{w:float,h:float,area:float}|null
+	 */
+	public static function dims( $w, $h, float $max_w, float $max_h, float $max_area = 0.0 ): ?array {
+		$w = self::to_float( $w );
+		$h = self::to_float( $h );
+		if ( $w <= 0 || $h <= 0 || $max_w <= 0 || $max_h <= 0 ) {
+			return null;
+		}
+		$cap_w = max( 0.1, self::floor1( $max_w ) );
+		$cap_h = max( 0.1, self::floor1( $max_h ) );
+		$w     = min( max( self::round1( $w ), 0.5 ), $cap_w );
+		$h     = min( max( self::round1( $h ), 0.5 ), $cap_h );
+		if ( $max_area > 0 && $w * $h > $max_area + 1e-9 ) {
+			$s = sqrt( $max_area / ( $w * $h ) );
+			$w = max( 0.1, self::floor1( $w * $s ) );
+			$h = max( 0.1, self::floor1( $h * $s ) );
+		}
+		return [ 'w' => $w, 'h' => $h, 'area' => self::round1( $w * $h ) ];
+	}
+
+	/** Erste Stufe, deren Obergrenze die Fläche abdeckt (Grenze inklusive); darüber die letzte Stufe. */
+	public static function range_index_for_area( array $ranges, float $area ): int {
+		$ranges = array_values( $ranges );
+		foreach ( $ranges as $i => $r ) {
+			$to = $r['to'] ?? null;
+			if ( $to === null || $area <= (float) $to + 1e-9 ) {
+				return (int) $i;
+			}
+		}
+		return max( 0, count( $ranges ) - 1 );
+	}
+
 	/**
 	 * Bei Flächenstufen nur die Stufen, die auf dieser Position überhaupt erreichbar sind
 	 * (Untergrenze der Stufe liegt unter der maximalen Druckfläche).

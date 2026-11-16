@@ -130,13 +130,13 @@ class ML_Deco_Selection {
 	/**
 	 * Prüft die Auswahl gegen die Produktdaten.
 	 *
-	 * Logo je Position: "file" = Attachment-ID der Logo-Datei, "same" = Position, deren Logo mitgenutzt wird. Beide Schlüssel
-	 * stehen nur in der Zeile, wenn es sie gibt (bestehende Wunschlisten-Einträge ohne Logo behalten ihre ID).
+	 * Logo je Position: "file" = Attachment-ID der Logo-Datei, "same" = Position, deren Logo mitgenutzt wird, "later" = bewusst
+	 * "Logo später per Mail" gewählt (nur ohne file). Diese Schlüssel stehen nur in der Zeile, wenn es sie gibt (bestehende Wunschlisten-Einträge ohne Logo behalten ihre ID).
 	 * $check_owner = true beim Speichern aus dem Browser: Die Datei muss dem Besucher gehören (ML_Deco_Files::is_owned()).
 	 * Bei false (gespeicherte Daten, geteilte Ansicht) genügt eine Logo-Datei dieses Plugins; fehlt sie (Aufräumen), bleibt die ID
 	 * stehen und die Anzeige sagt "nicht mehr vorhanden".
 	 *
-	 * @return array|null ['lines' => [['pos','tech','colours','range','area', 'file'?, 'same'?], ...], 'repeat' => bool]
+	 * @return array|null ['lines' => [['pos','tech','colours','range','area', 'w'?, 'h'?, 'file'?, 'same'?, 'later'?], ...], 'repeat' => bool]
 	 */
 	public static function sanitize( int $product_id, $raw, bool $check_owner = false ): ?array {
 		$ctx = self::context( $product_id );
@@ -188,7 +188,22 @@ class ML_Deco_Selection {
 				$area = $area > 0 ? min( $area, $maxArea ) : $maxArea;
 			}
 
-			$line = [ 'pos' => $posId, 'tech' => $techId, 'colours' => $colours, 'range' => $range, 'area' => round( $area, 1 ) ];
+			// Eigene Maße (Breite x Höhe in cm): Fläche und Stufe werden hier berechnet, nie vom Browser übernommen.
+			$size = ML_Deco_Render::size_cm( $pos );
+			$dims = $size ? ML_Deco_Calc::dims( $l['w'] ?? null, $l['h'] ?? null, $size['w'], $size['h'], $maxArea ) : null;
+			if ( $dims ) {
+				$area = $dims['area'];
+				$kind = (string) ( $tech['pricing'] ?? '' );
+				if ( in_array( $kind, [ 'area_range', 'colour_area_range' ], true ) && count( $ranges ) > 1 ) {
+					$range = ML_Deco_Calc::range_index_for_area( $ranges, $area );
+				}
+			}
+
+			$line = [ 'pos' => $posId, 'tech' => $techId, 'colours' => $colours, 'range' => $range, 'area' => $dims ? $dims['area'] : round( $area, 1 ) ];
+			if ( $dims ) {
+				$line['w'] = $dims['w'];
+				$line['h'] = $dims['h'];
+			}
 			if ( $logos ) {
 				$fileId = (int) ( $l['file'] ?? 0 );
 				if ( $fileId > 0 ) {
@@ -199,6 +214,8 @@ class ML_Deco_Selection {
 				}
 				if ( empty( $line['file'] ) && ! empty( $l['same'] ) ) {
 					$sameRaw[ $posId ] = (string) $l['same'];
+				} elseif ( empty( $line['file'] ) && ! empty( $l['later'] ) ) {
+					$line['later'] = 1;   // bewusst gewählt: Logo folgt per Mail (Standard ist "Datei hochladen")
 				}
 			}
 			$lines[]        = $line;
@@ -443,6 +460,7 @@ class ML_Deco_Selection {
 		$rows  = [];
 		$sum   = 0.0;
 		$setup = 0.0;
+		$estimate = false; // Vorkosten nur als Richtwert (Cotton)
 		$any   = false;
 
 		foreach ( (array) ( $selection['lines'] ?? [] ) as $l ) {
@@ -470,6 +488,10 @@ class ML_Deco_Selection {
 			} elseif ( ! $tech['fullColour'] ) {
 				$text .= ', ' . __( '1 Farbe', 'media-lab-ml-decoration' );
 			}
+			if ( isset( $l['w'], $l['h'] ) && (float) $l['w'] > 0 && (float) $l['h'] > 0 ) {
+				$fmt   = static fn( float $v ): string => number_format_i18n( $v, floor( $v ) === $v ? 0 : 1 );
+				$text .= ', ' . sprintf( $t['dimsRow'], $fmt( (float) $l['w'] ), $fmt( (float) $l['h'] ) );
+			}
 			$multi = count( ML_Deco_Calc::relevant_ranges( $tech, $pos['maxArea'] > 0 ? (float) $pos['maxArea'] : null ) ) > 1;
 			if ( $multi ) {
 				$text .= ', ' . ML_Deco_Calc::range_label( $range );
@@ -483,9 +505,11 @@ class ML_Deco_Selection {
 					$any    = true;
 					$sum   += $calc['total'];
 					$setup += round( $calc['setup'], 2 );
+					$isEst  = ! empty( $tech['setupEstimate'] ) && $calc['setup'] > 0;
+					$estimate = $estimate || $isEst;
 					$text  .= sprintf(
-						/* translators: 1: Stückpreis, 2: Einrichtung, 3: Summe */
-						' – ' . __( '%1$s je Stück + %2$s Einrichtung = %3$s', 'media-lab-ml-decoration' ),
+						/* translators: 1: Stückpreis, 2: Einrichtung bzw. Vorkosten, 3: Summe */
+						' – ' . ( $isEst ? __( '%1$s je Stück + %2$s Vorkosten (Richtwert) = %3$s', 'media-lab-ml-decoration' ) : __( '%1$s je Stück + %2$s Einrichtung = %3$s', 'media-lab-ml-decoration' ) ),
 						self::plain( $calc['unit'] ),
 						self::plain( $calc['setup'] ),
 						self::plain( $calc['total'] )
@@ -505,11 +529,14 @@ class ML_Deco_Selection {
 
 		if ( $rows && $show && $any ) {
 			$rows[ __( 'Veredelung gesamt (ca., netto, zusätzlich zum Produktpreis)', 'media-lab-ml-decoration' ) ] = sprintf(
-				__( '%1$s bei %2$d Stück (davon Einrichtung %3$s) – unverbindliche Schätzung', 'media-lab-ml-decoration' ),
+				$estimate ? __( '%1$s bei %2$d Stück (davon Vorkosten-Richtwert %3$s) – unverbindliche Schätzung', 'media-lab-ml-decoration' ) : __( '%1$s bei %2$d Stück (davon Einrichtung %3$s) – unverbindliche Schätzung', 'media-lab-ml-decoration' ),
 				self::plain( $sum ),
 				$qty,
 				self::plain( $setup )
 			);
+		}
+		if ( $rows && $show && $estimate && ML_Deco_Settings::setup_note() !== '' ) {
+			$rows[ __( 'Veredelung – Hinweis Vorkosten', 'media-lab-ml-decoration' ) ] = ML_Deco_Settings::setup_note();
 		}
 		if ( $rows && ! empty( $selection['repeat'] ) ) {
 			$rows[ __( 'Veredelung – Wiederholungsauftrag', 'media-lab-ml-decoration' ) ] = __( 'Ja', 'media-lab-ml-decoration' );

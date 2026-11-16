@@ -96,9 +96,25 @@ class ML_Deco_Render {
 		if ( $note !== '' ) {
 			echo '<p class="mld__note">' . esc_html( $note ) . '</p>';
 		}
+		if ( $show && self::any_setup_estimate( $data, $pricelist ) && ML_Deco_Settings::setup_note() !== '' ) {
+			echo '<p class="mld__note">' . esc_html( ML_Deco_Settings::setup_note() ) . '</p>';
+		}
 
 		echo '</div>';
 		return (string) ob_get_clean();
+	}
+
+	/** Hat mindestens eine angezeigte Technik Vorkosten, die nur ein Richtwert sind? */
+	private static function any_setup_estimate( array $data, array $pricelist ): bool {
+		foreach ( (array) $data['positions'] as $position ) {
+			foreach ( (array) ( $position['techniques'] ?? [] ) as $pt ) {
+				$tech = $pricelist['techniques'][ $pt['id'] ?? '' ] ?? null;
+				if ( is_array( $tech ) && ! empty( $tech['setup_estimate'] ) && ( $tech['setup'] ?? 0 ) > 0 ) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private static function render_position( array $position, array $techs, bool $show, float $factor, float $handling, bool $showImage = true ): void {
@@ -201,10 +217,14 @@ class ML_Deco_Render {
 	private static function render_facts( array $tech, float $factor ): void {
 		$facts = [];
 		if ( ( $tech['setup'] ?? 0 ) > 0 ) {
-			$facts[] = sprintf(
-				! empty( $tech['setup_per_colour'] ) ? __( 'Einrichtung (einmalig, je Farbe): %s', 'media-lab-ml-decoration' ) : __( 'Einrichtung (einmalig): %s', 'media-lab-ml-decoration' ),
-				self::money( $tech['setup'] * $factor )
-			);
+			if ( ! empty( $tech['setup_estimate'] ) ) {
+				$facts[] = sprintf( __( 'Vorkosten (Richtwert, einmalig): %s', 'media-lab-ml-decoration' ), self::money( $tech['setup'] * $factor ) );
+			} else {
+				$facts[] = sprintf(
+					! empty( $tech['setup_per_colour'] ) ? __( 'Einrichtung (einmalig, je Farbe): %s', 'media-lab-ml-decoration' ) : __( 'Einrichtung (einmalig): %s', 'media-lab-ml-decoration' ),
+					self::money( $tech['setup'] * $factor )
+				);
+			}
 		}
 		if ( ( $tech['setup_repeat'] ?? 0 ) > 0 ) {
 			$facts[] = sprintf( __( 'Bei Wiederholung: %s', 'media-lab-ml-decoration' ), self::money( $tech['setup_repeat'] * $factor ) );
@@ -217,6 +237,10 @@ class ML_Deco_Render {
 		}
 		if ( ! empty( $tech['min_qty'] ) ) {
 			$facts[] = sprintf( __( 'Mindestmenge: %s Stk.', 'media-lab-ml-decoration' ), esc_html( number_format_i18n( (int) $tech['min_qty'] ) ) );
+		}
+		$lead = trim( (string) ( ( (array) ( $tech['lead_time'] ?? [] ) )['de'] ?? '' ) );
+		if ( $lead !== '' ) {
+			$facts[] = esc_html( sprintf( __( 'Produktionszeit: %s', 'media-lab-ml-decoration' ), $lead ) );
 		}
 		if ( $facts ) {
 			// Beträge kommen als sicheres wc_price-HTML, Text selbst stammt aus unseren Übersetzungen
@@ -272,17 +296,37 @@ class ML_Deco_Render {
 		return (string) apply_filters( 'ml_deco_position_label', $label !== '' ? $label : $id, $position );
 	}
 
-	public static function size_label( array $position ): string {
+	/**
+	 * Maße einer Position in cm (mm und cm sind bekannt, sonst null). Einheitlich für Anzeige, Eingabegrenzen und Prüfung.
+	 *
+	 * @return array{w:float,h:float}|null
+	 */
+	public static function size_cm( array $position ): ?array {
 		$w = (float) ( $position['w'] ?? 0 );
 		$h = (float) ( $position['h'] ?? 0 );
 		if ( $w <= 0 || $h <= 0 ) {
+			return null;
+		}
+		$unit   = strtolower( (string) ( $position['unit'] ?? 'mm' ) );
+		$factor = $unit === 'mm' ? 0.1 : ( $unit === 'cm' ? 1.0 : null );
+		if ( $factor === null ) {
+			return null;
+		}
+		$w = round( $w * $factor, 2 );
+		$h = round( $h * $factor, 2 );
+		return ( $w > 0 && $h > 0 ) ? [ 'w' => $w, 'h' => $h ] : null;
+	}
+
+	/** Maße einer Position als Text, durchgehend in cm ("4 × 2 cm", rund: "⌀ 4 cm"). */
+	public static function size_label( array $position ): string {
+		$size = self::size_cm( $position );
+		if ( ! $size ) {
 			return '';
 		}
-		$fmt  = static fn( float $v ): string => number_format_i18n( $v, floor( $v ) === $v ? 0 : 1 );
-		$unit = (string) ( $position['unit'] ?? 'mm' );
-		if ( ( $position['shape'] ?? '' ) === 'Ellipse' && abs( $w - $h ) < 0.01 ) {
-			return '⌀ ' . $fmt( $w ) . ' ' . $unit;
+		$fmt = static fn( float $v ): string => number_format_i18n( $v, abs( $v - round( $v ) ) < 0.005 ? 0 : 1 );
+		if ( ( $position['shape'] ?? '' ) === 'Ellipse' && abs( $size['w'] - $size['h'] ) < 0.01 ) {
+			return '⌀ ' . $fmt( $size['w'] ) . ' cm';
 		}
-		return $fmt( $w ) . ' × ' . $fmt( $h ) . ' ' . $unit;
+		return $fmt( $size['w'] ) . ' × ' . $fmt( $size['h'] ) . ' cm';
 	}
 }

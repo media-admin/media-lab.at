@@ -123,7 +123,90 @@
 		return res;
 	}
 
+	// ── Motivmaße (Breite x Höhe in cm): muss exakt ML_Deco_Calc::dims() / range_index_for_area() entsprechen ──
+
+	function parseNum( v ) {
+		if ( v === null || v === undefined ) {
+			return 0;
+		}
+		var n = Number( String( v ).trim().replace( ',', '.' ) );
+		return isFinite( n ) ? n : 0;
+	}
+
+	function roundTenth( v ) {
+		return Math.floor( v * 10 + 0.5 + 1e-9 ) / 10;
+	}
+
+	function floorTenth( v ) {
+		return Math.floor( v * 10 + 1e-9 ) / 10;
+	}
+
+	/**
+	 * 1. je Seite mindestens 0,5 cm und höchstens das Maß der Position (auf 0,1 abgerundet), Seiten auf 0,1 gerundet;
+	 * 2. ist die Fläche größer als die Maximalfläche der Position (z. B. rund), werden beide Seiten im gleichen Verhältnis
+	 *    verkleinert (auf 0,1 abgerundet);
+	 * 3. Fläche = Breite x Höhe der gerundeten Seiten, auf 0,1 gerundet.
+	 * Stabil: dieselbe Regel auf das Ergebnis angewandt ändert nichts. Beide Werte nötig, sonst null.
+	 */
+	function dims( w, h, maxW, maxH, maxArea ) {
+		w = parseNum( w );
+		h = parseNum( h );
+		maxW = Number( maxW ) || 0;
+		maxH = Number( maxH ) || 0;
+		maxArea = Number( maxArea ) || 0;
+		if ( w <= 0 || h <= 0 || maxW <= 0 || maxH <= 0 ) {
+			return null;
+		}
+		var capW = Math.max( 0.1, floorTenth( maxW ) );
+		var capH = Math.max( 0.1, floorTenth( maxH ) );
+		w = Math.min( Math.max( roundTenth( w ), 0.5 ), capW );
+		h = Math.min( Math.max( roundTenth( h ), 0.5 ), capH );
+		if ( maxArea > 0 && w * h > maxArea + 1e-9 ) {
+			var sc = Math.sqrt( maxArea / ( w * h ) );
+			w = Math.max( 0.1, floorTenth( w * sc ) );
+			h = Math.max( 0.1, floorTenth( h * sc ) );
+		}
+		return { w: w, h: h, area: roundTenth( w * h ) };
+	}
+
+	/** Erste Stufe, deren Obergrenze die Fläche abdeckt (Grenze inklusive); darüber die letzte Stufe. */
+	function rangeIndexForArea( ranges, area ) {
+		for ( var i = 0; i < ranges.length; i++ ) {
+			var to = ranges[ i ].to;
+			if ( to === null || to === undefined || area <= Number( to ) + 1e-9 ) {
+				return i;
+			}
+		}
+		return Math.max( 0, ranges.length - 1 );
+	}
+
+	/**
+	 * Wirksame Stufe und Fläche einer Auswahlzeile: aus Stufe/Fläche der Auswahl, oder (sobald der Besucher Maße
+	 * eingegeben hat, sel.dOn) aus Breite x Höhe.
+	 * @param {Object} pos Position (maxArea, w, h in cm)
+	 * @param {Object} tech Technik
+	 * @param {Object} sel {rangeIdx, area, dw, dh, dOn}
+	 */
+	function resolveLine( pos, tech, sel ) {
+		var ranges = reachableRanges( tech, pos.maxArea );
+		var isRange = ( tech.pricing === 'area_range' || tech.pricing === 'colour_area_range' ) && ranges.length > 1;
+		var d = sel.dOn ? dims( sel.dw, sel.dh, pos.w, pos.h, pos.maxArea ) : null;
+		var area = sel.area || pos.maxArea || 0;
+		var idx = Math.max( 0, Math.min( ranges.length - 1, sel.rangeIdx || 0 ) );
+		if ( d ) {
+			area = d.area;
+			if ( isRange ) {
+				idx = rangeIndexForArea( ranges, area );
+			}
+		}
+		return { ranges: ranges, range: ranges[ idx ], rangeIdx: idx, area: area, dims: d, isRange: isRange };
+	}
+
 	root.MLDecoCalc = {
+		dims: dims,
+		rangeIndexForArea: rangeIndexForArea,
+		resolveLine: resolveLine,
+		parseNum: parseNum,
 		imageForColor: function ( pos, code, defaultColor ) {
 			var colors = pos.colors || [];
 			var use = code && colors.indexOf( code ) !== -1 ? code : ( defaultColor && colors.indexOf( defaultColor ) !== -1 ? defaultColor : null );
@@ -150,6 +233,20 @@
 			node.textContent = text;
 		}
 		return node;
+	}
+
+	// Produktionszeit je gewählter Technik (nur wenn hinterlegt), ohne Wiederholungen
+	function leadTimeNotes( lines, t ) {
+		var out = [];
+		lines.forEach( function ( l ) {
+			if ( l.tech.leadTime && t.leadTime ) {
+				var n = fill( t.leadTime, [ l.tech.leadTime ] );
+				if ( out.indexOf( n ) === -1 ) {
+					out.push( n );
+				}
+			}
+		} );
+		return out;
 	}
 
 	function fill( template, values ) {
@@ -280,11 +377,11 @@
 			return btn;
 		}
 
-		var hint = el( 'p', 'mld-calc__hint', t.hint );
+		var hint = el( 'p', 'mld-calc__hint', t.hint + ( data.logo ? ' ' + t.logoNeedFile : '' ) );   // Logo-Hinweis einmal oben statt je Position
 		var form = el( 'div', 'mld-calc__form' );
 
 		data.positions.forEach( function ( pos, pi ) {
-			var ps = { techId: '', colours: 1, rangeIdx: null, area: pos.maxArea || 0, dw: pos.w || 0, dh: pos.h || 0, mode: 'later', same: '', file: null, gone: false, busy: false, msg: '', err: false };
+			var ps = { techId: '', colours: 1, rangeIdx: null, area: pos.maxArea || 0, dw: pos.w || 0, dh: pos.h || 0, dOn: false, mode: 'upload', same: '', file: null, gone: false, busy: false, msg: '', err: false, tried: false };
 			state.positions.push( ps );
 
 			var fs = el( 'fieldset', 'mld-calc__pos' );
@@ -399,47 +496,61 @@
 			}
 
 			function round1( v ) {
-					return Math.round( v * 10 ) / 10;
+					return roundTenth( v );
 				}
+
+				// true: Die Felder sind mit der vollen Größe vorbelegt (Technik mit Preis je cm²); sonst optional und leer
+				var dimsPrefilled = false;
+				var dimsTech = '';   // Technik, für die die Felder zuletzt befüllt wurden
 
 				function updateDimsNote() {
-					if ( dimsNote ) {
-						dimsNote.textContent = fill( t.dimsMax, [ num( pos.w ), num( pos.h ) ] ) + ' · ' + fill( t.dimsArea, [ num( ps.area ) ] );
+					if ( ! dimsNote ) {
+						return;
 					}
+					var tech = ps.techId ? data.techniques[ ps.techId ] : null;
+					var rangeTech = !! tech && ( tech.pricing === 'area_range' || tech.pricing === 'colour_area_range' );
+					var text = fill( t.dimsMax, [ num( pos.w ), num( pos.h ) ] );
+					if ( ps.dOn || dimsPrefilled ) {
+						text += ' · ' + fill( t.dimsArea, [ num( ps.area ) ] );
+					} else {
+						text += ' · ' + ( rangeTech ? t.dimsOptional : t.dimsInfo );
+					}
+					dimsNote.textContent = text;
 				}
 
-				/** Maße setzen: je Seite höchstens das Maß der Position, die Fläche höchstens die Maximalfläche. */
+				/** Maße setzen (Regel siehe dims()): Fläche daraus, Maße gelten ab jetzt für die Berechnung. */
 				function setDims( w, h ) {
-					w = Math.min( Math.max( w, 0.5 ), pos.w );
-					h = Math.min( Math.max( h, 0.5 ), pos.h );
-					var a = w * h;
-					if ( pos.maxArea > 0 && a > pos.maxArea ) {
-						var s = Math.sqrt( pos.maxArea / a );
-						w *= s;
-						h *= s;
-						a = pos.maxArea;
+					var d = dims( w, h, pos.w, pos.h, pos.maxArea );
+					if ( ! d ) {
+						return false;
 					}
-					ps.dw = round1( w );
-					ps.dh = round1( h );
-					ps.area = round1( a );
+					ps.dw = d.w;
+					ps.dh = d.h;
+					ps.area = d.area;
+					ps.dOn = true;
+					return true;
 				}
 
 				if ( wrapDims ) {
 					var onDims = function () {
-						var w = parseFloat( inW.value );
-						var h = parseFloat( inH.value );
-						if ( w > 0 && h > 0 ) {
-							setDims( w, h );
-							updateDimsNote();
-							render();
+						if ( parseNum( inW.value ) > 0 && parseNum( inH.value ) > 0 ) {
+							setDims( parseNum( inW.value ), parseNum( inH.value ) );
+						} else if ( ! dimsPrefilled ) {
+							ps.dOn = false;   // optionale Maße geleert: es gilt wieder die Auswahl der Größe
+						} else {
+							return;
 						}
+						refresh();
+						render();
 					};
 					inW.addEventListener( 'input', onDims );
 					inH.addEventListener( 'input', onDims );
 					// beim Verlassen des Felds auf die zulässigen Werte zurücksetzen
 					var onDimsDone = function () {
-						inW.value = String( ps.dw );
-						inH.value = String( ps.dh );
+						if ( ps.dOn || dimsPrefilled ) {
+							inW.value = String( ps.dw );
+							inH.value = String( ps.dh );
+						}
 						updateDimsNote();
 					};
 					inW.addEventListener( 'change', onDimsDone );
@@ -454,6 +565,7 @@
 					wrapDims.hidden = true;
 				}
 				if ( ! tech ) {
+					dimsTech = '';
 					return;
 				}
 				var pt = pos.techniques.filter( function ( x ) { return x.id === ps.techId; } )[ 0 ];
@@ -475,6 +587,7 @@
 				}
 
 				if ( ! showPrices ) {
+					showDims( false );   // ohne Preise: Maße optional, gehen mit der Anfrage mit
 					return;
 				}
 
@@ -495,21 +608,45 @@
 				} else {
 					ps.rangeIdx = 0;
 				}
+				// Eigene Maße aktiv: Die Stufe ergibt sich aus Breite x Höhe (Anzeige, nicht änderbar)
+				var rl = resolveLine( pos, tech, ps );
+				selRange.disabled = !! rl.dims && rl.isRange;
+				if ( rl.dims && rl.isRange ) {
+					selRange.value = String( rl.rangeIdx );
+				}
 				var usesArea = ranges.some( function ( r ) {
 					return ( r.scales || [] ).some( function ( s ) { return hasKey( s, 'cm' ) && s.cm; } );
 				} ) || tech.pricing === 'area';
-				if ( usesArea && pos.maxArea ) {
-					if ( wrapDims ) {
-						inW.value = String( ps.dw );
-						inH.value = String( ps.dh );
-						updateDimsNote();
-						wrapDims.hidden = false;
-					} else {
-						inArea.max = String( pos.maxArea );
-						inArea.value = String( ps.area );
-						wrapArea.hidden = false;
+				if ( usesArea && pos.maxArea && ! wrapDims ) {
+					inArea.max = String( pos.maxArea );
+					inArea.value = String( ps.area );
+					wrapArea.hidden = false;
+				}
+				showDims( usesArea && pos.maxArea > 0 );
+			}
+
+			/** Felder für Breite x Höhe zeigen; prefilled: mit der vollen Größe vorbelegt (Preis je cm²), sonst optional. */
+			function showDims( prefilled ) {
+				if ( ! wrapDims ) {
+					return;
+				}
+				dimsPrefilled = prefilled;
+				var filled = prefilled || ps.dOn;
+				// optionale Felder nur bei neuer Technik leeren, damit halb getippte Werte stehen bleiben
+				var fresh = dimsTech !== ps.techId;
+				dimsTech = ps.techId;
+				if ( filled || fresh ) {
+					if ( document.activeElement !== inW ) {
+						inW.value = filled ? String( ps.dw ) : '';
+					}
+					if ( document.activeElement !== inH ) {
+						inH.value = filled ? String( ps.dh ) : '';
 					}
 				}
+				inW.placeholder = String( pos.w );
+				inH.placeholder = String( pos.h );
+				updateDimsNote();
+				wrapDims.hidden = false;
 			}
 
 			selTech.addEventListener( 'change', function () {
@@ -519,6 +656,7 @@
 				ps.area = pos.maxArea || 0;
 				ps.dw = pos.w || 0;
 				ps.dh = pos.h || 0;
+				ps.dOn = false;
 				refresh();
 				render();
 			} );
@@ -619,6 +757,7 @@
 					ps.msg = '';
 					ps.err = false;
 					ps.gone = false;
+					ps.tried = false;
 					if ( v.indexOf( 'same:' ) === 0 ) {
 						ps.mode = 'same';
 						ps.same = v.slice( 5 );
@@ -710,12 +849,13 @@
 			}
 
 			function resetLogo() {
-				ps.mode = 'later';
+				ps.mode = 'upload';   // Standard: Datei hochladen ("Logo später per Mail" ist eine bewusste Wahl)
 				ps.same = '';
 				ps.file = null;
 				ps.gone = false;
 				ps.msg = '';
 				ps.err = false;
+				ps.tried = false;
 			}
 
 			/** Gespeicherte Auswahl wieder einsetzen: files = Dateiinfos vom Server (mld_selection_get). */
@@ -735,6 +875,8 @@
 					} else {
 						ps.gone = true;
 					}
+				} else if ( line.later ) {
+					ps.mode = 'later';
 				}
 			}
 
@@ -781,7 +923,7 @@
 				}
 
 				// Auswahl der Quelle: "gleiches Logo" nur für Positionen mit eigener hochgeladener Datei
-				var opts = [ [ 'later', t.logoLater ], [ 'upload', t.logoUpload ] ];
+				var opts = [ [ 'upload', t.logoUpload ], [ 'later', t.logoLater ] ];
 				data.positions.forEach( function ( p2, i2 ) {
 					var s2 = state.positions[ i2 ];
 					if ( i2 !== pi && s2.techId && s2.mode === 'upload' && s2.file ) {
@@ -790,9 +932,9 @@
 				} );
 				var cur = ps.mode === 'same' ? 'same:' + ps.same : ps.mode;
 				if ( ! opts.some( function ( o ) { return o[ 0 ] === cur; } ) ) {
-					ps.mode = 'later';
+					ps.mode = 'upload';
 					ps.same = '';
-					cur = 'later';
+					cur = 'upload';
 				}
 				var sig = JSON.stringify( opts );
 				if ( sig !== modeSig ) {
@@ -823,11 +965,13 @@
 					text = t.logoUploading;
 				} else if ( ps.msg ) {
 					text = ps.msg;
-				} else if ( ps.gone && ps.mode === 'later' ) {
+				} else if ( ps.gone && up && ! ps.file ) {
 					text = t.logoGone;
+				} else if ( up && ! ps.file && ps.tried ) {
+					text = t.logoMissing;   // nur nach einem Versuch, ohne Datei weiterzugehen (der allgemeine Hinweis steht oben)
 				}
 				statusEl.textContent = text;
-				statusEl.classList.toggle( 'is-error', !! ps.err || ( ps.gone && ps.mode === 'later' && ! ps.busy && ! ps.msg ) );
+				statusEl.classList.toggle( 'is-error', !! ps.err || ( up && ! ps.file && ! ps.busy && ( ps.gone || ps.tried ) ) );
 				statusEl.hidden = text === '';
 			}
 
@@ -835,6 +979,21 @@
 				refreshLogo: function () {
 					refreshLogo();
 					syncExtras();
+				},
+				/** true, wenn für diese Position noch eine Datei fehlt (Standard "Datei hochladen" ohne Datei) oder der Upload läuft. */
+				needsFile: function () {
+					return !! logoWrap && !! ps.techId && ps.mode === 'upload' && ( ! ps.file || ps.busy );
+				},
+				/** Hinweis hervorheben und in den Sichtbereich holen. */
+				reveal: function () {
+					ps.tried = true;
+					refreshLogo();
+					if ( typeof logoWrap.scrollIntoView === 'function' ) {
+						logoWrap.scrollIntoView( { block: 'center', behavior: 'smooth' } );
+					}
+					if ( fileInput && ! fileInput.hidden ) {
+						fileInput.focus( { preventScroll: true } );
+					}
 				},
 				clear: function () {
 					resetLogo();
@@ -845,6 +1004,7 @@
 					ps.area = pos.maxArea || 0;
 					ps.dw = pos.w || 0;
 					ps.dh = pos.h || 0;
+					ps.dOn = false;
 					refresh();
 				},
 				set: function ( line, files ) {
@@ -854,7 +1014,13 @@
 					ps.colours = line.colours > 0 ? line.colours : 1;
 					ps.rangeIdx = line.range >= 0 ? line.range : null;
 					ps.area = line.area > 0 ? line.area : ( pos.maxArea || 0 );
-					if ( pos.w > 0 && pos.h > 0 ) {
+					ps.dOn = false;
+					if ( line.w > 0 && line.h > 0 && pos.w > 0 && pos.h > 0 ) {
+						// gespeicherte Maße: gelten wieder für die Berechnung
+						ps.dw = line.w;
+						ps.dh = line.h;
+						ps.dOn = true;
+					} else if ( pos.w > 0 && pos.h > 0 ) {
 						var sc = pos.maxArea > 0 ? Math.min( 1, Math.sqrt( ps.area / pos.maxArea ) ) : 1;
 						ps.dw = round1( pos.w * sc );
 						ps.dh = round1( pos.h * sc );
@@ -990,6 +1156,9 @@
 				var target = data.positions.filter( function ( p ) { return p.id === ps.same; } )[ 0 ];
 				return target ? fill( t.logoSame, [ target.label ] ) : t.logoLater;
 			}
+			if ( ps.mode === 'upload' ) {
+				return t.logoMissing;
+			}
 			return t.logoLater;
 		}
 
@@ -1013,13 +1182,20 @@
 			data.positions.forEach( function ( pos, pi ) {
 				var ps = state.positions[ pi ];
 				if ( ps.techId ) {
-					var line = { pos: pos.id, tech: ps.techId, colours: ps.colours, range: ps.rangeIdx || 0, area: ps.area || pos.maxArea || 0 };
+					var rl = resolveLine( pos, data.techniques[ ps.techId ], ps );
+					var line = { pos: pos.id, tech: ps.techId, colours: ps.colours, range: rl.rangeIdx, area: rl.area };
+					if ( rl.dims ) {
+						line.w = rl.dims.w;
+						line.h = rl.dims.h;
+					}
 					// Logo: nur die Datei-ID bzw. die Bezugsposition. Der Server prüft, ob die Datei dem Besucher gehört.
 					if ( data.logo ) {
 						if ( ps.mode === 'upload' && ps.file ) {
 							line.file = ps.file.id;
 						} else if ( ps.mode === 'same' && ps.same ) {
 							line.same = ps.same;
+						} else if ( ps.mode === 'later' ) {
+							line.later = 1;   // bewusst: Logo folgt per Mail
 						}
 					}
 					lines.push( line );
@@ -1206,8 +1382,17 @@
 			if ( wl.busy ) {
 				return;
 			}
-			wl.busy = true;
+			// Hinzufügen nur, wenn zu jeder gewählten Veredelung eine Datei vorliegt (oder bewusst "später per Mail" gewählt ist)
+			if ( ! wl.itemId ) {
+				for ( var gi = 0; gi < controls.length; gi++ ) {
+					if ( controls[ gi ] && controls[ gi ].needsFile && controls[ gi ].needsFile() ) {
+						controls[ gi ].reveal();
+						return;
+					}
+				}
+			}
 			wl.btn.disabled = true;
+			wl.busy = true;
 			var finish = function () {
 				wl.busy = false;
 				wl.btn.disabled = false;
@@ -1294,6 +1479,11 @@
 			}
 		}
 
+		/** ", Motiv B × H cm" für Zeilen mit eigenen Maßen, sonst leer */
+		function dimsText( rl ) {
+			return rl.dims ? ', ' + fill( t.dimsRow, [ num( rl.dims.w ), num( rl.dims.h ) ] ) : '';
+		}
+
 		function render() {
 			controls.forEach( function ( c ) {
 				if ( c && c.refreshLogo ) {
@@ -1314,9 +1504,12 @@
 				result.appendChild( el( 'h4', 'mld-calc__h', t.selection ) );
 				var ul = el( 'ul', 'mld-calc__list' );
 				lines.forEach( function ( l ) {
-					ul.appendChild( el( 'li', null, l.pos.label + ': ' + l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) + ( data.logo ? ' · ' + t.logoWord + ': ' + logoSummary( l.ps ) : '' ) ) );
+					ul.appendChild( el( 'li', null, l.pos.label + ': ' + l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) + dimsText( resolveLine( l.pos, l.tech, l.ps ) ) + ( data.logo ? ' · ' + t.logoWord + ': ' + logoSummary( l.ps ) : '' ) ) );
 				} );
 				result.appendChild( ul );
+				leadTimeNotes( lines, t ).forEach( function ( n ) {
+					result.appendChild( el( 'p', 'mld__note', n ) );
+				} );
 				if ( t.sendNote ) {
 					result.appendChild( el( 'p', 'mld__note', t.sendNote ) );
 				}
@@ -1327,7 +1520,8 @@
 			var table = el( 'table', 'mld__table mld-calc__table' );
 			var head = el( 'thead' );
 			var hr = el( 'tr' );
-			[ t.colPos, t.colUnit, t.colSetup, t.colTotal ].forEach( function ( h ) {
+			var anyEstimate = lines.some( function ( l ) { return l.tech.setupEstimate; } );
+			[ t.colPos, t.colUnit, anyEstimate ? t.colSetupEstimate : t.colSetup, t.colTotal ].forEach( function ( h ) {
 				var th = el( 'th', null, h );
 				th.scope = 'col';
 				hr.appendChild( th );
@@ -1339,16 +1533,17 @@
 			var sum = 0;
 			var notes = [];
 			var anyRequest = false;
+			var estimateShown = false;
 
 			lines.forEach( function ( l ) {
-				var ranges = reachableRanges( l.tech, l.pos.maxArea );
-				var range = ranges[ Math.min( l.ps.rangeIdx || 0, ranges.length - 1 ) ];
+				var rl = resolveLine( l.pos, l.tech, l.ps );
+				var range = rl.range;
 				var calc = computeLine( {
 					tech: l.tech,
 					range: range,
 					qty: state.qty,
 					colours: l.ps.colours,
-					area: l.ps.area || l.pos.maxArea || 0,
+					area: rl.area,
 					repeat: state.repeat,
 					handling: data.handling || 0,
 				} );
@@ -1357,7 +1552,7 @@
 				var first = el( 'td' );
 				first.appendChild( el( 'strong', null, l.pos.label ) );
 				first.appendChild( document.createElement( 'br' ) );
-				first.appendChild( document.createTextNode( l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) ) );
+				first.appendChild( document.createTextNode( l.tech.name + ( l.colourText ? ', ' + l.colourText : '' ) + dimsText( rl ) ) );
 					if ( data.logo ) {
 						first.appendChild( document.createElement( 'br' ) );
 						first.appendChild( el( 'span', 'mld-calc__logo-sum', t.logoWord + ': ' + logoSummary( l.ps ) ) );
@@ -1371,11 +1566,14 @@
 					tr.appendChild( td );
 				} else {
 					sum += calc.total;
+					if ( l.tech.setupEstimate && calc.setup > 0 ) {
+						estimateShown = true;
+					}
 					// data-label: Am Smartphone wird die Tabelle zur Liste, die Beschriftung steht dann vor dem Wert
 					var tdUnit = el( 'td', null, money( calc.unit ) );
 					tdUnit.setAttribute( 'data-label', t.colUnit );
 					var tdSetup = el( 'td', null, calc.setup > 0 ? money2( calc.setup ) : '–' );
-					tdSetup.setAttribute( 'data-label', t.colSetup );
+					tdSetup.setAttribute( 'data-label', anyEstimate ? t.colSetupEstimate : t.colSetup );
 					var tdTotal = el( 'td', 'mld-calc__cell-total', money2( calc.total ) );
 					tdTotal.setAttribute( 'data-label', t.colTotal );
 					tr.appendChild( tdUnit );
@@ -1389,7 +1587,7 @@
 					}
 					var usesArea = hasKey( range.scales[ 0 ] || {}, 'cm' ) && range.scales.some( function ( s ) { return s.cm; } ) || l.tech.pricing === 'area';
 					if ( usesArea ) {
-						notes.push( l.pos.label + ': ' + fill( t.maxArea, [ num( l.ps.area || l.pos.maxArea || 0 ) ] ) );
+						notes.push( l.pos.label + ': ' + fill( t.maxArea, [ num( rl.area ) ] ) );
 					}
 				}
 				body.appendChild( tr );
@@ -1414,6 +1612,10 @@
 			if ( sum > 0 && state.qty > 0 ) {
 				result.appendChild( el( 'p', 'mld-calc__avg', fill( t.average, [ money( sum / state.qty ) ] ) ) );
 			}
+			if ( estimateShown && t.setupNote ) {
+				notes.push( t.setupNote );
+			}
+			leadTimeNotes( lines, t ).forEach( function ( n ) { notes.push( n ); } );
 			notes.forEach( function ( n ) {
 				result.appendChild( el( 'p', 'mld__note', n ) );
 			} );

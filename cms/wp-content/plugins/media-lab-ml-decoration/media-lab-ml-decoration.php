@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Media Lab ML Decoration
- * Description: Veredelungsmöglichkeiten und Veredelungspreise (MidOcean, Makito) auf der Produktseite. Eigener Preisfaktor und Preis-Schalter je Lieferant. Projekt-Plugin für at.media-lab.
+ * Description: Veredelungsmöglichkeiten und Veredelungspreise (MidOcean, Makito, Cotton Classics) auf der Produktseite. Eigener Preisfaktor und Preis-Schalter je Lieferant. Projekt-Plugin für at.media-lab.
  * Version: 1.10.0
  * Author: Media Lab
  * Text Domain: media-lab-ml-decoration
@@ -11,6 +11,7 @@
  *   supplier-sync (CLI)  ->  feeds/<lieferant>_products.csv        Spalte decoration_json
  *                            feeds/<lieferant>_decoration_pricelist.json
  *   WP All Import        ->  Custom Field _ml_decoration           pro Produkt: Positionen + Techniken
+ *   Excel-Upload         ->  Preisliste Cotton Classics (WooCommerce > Veredelung), Vorlage unter data/
  *   dieses Plugin        ->  liest die Preisliste (Option), rechnet Faktor drauf, zeigt Tab "Veredelung"
  */
 
@@ -22,6 +23,9 @@ define( 'ML_DECO_URL', plugin_dir_url( __FILE__ ) );
 
 require_once ML_DECO_PATH . 'inc/class-store.php';
 require_once ML_DECO_PATH . 'inc/class-calc.php';
+require_once ML_DECO_PATH . 'inc/class-excel.php';
+require_once ML_DECO_PATH . 'inc/class-cotton.php';
+require_once ML_DECO_PATH . 'inc/class-assign.php';
 require_once ML_DECO_PATH . 'inc/class-settings.php';
 require_once ML_DECO_PATH . 'inc/class-render.php';
 require_once ML_DECO_PATH . 'inc/class-calculator.php';
@@ -35,6 +39,7 @@ add_action( 'plugins_loaded', function () {
 		return;
 	}
 	ML_Deco_Settings::init();
+	ML_Deco_Assign::init();
 	ML_Deco_Frontend::init();
 	ML_Deco_Files::init();
 	ML_Deco_Selection::init();
