@@ -605,15 +605,31 @@
 
 /* Gesamtpreis inkl. Veredelung unter der Summenzeile des Shops (Produktseite) */
 .mld-price-combined {
-	margin: 0.25rem 0 1rem;
+	display: grid;
+	gap: 0.15rem;
+	margin: 0.5rem 0 1.25rem;
 }
 
 .mld-price-combined[hidden] {
 	display: none;
 }
 
+.mld-price-combined__label {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: var(--color-text);
+}
+
+/* Der Endbetrag ist die wichtigste Zahl der Seite: größer als der Stückpreis, in der Akzentfarbe */
+.mld-price-combined__amount {
+	font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.25rem);
+	font-weight: 700;
+	line-height: 1.15;
+	color: var(--color-primary);
+}
+
 .mld-price-combined__parts {
-	font-size: 0.85rem;
+	font-size: 0.95rem;
 	color: var(--color-text-muted);
 }
 

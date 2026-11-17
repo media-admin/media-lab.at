@@ -1529,11 +1529,10 @@
 			}
 			var textileTotal = round2( textile.total );
 			var all = round2( textileTotal + deco.sum );
-			combinedEl.appendChild( el( 'strong', null, fill( t.combinedFor, [ num( state.qty, 0 ) ] ) + ': ' + money2( all ) ) );
-			combinedEl.appendChild( document.createElement( 'br' ) );
+			combinedEl.appendChild( el( 'span', 'mld-price-combined__label', fill( t.combinedFor, [ num( state.qty, 0 ) ] ) ) );
+			combinedEl.appendChild( el( 'strong', 'mld-price-combined__amount', money2( all ) ) );
 			combinedEl.appendChild( el( 'span', 'mld-price-combined__parts', fill( t.combinedParts, [ money2( textileTotal ), money2( deco.sum ) ] ) ) );
 			if ( deco.request && t.requestNote ) {
-				combinedEl.appendChild( document.createElement( 'br' ) );
 				combinedEl.appendChild( el( 'span', 'mld-price-combined__parts', t.requestNote ) );
 			}
 		}
