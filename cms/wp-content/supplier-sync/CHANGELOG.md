@@ -11,6 +11,16 @@ siehe Notion „WooCommerce Import – Entscheidungen & Setup" →
 
 ---
 
+## 2026-11-16
+
+### Added
+- Feed-Spalte `gender_hint` (am Ende der Parent-CSV, `Product::$genderHint`, `FeedGenerator`): Cotton Classics füllt sie mit Name2 (deutsch)
+  aus der Style List (zum Beispiel „Herren Piqué Polo“), Makito und MidOcean lassen sie leer. Gedacht für den Geschlechtsfilter
+  (`media-lab-ml-sku`, `inc/geschlecht.php`), der Wert gehört in das Meta `_ml_gender_hint` (WP All Import, Import 11:
+  benutzerdefiniertes Feld mit `{gender_hint[1]}`). Die bestehende Zuordnung der Imports bleibt unverändert.
+
+---
+
 ## 2026-10-27
 
 ### Changed

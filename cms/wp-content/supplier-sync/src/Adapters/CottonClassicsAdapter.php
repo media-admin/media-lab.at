@@ -105,6 +105,7 @@ class CottonClassicsAdapter extends AbstractAdapter {
                 if ($styleCode === '') continue;
 
                 $name1          = trim((string) ($cells[1] ?? ''));
+                $name2DE        = trim((string) ($cells[2] ?? ''));
                 $materialDescDE = trim((string) ($cells[3] ?? ''));
                 $productDescDE  = trim((string) ($cells[4] ?? ''));
                 $picture        = trim((string) ($cells[14] ?? ''));
@@ -112,6 +113,7 @@ class CottonClassicsAdapter extends AbstractAdapter {
 
                 $data[$styleCode] = [
                     'title'       => $name1,
+                    'name2'       => strcasecmp($name2DE, 'NULL') === 0 ? '' : $name2DE,
                     'description' => trim(implode("\n", array_filter(
                     array_map(static function ($t) {
                         $t = trim((string) $t);
@@ -180,6 +182,8 @@ class CottonClassicsAdapter extends AbstractAdapter {
 
         $product->productTitle       = $style['title'] ?? $styleCode;
         $product->productDescription = $style['description'] ?? '';
+        // Name2 (deutsch, z. B. "Herren Piqué Polo") nennt das Geschlecht, der Titel (Name1) oft nicht: nur fuer den Geschlechtsfilter
+        $product->genderHint         = $style['name2'] ?? '';
         // Manufacturer(2) liegt pro SKU-Zeile vor, ist aber innerhalb eines
         // Styles konsistent (alle Farb-/Größenvarianten eines Styles teilen
         // sich denselben Hersteller) - wir nehmen die erste Zeile.

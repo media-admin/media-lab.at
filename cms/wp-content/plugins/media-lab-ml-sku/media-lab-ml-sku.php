@@ -4,7 +4,7 @@
  * Description: Generates Media Lab SKUs (ML-CODE-NNNNNN(-VVV)) for WooCommerce products/variations.
  *              Fires after WP All Import finishes writing custom fields (pmxi_saved_post),
  *              with a manual-save fallback and an atomic counter to avoid race conditions.
- * Version: 0.7.1
+ * Version: 0.8.0
  */
 
 defined('ABSPATH') || exit;
@@ -1672,6 +1672,9 @@ require_once __DIR__ . '/inc/groessen.php';
 
 // Kategorien (11/2026): Zielbaum mit 12 Hauptkategorien und Kollektionen, siehe inc/kategorien.php
 require_once __DIR__ . '/inc/kategorien.php';
+
+// Geschlechtsfilter (11/2026): Herren, Damen, Unisex, Kinder aus Titel, Kategorie, Größe und Beschreibung, siehe inc/geschlecht.php
+require_once __DIR__ . '/inc/geschlecht.php';
 
 // Konfigurator: Bildwechsel mit der Farbauswahl (11/2026), siehe inc/konfigurator-bilder.php
 require_once __DIR__ . '/inc/konfigurator-bilder.php';

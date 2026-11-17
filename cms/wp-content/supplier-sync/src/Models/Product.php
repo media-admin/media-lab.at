@@ -16,6 +16,7 @@ class Product {
     public string $productDescription;
     public string $brand = '';
     public string $badge = '';       // ACF product_badge: 'new' | 'restposten' | ''
+    public string $genderHint = '';  // Hinweis fuer den Geschlechtsfilter (nur intern, Meta _ml_gender_hint); Cotton: Name2 deutsch
     public string $decorationJson = '';
     public array $categories = [];
 
@@ -90,6 +91,7 @@ class Product {
         'product_badge'         => $this->badge,
         'single_variant_price_tiers' => $singleVariantPriceTiers,
         'decoration_json' => $this->decorationJson,
+        'gender_hint'     => $this->genderHint,
     ];
     }
 }

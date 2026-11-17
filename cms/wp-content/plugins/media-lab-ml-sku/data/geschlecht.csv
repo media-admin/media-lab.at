@@ -1,0 +1,14 @@
+﻿quelle;muster;wert;max_zeichen;hinweis
+hinweis,titel;\b(herren|men|mens|männer)\b;Herren;0;Herren, Men, Men's (Possessiv trifft über die Wortgrenze)
+hinweis,titel;\b(damen|women|womens|ladies|frauen|female)\b;Damen;0;Damen, Women, Frauen
+hinweis,titel;\b(kinder|kids|kid|children|junior|baby|babys|babies|boys?|girls?|jungen|mädchen)\b;Kinder;0;Kinder, Kids, Junior, Baby
+hinweis,titel;\bunisex\b;Unisex;0;Unisex
+groesse;^hom$;Herren;0;Makito-Größe hom (Herren)
+groesse;^muj$;Damen;0;Makito-Größe muj (Damen)
+kategorie;(^|>\s*)Kids(\s*>|$);Kinder;0;MidOcean: Kleidung & Wearables > Kids
+kategorie;^Kinder$;Kinder;0;Makito: Kategorie Kinder
+kategorie;^Baby$;Kinder;0;Cotton Classics: Kategorie Baby
+kategorie;^Damenartikel$;Damen;0;Makito: Kategorie Damenartikel
+beschreibung;\bunisex\b;Unisex;400;Unisex in den ersten 400 Zeichen der Beschreibung
+beschreibung;(^|[.,:!?]\s+|\s[-–—]\s)(herren|männer)\b;Herren;120;Herren als Produktart-Zusatz am Anfang der Beschreibung (nicht: geeignet für Herren)
+beschreibung;(^|[.,:!?]\s+|\s[-–—]\s)(damen|frauen)\b;Damen;120;Damen oder Frauen als Produktart-Zusatz am Anfang der Beschreibung (nicht: geeignet für Damen)
