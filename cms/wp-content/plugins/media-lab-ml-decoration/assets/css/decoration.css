@@ -603,6 +603,20 @@
 	color: var(--color-text-muted);
 }
 
+/* Gesamtpreis inkl. Veredelung unter der Summenzeile des Shops (Produktseite) */
+.mld-price-combined {
+	margin: 0.25rem 0 1rem;
+}
+
+.mld-price-combined[hidden] {
+	display: none;
+}
+
+.mld-price-combined__parts {
+	font-size: 0.85rem;
+	color: var(--color-text-muted);
+}
+
 /* Motivmaße (Breite x Höhe) */
 .mld-calc__dims-title {
 	font-size: 0.85rem;

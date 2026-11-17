@@ -1498,7 +1498,64 @@
 			return rl.dims ? ', ' + fill( t.dimsRow, [ num( rl.dims.w ), num( rl.dims.h ) ] ) : '';
 		}
 
+		// Gesamtpreis inkl. Veredelung: Die Summe des Shops unter dem Preis ("Gesamt (n Stück)") kennt nur das Textil.
+		// Hier kommt direkt darunter die Summe aus Textil und Veredelung dazu, damit der Kunde nicht selbst addieren muss.
+		var deco = { sum: null, request: false };           // Veredelung der aktuellen Auswahl (null: keine Beträge)
+		var textile = null;                                 // letzte Meldung des Shops (mlw:price-updated)
+		var combinedEl = null;
+
+		function renderCombined() {
+			var scope = section.closest( '.product' ) || document;
+			var totalEl = scope.querySelector( '.mlw-price-total' );
+			if ( ! totalEl ) {
+				if ( combinedEl ) {
+					combinedEl.hidden = true;
+				}
+				return;
+			}
+			if ( ! combinedEl ) {
+				combinedEl = el( 'p', 'mld-price-combined' );
+				combinedEl.setAttribute( 'aria-live', 'polite' );
+			}
+			if ( combinedEl.previousElementSibling !== totalEl ) {
+				totalEl.insertAdjacentElement( 'afterend', combinedEl );
+			}
+			// nur bei Beträgen, gewählter Variante und gleicher Menge im Shop und im Rechner
+			var ok = showPrices && deco.sum !== null && deco.sum > 0 && textile && typeof textile.total === 'number' && textile.qty === state.qty;
+			combinedEl.hidden = ! ok;
+			combinedEl.innerHTML = '';
+			if ( ! ok ) {
+				return;
+			}
+			var textileTotal = round2( textile.total );
+			var all = round2( textileTotal + deco.sum );
+			combinedEl.appendChild( el( 'strong', null, fill( t.combinedFor, [ num( state.qty, 0 ) ] ) + ': ' + money2( all ) ) );
+			combinedEl.appendChild( document.createElement( 'br' ) );
+			combinedEl.appendChild( el( 'span', 'mld-price-combined__parts', fill( t.combinedParts, [ money2( textileTotal ), money2( deco.sum ) ] ) ) );
+			if ( deco.request && t.requestNote ) {
+				combinedEl.appendChild( document.createElement( 'br' ) );
+				combinedEl.appendChild( el( 'span', 'mld-price-combined__parts', t.requestNote ) );
+			}
+		}
+
+		document.addEventListener( 'mlw:price-updated', function ( e ) {
+			textile = e && e.detail ? e.detail : null;
+			renderCombined();
+		} );
+		// Der Shop meldet den Preis beim Start unter Umständen vor unserem Start: einmal neu anfordern
+		document.dispatchEvent( new Event( 'mlw:recalculate' ) );
+		window.addEventListener( 'load', function () {
+			document.dispatchEvent( new Event( 'mlw:recalculate' ) );
+		} );
+
 		function render() {
+			deco.sum = null;
+			deco.request = false;
+			renderResult();
+			renderCombined();
+		}
+
+		function renderResult() {
 			controls.forEach( function ( c ) {
 				if ( c && c.refreshLogo ) {
 					c.refreshLogo();
@@ -1627,6 +1684,8 @@
 			scroll.appendChild( table );
 			result.appendChild( scroll );
 
+			deco.sum = round2( sum );
+			deco.request = anyRequest;
 			if ( sum > 0 && state.qty > 0 ) {
 				result.appendChild( el( 'p', 'mld-calc__avg', fill( t.average, [ money( sum / state.qty ) ] ) ) );
 			}

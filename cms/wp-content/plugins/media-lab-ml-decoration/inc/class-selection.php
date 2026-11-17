@@ -295,7 +295,8 @@ class ML_Deco_Selection {
 			if ( $clean === null ) {
 				continue;
 			}
-			$rows = self::rows( $pid, $clean, max( 1, (int) ( $item['quantity'] ?? 1 ) ) );
+			$qty  = max( 1, (int) ( $item['quantity'] ?? 1 ) );
+			$rows = self::rows( $pid, $clean, $qty, true, self::textile_unit( $stored + $item, $qty ) );
 			if ( ! $rows ) {
 				continue;
 			}
@@ -384,7 +385,10 @@ class ML_Deco_Selection {
 			if ( $clean === null ) {
 				continue;
 			}
-			$rows = self::rows( $pid, $clean, max( 1, (int) ( $item['quantity'] ?? 1 ) ), (bool) $own_list );
+			$qty    = max( 1, (int) ( $item['quantity'] ?? 1 ) );
+			$unit   = isset( $item['unit_price'] ) && $item['unit_price'] !== null ? (float) $item['unit_price'] : null;
+			$totals = null;
+			$rows   = self::rows( $pid, $clean, $qty, (bool) $own_list, $unit, $totals );
 			if ( ! $rows ) {
 				continue;
 			}
@@ -393,9 +397,50 @@ class ML_Deco_Selection {
 				$display[ $label ] = $value;
 			}
 			$item['config_display'] = $display;
+
+			// Summe der Zeile (und damit die Gesamtsumme der Wunschliste) inklusive Veredelung: Sonst sähe der Kunde
+			// nur den Textilpreis und müsste die Veredelung selbst dazurechnen. Der Stückpreis bleibt der Textilpreis.
+			if ( $totals && $totals['combined'] !== null ) {
+				$item['line_total']      = $totals['combined'];
+				$item['line_total_html'] = wc_price( $totals['combined'] ) . self::note_html( __( 'inkl. Veredelung', 'media-lab-ml-decoration' ) );
+				$item['unit_price_html'] = (string) ( $item['unit_price_html'] ?? '' ) . self::note_html( __( 'zzgl. Veredelung', 'media-lab-ml-decoration' ) );
+			}
 		}
 		unset( $item );
 		return $items;
+	}
+
+	/** Kleiner Zusatz unter einem Preis (die Wunschliste gibt die Preis-Felder als fertiges HTML aus). */
+	private static function note_html( string $text ): string {
+		return '<small class="mld-price-note" style="display:block;font-weight:400;font-size:.8em">' . esc_html( $text ) . '</small>';
+	}
+
+	/**
+	 * Textilpreis je Stück (netto, wie in der Wunschliste) für einen Eintrag der Wunschliste oder Anfrage.
+	 * null, wenn er sich nicht sicher bestimmen lässt (Variante fehlt, Produkt weg, kein Preis).
+	 */
+	private static function textile_unit( array $entry, int $qty ): ?float {
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return null;
+		}
+		if ( isset( $entry['price_breakdown']['unit_price'] ) && $entry['price_breakdown']['unit_price'] !== null ) {
+			return (float) $entry['price_breakdown']['unit_price'];
+		}
+		$vid    = (int) ( $entry['variation_id'] ?? 0 );
+		$pid    = (int) ( $entry['product_id'] ?? 0 );
+		$source = $pid ? wc_get_product( $vid ?: $pid ) : null;
+		if ( ! $source || ( ! $vid && $source->is_type( 'variable' ) ) ) {
+			return null;
+		}
+		$price = $source->get_price();
+		if ( $price === '' || $price === null ) {
+			return null;
+		}
+		$unit = (float) $price;
+		if ( empty( $entry['config'] ) ) {
+			$unit = (float) apply_filters( 'mlw_wishlist_unit_price', $unit, $entry, $source, $qty );
+		}
+		return $unit;
 	}
 
 	/** Hängt je Produktzeile mit gemerkter Auswahl die Veredelungszeilen an config_display. */
@@ -409,7 +454,8 @@ class ML_Deco_Selection {
 			if ( ! $pid || empty( $all[ $pid ] ) ) {
 				continue;
 			}
-			$rows = self::rows( $pid, $all[ $pid ], max( 1, (int) ( $item['quantity'] ?? 1 ) ) );
+			$qty  = max( 1, (int) ( $item['quantity'] ?? 1 ) );
+			$rows = self::rows( $pid, $all[ $pid ], $qty, true, self::textile_unit( $item, $qty ) );
 			if ( ! $rows ) {
 				continue;
 			}
@@ -431,9 +477,17 @@ class ML_Deco_Selection {
 	 * Logo-Zeilen ("Logo – <Position>"): Dateiname, "folgt per Mail", "gleiches Logo wie <Position>" oder "Datei nicht mehr
 	 * vorhanden". $names = false (geteilte Ansicht): nur "Logo hinterlegt", kein Dateiname.
 	 *
+	 * Mit $textile_unit (Textilpreis je Stück, netto) kommt zusätzlich die Zeile "Gesamt inkl. Veredelung" dazu:
+	 * Der Kunde sieht dann die Summe aus Textil und Veredelung statt zweier getrennter Beträge. $totals liefert die
+	 * Summen für die Wunschliste (sum = Veredelung inkl. Einrichtung und Zuschlag, setup, textile, combined, request);
+	 * es bleibt null, wenn keine Beträge ausgegeben werden ("Preise anzeigen" aus) oder keine Position einen Preis hat.
+	 *
+	 * @param float|null $textile_unit Textilpreis je Stück oder null (unbekannt: keine Gesamtzeile).
+	 * @param array|null $totals       Rückgabe der Summen (by reference).
 	 * @return array<string,string>
 	 */
-	public static function rows( int $product_id, array $selection, int $qty, bool $names = true ): array {
+	public static function rows( int $product_id, array $selection, int $qty, bool $names = true, ?float $textile_unit = null, ?array &$totals = null ): array {
+		$totals = null;
 		$ctx = self::context( $product_id );
 		if ( ! $ctx ) {
 			return [];
@@ -544,6 +598,21 @@ class ML_Deco_Selection {
 				$qty,
 				self::plain( $setup )
 			) . ( $request ? '. ' . $t['requestNote'] : '' );
+		}
+		if ( $rows && $show && $any ) {
+			$totals = [ 'sum' => round( $sum, 2 ), 'setup' => round( $setup, 2 ), 'request' => $request, 'textile' => null, 'combined' => null ];
+			if ( $textile_unit !== null ) {
+				$textile = round( $textile_unit * $qty, 2 );
+				$totals['textile']  = $textile;
+				$totals['combined'] = round( $textile + $totals['sum'], 2 );
+				$rows[ $t['combined'] ] = sprintf(
+					/* translators: 1: Gesamtbetrag, 2: Stückzahl, 3: Textilsumme, 4: Veredelungssumme */
+					__( '%1$s bei %2$d Stück (%3$s) – unverbindliche Schätzung', 'media-lab-ml-decoration' ),
+					self::plain( $totals['combined'] ),
+					$qty,
+					sprintf( $t['combinedParts'], self::plain( $textile ), self::plain( $totals['sum'] ) )
+				) . ( $request ? '. ' . $t['requestNote'] : '' );
+			}
 		}
 		if ( $rows && $show && $estimate && ML_Deco_Settings::setup_note() !== '' ) {
 			$rows[ __( 'Veredelung – Hinweis Vorkosten', 'media-lab-ml-decoration' ) ] = ML_Deco_Settings::setup_note();
