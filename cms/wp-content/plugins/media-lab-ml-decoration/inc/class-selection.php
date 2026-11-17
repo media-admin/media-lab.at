@@ -399,20 +399,16 @@ class ML_Deco_Selection {
 			$item['config_display'] = $display;
 
 			// Summe der Zeile (und damit die Gesamtsumme der Wunschliste) inklusive Veredelung: Sonst sähe der Kunde
-			// nur den Textilpreis und müsste die Veredelung selbst dazurechnen. Der Stückpreis bleibt der Textilpreis.
+			// nur den Textilpreis und müsste die Veredelung selbst dazurechnen. Der Stückpreis bleibt der Textilpreis; die
+			// Hinweise "zzgl./inkl. Veredelung" unter den Preisen setzt assets/js/wishlist-notes.js (die Vorlage der
+			// Wunschliste gibt die Preise selbst aus und kennt keine Zusätze).
 			if ( $totals && $totals['combined'] !== null ) {
 				$item['line_total']      = $totals['combined'];
-				$item['line_total_html'] = wc_price( $totals['combined'] ) . self::note_html( __( 'inkl. Veredelung', 'media-lab-ml-decoration' ) );
-				$item['unit_price_html'] = (string) ( $item['unit_price_html'] ?? '' ) . self::note_html( __( 'zzgl. Veredelung', 'media-lab-ml-decoration' ) );
+				$item['line_total_html'] = wc_price( $totals['combined'] );
 			}
 		}
 		unset( $item );
 		return $items;
-	}
-
-	/** Kleiner Zusatz unter einem Preis (die Wunschliste gibt die Preis-Felder als fertiges HTML aus). */
-	private static function note_html( string $text ): string {
-		return '<small class="mld-price-note" style="display:block;font-weight:400;font-size:.8em">' . esc_html( $text ) . '</small>';
 	}
 
 	/**

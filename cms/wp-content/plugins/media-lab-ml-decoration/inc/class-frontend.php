@@ -165,6 +165,25 @@ class ML_Deco_Frontend {
 		if ( function_exists( 'is_product' ) && is_product() ) {
 			self::enqueue_assets();
 		}
+		self::enqueue_wishlist_notes();
+	}
+
+	/**
+	 * Wunschlisten-Seite (Shortcode [mlw_wishlist_page]): Hinweise "zzgl./inkl. Veredelung" unter den Preisen.
+	 * Filter ml_deco_wishlist_notes (false = aus).
+	 */
+	private static function enqueue_wishlist_notes(): void {
+		$post = is_singular() ? get_post() : null;
+		if ( ! $post || ! has_shortcode( (string) $post->post_content, 'mlw_wishlist_page' ) || ! apply_filters( 'ml_deco_wishlist_notes', true ) ) {
+			return;
+		}
+		$t = ML_Deco_Calculator::payload_strings();
+		wp_enqueue_script( 'ml-deco-wishlist-notes', ML_DECO_URL . 'assets/js/wishlist-notes.js', [], ML_DECO_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
+		wp_localize_script( 'ml-deco-wishlist-notes', 'mldWishlistNotes', [
+			'marker' => $t['combined'],
+			'unit'   => __( 'zzgl. Veredelung', 'media-lab-ml-decoration' ),
+			'total'  => __( 'inkl. Veredelung', 'media-lab-ml-decoration' ),
+		] );
 	}
 
 	private static function enqueue_assets(): void {
