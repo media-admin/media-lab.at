@@ -1,0 +1,35 @@
+// =============================================================================
+// Formular-Steuerelemente: zentrale Definition für Checkbox und Radio
+// -----------------------------------------------------------------------------
+// Gilt für alle nativen Checkboxen und Radiobuttons im Theme und in den Plugin-Formularen (Anfrage- und
+// Wunschlisten-Formular, Datenschutz-Zustimmung). Größe, Akzentfarbe, Fokus und Mauszeiger stehen nur hier.
+// Komponenten, die schon eigene Regeln haben (Contact Form 7, Filter, Kommentare), behalten diese; neue Formulare
+// müssen nichts mehr definieren. :where() hat keine Spezifität, deshalb überschreibt jede Komponentenregel die Basis.
+// Nur Tokens und Variablen, keine festen Farbwerte.
+// =============================================================================
+
+:where(input[type='checkbox'], input[type='radio']) {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+:where(input[type='checkbox'], input[type='radio']):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+// Wunschlisten- und Anfrageformular: die allgemeine Regel .mlw-wishlist__form-row input (Rahmen, Hintergrund und
+// Innenabstand für Textfelder) trifft auch Checkboxen. Für sie zurücksetzen, damit die zentrale Definition gilt.
+.mlw-wishlist__form-row input[type='checkbox'],
+.mlw-wishlist__form-row input[type='radio'] {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}

@@ -110,7 +110,7 @@ class ML_Deco_Frontend {
 	}
 
 	public static function init(): void {
-		add_filter( 'woocommerce_product_tabs', [ __CLASS__, 'tabs' ], 25 );
+		add_filter( 'woocommerce_product_tabs', [ __CLASS__, 'tabs' ], 25 ); // Priorität des Filters; die Tab-Reihenfolge steht in 'priority' unten
 		// Farbcode der gewählten Variante (MidOcean) an die Variationsdaten hängen: die Positionsbilder folgen der Farbe
 		add_filter( 'woocommerce_available_variation', [ __CLASS__, 'variation_color' ], 10, 3 );
 		add_filter( 'body_class', [ __CLASS__, 'body_class' ] );
@@ -125,7 +125,7 @@ class ML_Deco_Frontend {
 		}
 		$tabs['ml_decoration'] = [
 			'title'    => ML_Deco_Settings::tab_title(),
-			'priority' => 25,
+			'priority' => 5, // vor "Zusätzliche Informationen" (20) und "Bewertungen" (30), also der erste Tab
 			'callback' => static function () use ( $id ) {
 				echo ML_Deco_Render::render( $id ); // phpcs:ignore WordPress.Security.EscapeOutput -- Render escaped intern
 			},
