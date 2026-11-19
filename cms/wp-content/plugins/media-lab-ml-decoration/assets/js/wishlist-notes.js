@@ -3,6 +3,8 @@
  *
  * Der Stückpreis bleibt der Textilpreis, die Zeilensumme enthält die Veredelung (ML_Deco_Selection::display_items).
  * Damit das nicht verwirrt, steht unter dem Stückpreis "zzgl. Veredelung" und unter der Zeilensumme "inkl. Veredelung".
+ * In der geteilten Ansicht (shared.php) stehen Stückpreis und Summe in einer Zeile ("X pro Stück · Y gesamt"), dort steht
+ * ein gemeinsamer Hinweis darunter.
  * Die Vorlage der Wunschliste (media-lab-woocommerce) gibt die Preise selbst aus und rendert nach Ajax-Änderungen neu,
  * deshalb arbeitet dieses Skript am fertigen Markup: Eintrag mit der Detailzeile "Gesamt inkl. Veredelung ..." bekommt
  * die Hinweise, der Rest nicht. Läuft beim Laden und nach jedem Neuaufbau der Liste.
@@ -50,6 +52,13 @@
 			var wanted = hasDecoration( items[ i ] );
 			var price = items[ i ].querySelector( '.mlw-wishlist-item__price' );
 			var total = items[ i ].querySelector( '.mlw-wishlist-item__line-total' );
+			if ( items[ i ].classList.contains( 'mlw-wishlist-item--shared' ) ) {
+				// Geteilte Ansicht: eine Preiszeile, ein gemeinsamer Hinweis.
+				if ( price && cfg.shared ) {
+					sync( price, cfg.shared, wanted );
+				}
+				continue;
+			}
 			if ( price ) {
 				sync( price, cfg.unit, wanted );
 			}

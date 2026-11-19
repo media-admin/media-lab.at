@@ -183,6 +183,7 @@ class ML_Deco_Frontend {
 			'marker' => $t['combined'],
 			'unit'   => __( 'zzgl. Veredelung', 'media-lab-ml-decoration' ),
 			'total'  => __( 'inkl. Veredelung', 'media-lab-ml-decoration' ),
+			'shared' => __( 'Stückpreis zzgl. Veredelung, Gesamtpreis inkl. Veredelung', 'media-lab-ml-decoration' ),
 		] );
 	}
 
