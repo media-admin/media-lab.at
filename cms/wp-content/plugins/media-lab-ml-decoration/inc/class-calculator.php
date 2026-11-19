@@ -219,8 +219,8 @@ class ML_Deco_Calculator {
 		$decode = static fn( string $v ): string => html_entity_decode( $v, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 
 		return [
-			'pattern'  => function_exists( 'get_woocommerce_price_format' ) ? $decode( (string) get_woocommerce_price_format() ) : "%2\$s\u{00A0}%1\$s",
-			'symbol'   => function_exists( 'get_woocommerce_currency_symbol' ) ? $decode( (string) get_woocommerce_currency_symbol() ) : '€',
+			'pattern'  => function_exists( 'get_woocommerce_price_format' ) ? $decode( (string) get_woocommerce_price_format() ) : "%1\$s\u{00A0}%2\$s",
+			'symbol'   => function_exists( 'get_woocommerce_currency_symbol' ) ? $decode( (string) get_woocommerce_currency_symbol() ) : 'EUR',
 			'decimal'  => function_exists( 'wc_get_price_decimal_separator' ) ? (string) wc_get_price_decimal_separator() : ',',
 			'thousand' => function_exists( 'wc_get_price_thousand_separator' ) ? (string) wc_get_price_thousand_separator() : '.',
 		];

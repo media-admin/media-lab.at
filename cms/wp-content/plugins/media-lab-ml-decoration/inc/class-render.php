@@ -266,10 +266,10 @@ class ML_Deco_Render {
 	public static function money( float $value ): string {
 		$value = round( $value, 3 );
 		$cents = $value * 100;
-		$dec   = abs( $cents - round( $cents ) ) < 0.0001 ? 2 : 3; // 0,105 € nicht auf 0,11 € runden
+		$dec   = abs( $cents - round( $cents ) ) < 0.0001 ? 2 : 3; // EUR 0,105 nicht auf EUR 0,11 runden
 		return function_exists( 'wc_price' )
 			? wc_price( $value, [ 'decimals' => $dec ] )
-			: esc_html( number_format_i18n( $value, $dec ) . ' €' );
+			: esc_html( 'EUR ' . number_format_i18n( $value, $dec ) );
 	}
 
 	private static function qty_label( int $from, ?int $to ): string {

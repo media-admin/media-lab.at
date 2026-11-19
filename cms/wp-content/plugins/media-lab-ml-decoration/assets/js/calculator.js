@@ -287,8 +287,8 @@
 		var t = data.i18n || {};
 		var showPrices = !! data.showPrices;
 		var fmt = data.format || {};
-		var pattern = fmt.pattern || '%2$s\u00a0%1$s';
-		var symbol = fmt.symbol || '\u20ac';
+		var pattern = fmt.pattern || '%1$s\u00a0%2$s';
+		var symbol = fmt.symbol || 'EUR';
 		var decSep = fmt.decimal !== undefined ? fmt.decimal : ',';
 		var thouSep = fmt.thousand !== undefined ? fmt.thousand : '.';
 
@@ -302,7 +302,7 @@
 		function formatPrice( v, dec ) {
 			return pattern.replace( '%1$s', symbol ).replace( '%2$s', formatNumber( v, dec ) );
 		}
-		/** Stückpreise: 2 Nachkommastellen, bei Bedarf 3 (0,105 € nicht auf 0,11 € runden) */
+		/** Stückpreise: 2 Nachkommastellen, bei Bedarf 3 (EUR 0,105 nicht auf EUR 0,11 runden) */
 		function money( v ) {
 			v = Math.round( v * 1000 ) / 1000;
 			var cents = v * 100;

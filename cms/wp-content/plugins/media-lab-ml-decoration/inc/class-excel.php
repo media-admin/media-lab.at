@@ -179,7 +179,7 @@ class ML_Deco_Excel {
 		if ( is_int( $v ) || is_float( $v ) ) {
 			return round( (float) $v, 6 );
 		}
-		$s = str_replace( [ ' ', "\u{00a0}", '€' ], '', (string) $v );
+		$s = str_ireplace( [ ' ', "\u{00a0}", '€', 'EUR' ], '', (string) $v ); // "EUR 4,80" und "4,80 €" werden gelesen
 		$s = str_replace( ',', '.', $s );
 		return is_numeric( $s ) ? round( (float) $s, 6 ) : null;
 	}
@@ -384,7 +384,7 @@ class ML_Deco_Excel {
 
 			$summary[] = sprintf(
 				/* translators: 1: Technikname, 2: Anzahl Flächenstufen, 3: Flächengrenzen, 4: Anzahl Mengenstaffeln, 5: Vorkosten */
-				__( '%1$s: %2$d Flächenstufen (bis %3$s cm²), %4$d Mengenstaffeln, Vorkosten-Richtwert %5$s €', 'media-lab-ml-decoration' ),
+				__( '%1$s: %2$d Flächenstufen (bis %3$s cm²), %4$d Mengenstaffeln, Vorkosten-Richtwert EUR %5$s', 'media-lab-ml-decoration' ),
 				$name,
 				count( $ranges ),
 				implode( ' / ', array_map( static fn( $x ) => self::fmt( $x['to'] ), $ranges ) ),
@@ -394,7 +394,7 @@ class ML_Deco_Excel {
 			if ( $techniques[ $id ]['min_surcharge'] !== null ) {
 				$summary[ count( $summary ) - 1 ] .= sprintf(
 					/* translators: 1: Betrag, 2: Mengengrenze */
-					__( ', Mindermengen-Zuschlag %1$s € unter %2$d Stück', 'media-lab-ml-decoration' ),
+					__( ', Mindermengen-Zuschlag EUR %1$s unter %2$d Stück', 'media-lab-ml-decoration' ),
 					number_format_i18n( (float) $techniques[ $id ]['min_surcharge'], 2 ),
 					(int) $techniques[ $id ]['min_surcharge_below']
 				);
