@@ -33,4 +33,16 @@ $check( 'ohne Cotton-Produkte bleibt alles', count( $none['kept'] ), 5 );
 $other = $rules->filterProducts( $products, 'TKM', [ 'LCC' => [ '25.0553' ] ] );
 $check( 'anderer Lieferant bleibt unberuehrt', count( $other['kept'] ), 5 );
 
+// NEOBLU (zweite Regel)
+$neoblu = $rules->all()[1];
+$check( 'NEOBLU Cotton 24.3162 -> 3162', DuplicateRules::key( $neoblu, 'LCC', '24.3162' ), '3162' );
+$check( 'NEOBLU MidOcean N03162 -> 3162', DuplicateRules::key( $neoblu, 'DIM', 'N03162' ), '3162' );
+$check( 'NEOBLU Cotton-Sondergroesse 24.162X -> null', DuplicateRules::key( $neoblu, 'LCC', '24.162X' ), null );
+$nb = $rules->filterProducts(
+    [ $mk( 'N03162', 'NEOBLU' ), $mk( 'N03168', 'NEOBLU' ), $mk( 'N03163', "SOL's Collection" ) ],
+    'DIM',
+    [ 'LCC' => [ '24.3162', '24.162X', '24.3163' ] ]
+);
+$check( 'NEOBLU: nur N03162 verdraengt (N03168 ohne Partner, N03163 andere Marke)', array_map( fn( $h ) => $h['product']->supplierSku, $nb['dropped'] ), [ 'N03162' ] );
+
 exit( $fail ? 1 : 0 );

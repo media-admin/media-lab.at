@@ -17,8 +17,8 @@ siehe Notion „WooCommerce Import – Entscheidungen & Setup" →
 - Dubletten zwischen Lieferanten (Entscheidung Markus Tritremmel, 19.11.2026: Cotton Classics hat Vorrang vor MidOcean). Führen beide denselben
   Artikel, bleibt das Cotton-Produkt, das MidOcean-Produkt kommt nicht mehr in den Feed und wird im Shop auf Entwurf gesetzt.
   - `config/duplicates.php`: Regeln je Marke (bevorzugter und verdrängter Lieferant, Regex für den Abgleichschlüssel je Lieferantencode).
-    Erste Regel: "SOL's Collection" (Cotton `25.0553` und MidOcean `S00553` ergeben beide den Schlüssel 553). NEOBLU folgt, sobald die
-    Artikelnummern beider Lieferanten bekannt sind.
+    Regeln: "SOL's Collection" (Cotton `25.0553` und MidOcean `S00553` ergeben beide den Schlüssel 553) und "NEOBLU" (Cotton `24.3162`
+    und MidOcean `N03162` ergeben beide 3162).
   - `src/Services/DuplicateRules.php`: Abgleich ohne Abhängigkeiten (Schlüssel, Markenvergleich, Filter für Produktlisten).
   - `sync.php`: Nach dem Abruf entfernt der Sync Produkte aus dem Feed, deren Schlüssel bei einem bevorzugten, im Shop veröffentlichten
     Lieferanten vorkommt (Marke muss passen). Ohne Datenbank oder ohne Produkte des bevorzugten Lieferanten bleibt alles im Feed. Jede

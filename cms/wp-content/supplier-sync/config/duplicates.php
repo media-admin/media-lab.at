@@ -21,5 +21,15 @@ return [
             'DIM' => '/^S(\d+)$/',
         ],
     ],
-    // NEOBLU: folgt, sobald die Artikelnummern beider Lieferanten bekannt sind.
+    [
+        // Cotton "24.3162" und MidOcean "N03162" (Gabin Men) ergeben beide 3162. Cotton-Sondergrößen wie "24.162X" haben keine reine
+        // Zifferngruppe und gehören damit nie zu einem Paar.
+        'brand'  => 'NEOBLU',
+        'prefer' => 'LCC',
+        'drop'   => 'DIM',
+        'key'    => [
+            'LCC' => '/^24\.(\d+)$/',
+            'DIM' => '/^N(\d+)$/',
+        ],
+    ],
 ];
