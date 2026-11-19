@@ -24,7 +24,6 @@ Add/remove CPTs in `inc/custom-post-types.php`
 Add/remove taxonomies in `inc/taxonomies.php`
 ACF fields auto-load from `acf-json/`
 Currency display (`inc/currency.php`): EUR with a space before the amount ("EUR 100.000,00"), set via the WooCommerce filters for symbol, price format and separators (project decision at.media-lab, 19.11.2026)
-Variation thumbnails in the product gallery (`inc/variation-thumbs.php`): switches on the opt-in filter `mlw_variation_color_thumbs` of media-lab-woocommerce 2.36.0 (project decision at.media-lab, 19.11.2026)
 
 ## Dependencies
 
@@ -37,5 +36,5 @@ das phpseclib3 für SSH-Key-Auth benötigt.)
 
 ## Version
 
-1.2.0
+1.1.0
 
