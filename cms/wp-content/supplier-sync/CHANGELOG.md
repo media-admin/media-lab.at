@@ -11,6 +11,25 @@ siehe Notion „WooCommerce Import – Entscheidungen & Setup" →
 
 ---
 
+## 2026-11-19
+
+### Added
+- Dubletten zwischen Lieferanten (Entscheidung Markus Tritremmel, 19.11.2026: Cotton Classics hat Vorrang vor MidOcean). Führen beide denselben
+  Artikel, bleibt das Cotton-Produkt, das MidOcean-Produkt kommt nicht mehr in den Feed und wird im Shop auf Entwurf gesetzt.
+  - `config/duplicates.php`: Regeln je Marke (bevorzugter und verdrängter Lieferant, Regex für den Abgleichschlüssel je Lieferantencode).
+    Erste Regel: "SOL's Collection" (Cotton `25.0553` und MidOcean `S00553` ergeben beide den Schlüssel 553). NEOBLU folgt, sobald die
+    Artikelnummern beider Lieferanten bekannt sind.
+  - `src/Services/DuplicateRules.php`: Abgleich ohne Abhängigkeiten (Schlüssel, Markenvergleich, Filter für Produktlisten).
+  - `sync.php`: Nach dem Abruf entfernt der Sync Produkte aus dem Feed, deren Schlüssel bei einem bevorzugten, im Shop veröffentlichten
+    Lieferanten vorkommt (Marke muss passen). Ohne Datenbank oder ohne Produkte des bevorzugten Lieferanten bleibt alles im Feed. Jede
+    übersprungene Dublette steht im Log (`Dublette uebersprungen: ...`).
+  - `DatabaseClient::getPublishedSupplierSkus()`: Lieferanten-Artikelnummern der veröffentlichten Produkte eines Lieferanten.
+  - `tools/dedupe_suppliers.php` (WP-CLI): ohne Argument nur Bericht, mit `apply` Dubletten auf Entwurf setzen (Feld `_ml_duplicate_of`
+    mit der ID des bevorzugten Produkts), mit `restore` wieder veröffentlichen. Es wird nichts gelöscht. Liste in `logs/dedupe_<Datum>.csv`.
+  - `tests/duplicate_rules_test.php`: `php tests/duplicate_rules_test.php`.
+
+---
+
 ## 2026-11-16
 
 ### Added

@@ -85,6 +85,36 @@ class DatabaseClient {
     }
 
     /**
+     * Lieferanten-Artikelnummern (_ml_supplier_sku) aller veröffentlichten Produkte eines Lieferanten-Codes.
+     * Grundlage für den Abgleich von Dubletten zwischen Lieferanten (config/duplicates.php).
+     *
+     * @return string[]
+     */
+    public function getPublishedSupplierSkus(string $supplierCode): array {
+        $postmeta = $this->table('postmeta');
+        $posts    = $this->table('posts');
+
+        $sql = "
+            SELECT supplier_sku_meta.meta_value
+            FROM {$postmeta} AS supplier_code_meta
+            INNER JOIN {$postmeta} AS supplier_sku_meta
+                ON supplier_sku_meta.post_id = supplier_code_meta.post_id
+                AND supplier_sku_meta.meta_key = '_ml_supplier_sku'
+            INNER JOIN {$posts} AS p
+                ON p.ID = supplier_code_meta.post_id
+                AND p.post_type = 'product'
+                AND p.post_status = 'publish'
+            WHERE supplier_code_meta.meta_key = '_ml_supplier_code'
+              AND supplier_code_meta.meta_value = :supplier_code
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['supplier_code' => $supplierCode]);
+
+        return array_map('strval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+    }
+
+    /**
      * Liest einen einzelnen Wert aus wp_options - robust gegenueber ACFs
      * "options_"-Praefix bei Optionsseiten (analog zu
      * medialab_heartbeat_get_setting() in media-lab-agency-core, das

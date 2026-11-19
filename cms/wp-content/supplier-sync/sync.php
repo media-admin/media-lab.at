@@ -7,6 +7,7 @@ use Monolog\Handler\StreamHandler;
 use SupplierSync\Services\ApiClient;
 use SupplierSync\Services\FeedGenerator;
 use SupplierSync\Services\DatabaseClient;
+use SupplierSync\Services\DuplicateRules;
 
 // .env laden (nötig für Lieferanten-Zugangsdaten wie MAKITO_CUSTOMER_TOKEN)
 $dotenv = Dotenv::createImmutable(__DIR__);
@@ -104,6 +105,40 @@ foreach ($suppliers as $key => $config) {
             );
         }
         $logger->info("Fetched " . count($products) . " products from {$config['name']}");
+
+        // Dubletten zwischen Lieferanten (config/duplicates.php, Entscheidung 19.11.2026): Artikel, die ein bevorzugter
+        // Lieferant schon im Shop führt, kommen nicht in den Feed. Ohne Datenbank oder ohne Produkte des bevorzugten
+        // Lieferanten bleibt alles erhalten.
+        $duplicatesFile = __DIR__ . '/config/duplicates.php';
+        $supplierCode   = (string) ($config['supplier_code'] ?? '');
+        if ($supplierCode !== '' && is_file($duplicatesFile)) {
+            $duplicateRules = new DuplicateRules(require $duplicatesFile);
+            $dropRules = $duplicateRules->rulesDropping($supplierCode);
+            if ($dropRules) {
+                try {
+                    $dupDb = new DatabaseClient(
+                        ml_env('DB_HOST', '127.0.0.1'),
+                        (int) ml_env('DB_PORT', 3306),
+                        ml_env('DB_NAME'),
+                        ml_env('DB_USER'),
+                        ml_env('DB_PASS'),
+                        ml_env('DB_TABLE_PREFIX', 'wp_')
+                    );
+                    $preferredSkus = [];
+                    foreach ($dropRules as $rule) {
+                        $preferredSkus[$rule['prefer']] ??= $dupDb->getPublishedSupplierSkus($rule['prefer']);
+                    }
+                    $result   = $duplicateRules->filterProducts($products, $supplierCode, $preferredSkus);
+                    $products = $result['kept'];
+                    foreach ($result['dropped'] as $hit) {
+                        $logger->info("Dublette uebersprungen: {$hit['product']->importUid} (Schluessel {$hit['key']}, bevorzugt: {$hit['rule']['prefer']})");
+                    }
+                    $logger->info(count($result['dropped']) . " Dubletten aus dem Feed {$config['name']} entfernt, " . count($products) . " Produkte bleiben");
+                } catch (\Throwable $e) {
+                    $logger->warning("Dubletten-Abgleich uebersprungen, alle Produkte bleiben im Feed: " . $e->getMessage());
+                }
+            }
+        }
 
         $variantCount = array_sum(array_map(fn($p) => count($p->variants), $products));
         $logger->info("Total variants: {$variantCount}");
