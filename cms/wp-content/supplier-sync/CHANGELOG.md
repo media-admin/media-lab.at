@@ -11,6 +11,32 @@ siehe Notion „WooCommerce Import – Entscheidungen & Setup" →
 
 ---
 
+## 2026-11-21
+
+### Added
+- Regel für Produkte, die der Lieferant aus dem Feed nimmt (Entscheidung Markus Tritremmel, 21.11.2026). Bisher blieben sie unverändert
+  (WP All Import: `is_delete_missing` = 0). Jetzt vergleicht ein eigener Schritt nach dem Sync den Feed mit dem Shop:
+  - Fehlt ein veröffentlichtes Produkt im Feed, bleibt es sichtbar, solange es Hausbestand (`stock_inhouse`, am Produkt oder an einer
+    Variante) hat. Ohne Hausbestand wird es auf Entwurf gesetzt, nie gelöscht.
+  - Taucht es im Feed wieder auf, wird es nicht automatisch veröffentlicht, der Bericht nennt es nur.
+  - Schutzgrenze: Fehlen mehr als 5 % der veröffentlichten Produkte eines Lieferanten (mindestens 3 erlaubt), zum Beispiel bei einem leeren
+    oder defekten Feed, ändert das Werkzeug nichts und beendet sich mit Code 2.
+  - `src/Services/FeedMissingRules.php`: reine Entscheidungslogik ohne Datenbank und WordPress.
+  - `tools/feed_missing.php`: läuft ohne WP-CLI (lädt `wp-load.php`, auch auf Production per Cronjob) oder mit `wp eval-file`. Liest
+    `feeds/<lieferant>_products.csv` (genau das, was der Import bekommt, inklusive Dubletten-Filter), ruft keine Lieferanten-API auf.
+    `php tools/feed_missing.php midocean` ist nur ein Bericht, `apply` setzt auf Entwurf (Feld `_ml_feed_missing` mit Datum), `restore`
+    veröffentlicht alle damit gesetzten Entwürfe des Lieferanten wieder. Angaben `max=5` (Schutzgrenze in Prozent) und `age=36` (höchstens
+    so alte Feed-Datei bei `apply`, `0` schaltet das ab, zum Beispiel für Cotton Classics). Liste in `logs/feed_missing_<lieferant>_<Datum>.csv`,
+    Verlauf in `logs/feed_missing.log`.
+  - `tests/feed_missing_rules_test.php`: `php tests/feed_missing_rules_test.php`.
+- Der Dubletten-Fall "Cotton-Artikel kommt später dazu, MidOcean-Gegenstück ist schon veröffentlicht" (Grenze 1 im Abschnitt Textil-Dubletten) wird
+  damit abgedeckt: Der Sync lässt das MidOcean-Produkt aus dem Feed, die neue Regel setzt es beim nächsten Lauf auf Entwurf.
+
+### Changed
+- Makito-Feeds über `https://print.makito.es/user/xml/...` statt `http://print.makito.es:8080/...` (Hetzner sperrt ausgehend Port 8080).
+  `ApiClient` und der Makito-Adapter maskieren den Token `pszinternal` im Log. Neue Skripte `tools/diagnose_server.php` und
+  `tools/test_makito_ports.php` (Server-Diagnose und Makito-Portcheck, nur Kommandozeile).
+
 ## 2026-11-19
 
 ### Added
