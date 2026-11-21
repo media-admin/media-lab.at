@@ -14,6 +14,16 @@ siehe Notion „WooCommerce Import – Entscheidungen & Setup" →
 ## 2026-11-21
 
 ### Added
+- Importkette für den Live-Betrieb (Entscheidung Markus Tritremmel, 21.11.2026: WP-CLI als einzelne `wp-cli.phar` per Cronjob, Start gegen 04:00 oder 05:00 Uhr, Varianten täglich):
+  - `tools/run_chain.php <lieferant>` führt die Schritte aus `config/chain.php` nacheinander aus: Sync, Eltern-Import, SKU-Zuordnung, Varianten-Import, Feed-Abgleich (bei Cotton Classics nur Sync, Eltern-Import und Feed-Abgleich, der Varianten-Import 13 dauert rund 3 Tage und bleibt Handarbeit).
+  - Eine Sperrdatei (`logs/chain.lock`) verhindert, dass zwei Ketten gleichzeitig laufen. Eine zweite Kette wartet (Standard bis zu 6 Stunden, `wait=<Stunden>`).
+  - Bei einem Fehler (Exit-Code, "Fatal error" oder "Allowed memory size" in der Ausgabe) bricht die Kette ab, damit kein Import auf einem defekten Zwischenstand aufbaut.
+  - Feedprüfung nach dem Sync: Datei muss neu sein, Produkte enthalten und mindestens 80 % der Produkte des letzten Laufs haben, sonst Abbruch mit Code 2 (`force` überspringt das).
+  - Zusätzliche Angaben: `dry-run` (zeigt nur die Befehle), `from=<schritt>`, `only=<schritt>`.
+  - Kindprozesse laufen mit der `php.ini` des Aufrufers und `memory_limit=1024M` (`ML_CHAIN_MEMORY` zum Ändern). WP-CLI: `WP_CLI_BIN`, sonst `bin/wp-cli.phar`, sonst `wp`.
+  - Logs: `logs/chain/<lieferant>_<Datum>.log`, letzter Stand in `logs/chain_last_status.json`.
+
+### Added
 - Regel für Produkte, die der Lieferant aus dem Feed nimmt (Entscheidung Markus Tritremmel, 21.11.2026). Bisher blieben sie unverändert
   (WP All Import: `is_delete_missing` = 0). Jetzt vergleicht ein eigener Schritt nach dem Sync den Feed mit dem Shop:
   - Fehlt ein veröffentlichtes Produkt im Feed, bleibt es sichtbar, solange es Hausbestand (`stock_inhouse`, am Produkt oder an einer
