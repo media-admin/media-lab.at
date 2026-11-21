@@ -15,10 +15,11 @@ class ApiClient {
 
     public function get(string $url, array $options = []) {
         try {
-            $this->logger?->info("API Request: $url");
+            // Token-Parameter (pszinternal) nicht im Klartext ins Log schreiben
+            $this->logger?->info("API Request: " . preg_replace('/(pszinternal=)[^&]+/i', '$1***', $url));
             return $this->client->get($url, $options);
         } catch (\Exception $e) {
-            $this->logger?->error("API Error: " . $e->getMessage());
+            $this->logger?->error("API Error: " . preg_replace('/(pszinternal=)[^&\s\'"]+/i', '$1***', $e->getMessage()));
             throw $e;
         }
     }

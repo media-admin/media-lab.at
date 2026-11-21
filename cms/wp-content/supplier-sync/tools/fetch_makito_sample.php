@@ -48,7 +48,7 @@ $fullPath = $isLocal ? $feed : "{$dir}/makito_{$safe}_full.xml";
 
 // 1. Download direkt in eine Datei (die Feeds können groß sein)
 if (!$isLocal) {
-    $url = "http://print.makito.es:8080/user/xml/{$feed}?pszinternal=" . urlencode($token)
+    $url = "https://print.makito.es/user/xml/{$feed}?pszinternal=" . urlencode($token)
          . ($ldl ? '&ldl=' . urlencode($ldl) : '');
 
     $fp = fopen($fullPath, 'w');

@@ -6,8 +6,8 @@
  * über feste URLs mit kundenspezifischem "pszinternal"-Token in der URL
  * (kein API-Key-Header wie bei MidOcean).
  *
- * Produkte:  http://print.makito.es:8080/user/xml/ItemDataFile.php?pszinternal=<token>
- * Stock:     http://print.makito.es:8080/user/xml/allstockfile.php?pszinternal=<token>
+ * Produkte:  https://print.makito.es/user/xml/ItemDataFile.php?pszinternal=<token>
+ * Stock:     https://print.makito.es/user/xml/allstockfile.php?pszinternal=<token>
  *
  * Beide gegen echte Beispiel-Responses verifiziert (31.08.2026, Vorsession).
  *
@@ -428,7 +428,7 @@ class MakitoAdapter extends AbstractAdapter {
             libxml_clear_errors();
             libxml_use_internal_errors($previous);
             $msg = implode('; ', array_map(fn($e) => trim($e->message), $errors));
-            throw new \RuntimeException("Makito XML konnte nicht geparst werden ({$url}): {$msg}");
+            throw new \RuntimeException("Makito XML konnte nicht geparst werden (" . preg_replace('/(pszinternal=)[^&]+/i', '$1***', $url) . "): {$msg}");
         }
         libxml_use_internal_errors($previous);
 
